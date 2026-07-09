@@ -11,18 +11,21 @@
     "clean": "rimraf .next .turbo"
   },
   "dependencies": {
-    "next": "^15.3.5",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "@voryent/ui": "*",
     "@voryent/config": "*",
     "@voryent/types": "*",
-    "@voryent/utils": "*"
+    "@voryent/ui": "*",
+    "@voryent/utils": "*",
+    "next": "^15.3.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "autoprefixer": "^10.5.2",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.8.3"
   }
 }
