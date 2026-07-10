@@ -8,7 +8,10 @@
     "moduleResolution": "bundler",
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["../../packages/ui/src/components/*", "./src/components/*"],
+      "@/lib/*": ["../../packages/ui/src/lib/*", "./src/lib/*"],
+      "@/hooks/*": ["../../packages/ui/src/hooks/*", "./src/hooks/*"]
     },
     "noEmit": true,
     "incremental": true

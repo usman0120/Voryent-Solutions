@@ -15,7 +15,7 @@ export default function CardsExample() {
           {[1, 2, 3].map((i) => (
             <BlogCard 
               key={i}
-              title={\`Building Enterprise Applications with Next.js (Part \${i})\`}
+              title={`Building Enterprise Applications with Next.js (Part ${String(i)})`}
               excerpt="Learn how to architect, develop, and deploy a large-scale React application using the App Router."
               date="July 12, 2026"
               category="Engineering"

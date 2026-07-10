@@ -25,7 +25,6 @@ export function BlogCard({ title, excerpt, date, author, category, imageUrl, hre
       <Card className="h-full flex flex-col transition-shadow hover:shadow-md overflow-hidden" {...props}>
         {imageUrl && (
           <div className="w-full h-48 overflow-hidden bg-muted">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={imageUrl} 
               alt={title} 
