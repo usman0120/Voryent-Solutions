@@ -10,51 +10,103 @@ import {
   CardHeader, 
   CardTitle,
   EmptyState,
-  FaqComponent
+  FaqComponent,
+  CareerCard
 } from "@voryent/ui"
-import { 
-  ArrowRight, 
-  MapPin, 
-  Code2, 
-  BookOpen, 
-  Heart, 
-  Rocket, 
-  Briefcase,
-  FileText,
-  Search,
-  Users,
-  Settings,
-  Award,
-  ThumbsUp
-} from "lucide-react"
+import * as LucideIcons from "lucide-react"
+import { ArrowRight, MapPin, Code2, BookOpen, Heart, Rocket, Briefcase, FileText, Search, Users, Settings, Award, ThumbsUp } from "lucide-react"
+import { getCareersData, getCareersJobs } from "@/lib/firebase/services"
 
-export const metadata: Metadata = {
-  title: "Careers | Voryent Solutions",
-  description: "Join Voryent Solutions. Build software that makes a difference. We value engineering excellence, learning, ownership, and collaboration.",
-  alternates: {
-    canonical: "https://voryentsolutions.com/careers",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const careersData: any = await getCareersData().catch(() => null);
+  return {
+    title: careersData?.seo?.title || "Careers | Voryent Solutions",
+    description: careersData?.seo?.description || "Join Voryent Solutions. Build software that makes a difference. We value engineering excellence, learning, ownership, and collaboration.",
+    alternates: {
+      canonical: "https://voryentsolutions.com/careers",
+    },
+  };
 }
 
-export default function CareersPage() {
-  const faqItems = [
-    {
-      question: "Do you offer remote work?",
-      answer: "Yes, we are a remote-first company. We hire talented engineers from all over the world and provide flexible working hours to accommodate different time zones."
-    },
-    {
-      question: "What is the interview process like?",
-      answer: "Our process typically includes an initial application review, a behavioral interview, a technical discussion (not a whiteboard test), an offer, and onboarding."
-    },
-    {
-      question: "What tech stack do you use?",
-      answer: "We primarily work with React, Next.js, Node.js, TypeScript, PostgreSQL, and various cloud platforms like AWS and Vercel. We also heavily utilize AI tools in our workflows."
-    },
-    {
-      question: "Are there opportunities for career growth?",
-      answer: "Absolutely. We prioritize internal mobility, continuous learning, and provide budgets for courses, certifications, and conferences."
-    }
-  ]
+const defaultFaqItems = [
+  {
+    question: "Do you offer remote work?",
+    answer: "Yes, we are a remote-first company. We hire talented engineers from all over the world and provide flexible working hours to accommodate different time zones."
+  },
+  {
+    question: "What is the interview process like?",
+    answer: "Our process typically includes an initial application review, a behavioral interview, a technical discussion (not a whiteboard test), an offer, and onboarding."
+  },
+  {
+    question: "What tech stack do you use?",
+    answer: "We primarily work with React, Next.js, Node.js, TypeScript, PostgreSQL, and various cloud platforms like AWS and Vercel. We also heavily utilize AI tools in our workflows."
+  },
+  {
+    question: "Are there opportunities for career growth?",
+    answer: "Absolutely. We prioritize internal mobility, continuous learning, and provide budgets for courses, certifications, and conferences."
+  }
+];
+
+const defaultBenefits = [
+  { icon: "MapPin", title: "Remote-first", desc: "Work from wherever you are most productive. We care about your impact, not your location." },
+  { icon: "Code2", title: "Modern Tech Stack", desc: "Work with React, Next.js, Node, and the latest AI integrations on modern, scalable infrastructure." },
+  { icon: "BookOpen", title: "Learning & Growth", desc: "Dedicated budgets for courses, certifications, and attending industry conferences." },
+  { icon: "Heart", title: "Flexible Culture", desc: "We believe in a healthy work-life balance, asynchronous communication, and flexible hours." },
+  { icon: "Rocket", title: "Challenging Projects", desc: "Tackle complex engineering problems and deliver products that have real business impact." },
+  { icon: "Briefcase", title: "Long-term Career", desc: "We build long-term partnerships not only with our clients, but with our team members." },
+];
+
+const defaultProcess = [
+  { icon: "FileText", title: "Apply" },
+  { icon: "Search", title: "Review" },
+  { icon: "Users", title: "Interview" },
+  { icon: "Settings", title: "Technical Discussion" },
+  { icon: "Award", title: "Offer" },
+  { icon: "ThumbsUp", title: "Welcome" },
+];
+
+export default async function CareersPage() {
+  const [careersDataRaw, dbJobsRaw] = await Promise.all([
+    getCareersData().catch(() => null),
+    getCareersJobs().catch(() => []),
+  ]);
+
+  const careersData = careersDataRaw as any;
+  const dbJobs = dbJobsRaw as any[];
+
+  const hero = careersData?.hero || {
+    badge: "Join the Team",
+    title: "Build software that makes a difference.",
+    description: "At Voryent, we value engineering excellence, continuous learning, extreme ownership, and seamless collaboration. Join us to build robust architectures and intelligent workflows for ambitious organizations."
+  };
+
+  const benefitsTitle = careersData?.benefits?.title || "Why Work With Voryent";
+  const benefitsDesc = careersData?.benefits?.description || "We provide the environment, tools, and culture you need to do your best work and grow your career.";
+  const benefitsItems = careersData?.benefits?.items || defaultBenefits;
+
+  const processTitle = careersData?.hiringProcess?.title || "Our Hiring Process";
+  const processDesc = careersData?.hiringProcess?.description || "A transparent, respectful, and efficient process designed to let you show your true capabilities.";
+  const processSteps = careersData?.hiringProcess?.steps || defaultProcess;
+
+  const cta = careersData?.cta || {
+    title: "Ready to make an impact?",
+    description: "Join our team and help us build scalable, high-performance software solutions for ambitious organizations.",
+    buttonText: "Apply Now"
+  };
+
+  const faqItems = careersData?.faq?.items || defaultFaqItems;
+  const faqTitle = careersData?.faq?.title || "Frequently Asked Questions";
+  const faqDesc = careersData?.faq?.description || "Common questions about working at Voryent Solutions.";
+
+  const emptyState = careersData?.emptyState || {
+    title: "No open positions at the moment.",
+    description: "We don't have any specific roles open right now, but we are always looking for talented engineers and designers. We'd still love to hear from you."
+  };
+
+  const getIcon = (name: string, fallbackIcon: any) => {
+    const Icon = (LucideIcons as any)[name];
+    return Icon || fallbackIcon;
+  };
 
   return (
     <>
@@ -64,13 +116,13 @@ export default function CareersPage() {
         <Container>
           <div className="max-w-3xl mx-auto text-center">
             <Badge variant="secondary" className="mb-6 py-1.5 px-4 text-sm font-medium">
-              Join the Team
+              {hero.badge}
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-              Build software that makes a difference.
+              {hero.title}
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-              At Voryent, we value engineering excellence, continuous learning, extreme ownership, and seamless collaboration. Join us to build robust architectures and intelligent workflows for ambitious organizations.
+              {hero.description}
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Button asChild size="lg" className="h-12 px-8">
@@ -93,33 +145,29 @@ export default function CareersPage() {
       <Section className="bg-muted/30">
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Why Work With Voryent</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">{benefitsTitle}</h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              We provide the environment, tools, and culture you need to do your best work and grow your career.
+              {benefitsDesc}
             </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: MapPin, title: "Remote-first", desc: "Work from wherever you are most productive. We care about your output and impact, not your location." },
-              { icon: Code2, title: "Modern Tech Stack", desc: "Work with React, Next.js, Node, and the latest AI integrations on modern, scalable infrastructure." },
-              { icon: BookOpen, title: "Learning & Growth", desc: "Dedicated budgets for courses, certifications, and attending industry conferences." },
-              { icon: Heart, title: "Flexible Culture", desc: "We believe in a healthy work-life balance, asynchronous communication, and flexible hours." },
-              { icon: Rocket, title: "Challenging Projects", desc: "Tackle complex engineering problems and deliver products that have real business impact." },
-              { icon: Briefcase, title: "Long-term Career", desc: "We build long-term partnerships not only with our clients, but with our team members." },
-            ].map((benefit, i) => (
-              <Card key={i} className="shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
-                    <benefit.icon className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl">{benefit.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{benefit.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {benefitsItems.map((benefit: any, i: number) => {
+              const Icon = getIcon(benefit.icon, Heart);
+              return (
+                <Card key={i} className="shadow-sm hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <CardTitle className="text-xl">{benefit.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{benefit.desc}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </Container>
       </Section>
@@ -134,17 +182,38 @@ export default function CareersPage() {
             </p>
           </div>
           
-          <EmptyState 
-            title="No open positions at the moment."
-            description="We don't have any specific roles open right now, but we are always looking for talented engineers and designers. We'd still love to hear from you."
-            action={
-              <Button asChild size="lg">
-                <Link href="/contact">
-                  Submit General Application
-                </Link>
-              </Button>
-            }
-          />
+          {dbJobs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dbJobs.map((job: any) => (
+                <CareerCard
+                  key={job.id}
+                  title={job.title}
+                  department={job.department}
+                  location={job.location}
+                  type={job.employmentType}
+                  action={
+                    <Link href={`/careers/${job.slug}`} className="w-full">
+                      <Button variant="outline" className="w-full">
+                        View Details
+                      </Button>
+                    </Link>
+                  }
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState 
+              title={emptyState.title}
+              description={emptyState.description}
+              action={
+                <Button asChild size="lg">
+                  <Link href="/contact">
+                    Submit General Application
+                  </Link>
+                </Button>
+              }
+            />
+          )}
         </Container>
       </Section>
 
@@ -152,9 +221,9 @@ export default function CareersPage() {
       <Section className="bg-muted/30">
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Our Hiring Process</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">{processTitle}</h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              A transparent, respectful, and efficient process designed to let you show your true capabilities.
+              {processDesc}
             </p>
           </div>
           
@@ -163,22 +232,18 @@ export default function CareersPage() {
             <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-border -translate-y-1/2 z-0" aria-hidden="true" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 relative z-10">
-              {[
-                { icon: FileText, title: "Apply" },
-                { icon: Search, title: "Review" },
-                { icon: Users, title: "Interview" },
-                { icon: Settings, title: "Technical Discussion" },
-                { icon: Award, title: "Offer" },
-                { icon: ThumbsUp, title: "Welcome" },
-              ].map((step, i) => (
-                <div key={i} className="flex flex-col items-center text-center group">
-                  <div className="w-16 h-16 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
-                    <step.icon className="h-7 w-7" />
+              {processSteps.map((step: any, i: number) => {
+                const Icon = getIcon(step.icon, FileText);
+                return (
+                  <div key={i} className="flex flex-col items-center text-center group">
+                    <div className="w-16 h-16 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
+                      <Icon className="h-7 w-7" />
+                    </div>
+                    <h3 className="font-semibold text-foreground text-lg">{step.title}</h3>
+                    <span className="text-xs font-medium text-muted-foreground mt-1 uppercase tracking-wider">Step 0{i+1}</span>
                   </div>
-                  <h3 className="font-semibold text-foreground text-lg">{step.title}</h3>
-                  <span className="text-xs font-medium text-muted-foreground mt-1 uppercase tracking-wider">Step 0{i+1}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </Container>
@@ -188,9 +253,9 @@ export default function CareersPage() {
       <Section>
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Frequently Asked Questions</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">{faqTitle}</h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Common questions about working at Voryent Solutions.
+              {faqDesc}
             </p>
           </div>
           
@@ -211,14 +276,14 @@ export default function CareersPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 pointer-events-none" aria-hidden="true" />
             <div className="relative z-10 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground mb-6 leading-tight">
-                Ready to make an impact?
+                {cta.title}
               </h2>
               <p className="text-lg text-primary-foreground/90 mb-10">
-                Join our team and help us build scalable, high-performance software solutions for ambitious organizations.
+                {cta.description}
               </p>
               <div className="mt-10 flex justify-center">
                 <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
-                  <Link href="/contact">Apply Now</Link>
+                  <Link href="/contact">{cta.buttonText}</Link>
                 </Button>
               </div>
             </div>

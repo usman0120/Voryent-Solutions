@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { getServiceBySlug } from "@/lib/firebase/services"
 import { Container, Section, Button, Card, CardContent, FaqComponent } from "@voryent/ui"
 import { 
   ArrowRight, Search, PenTool, Eye, Code2, Rocket, LifeBuoy,
@@ -359,11 +360,31 @@ export const generateStaticParams = async () => {
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   
-  if (!serviceDatabase[slug]) {
+  // Try to fetch from DB
+  let dbData: any = null;
+  try {
+    dbData = await getServiceBySlug(slug);
+  } catch (err) {}
+
+  const staticData = serviceDatabase[slug];
+  
+  if (!dbData && !staticData) {
     notFound()
   }
 
-  const data = serviceDatabase[slug]
+  // Merge DB data with static fallback for missing fields
+  const data = {
+    title: dbData?.title || staticData?.title || "Service",
+    subtitle: dbData?.hero?.subtitle || staticData?.subtitle || "",
+    overviewText: dbData?.overview || staticData?.overviewText || "",
+    imageSrc: dbData?.hero?.image || staticData?.imageSrc || "/Assets/Illustrations/Custom Software Illustration.png",
+    benefits: dbData?.benefits?.length ? dbData.benefits.map((b: any) => ({ ...b, icon: Zap })) : (staticData?.benefits || []),
+    processSteps: dbData?.process?.length ? dbData.process.map((p: any) => ({ ...p, icon: Target })) : (staticData?.processSteps || []),
+    technologies: dbData?.technologies || staticData?.technologies || [],
+    deliverablesList: staticData?.deliverablesList || [],
+    faqs: dbData?.faq || staticData?.faqs || [],
+    related: staticData?.related || []
+  };
 
   return (
     <>
@@ -422,7 +443,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.benefits.map((benefit, i) => (
+            {data.benefits.map((benefit: any, i: number) => (
               <Card key={i} className="border-border/50 shadow-sm hover:shadow-md transition-all">
                 <CardContent className="p-6">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
@@ -449,7 +470,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 {/* Timeline track */}
                 <div className="hidden sm:block absolute top-1/2 left-0 w-full h-0.5 bg-border -translate-y-1/2 z-0" aria-hidden="true" />
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 relative z-10">
-                  {data.processSteps.map((step, i) => (
+                  {data.processSteps.map((step: any, i: number) => (
                     <div key={i} className="flex flex-col items-center text-center group">
                       <div className="w-14 h-14 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center text-primary mb-3 group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
                         <step.icon className="h-6 w-6" />
@@ -491,7 +512,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
           
           <div className="flex flex-wrap justify-center gap-4">
-            {data.technologies.map((tech) => (
+            {data.technologies.map((tech: any) => (
               <div 
                 key={tech} 
                 className="px-6 py-3 rounded-full bg-background border border-border shadow-sm text-foreground font-medium flex items-center gap-2 hover:border-primary/50 transition-colors"

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { getIndustries } from "@/lib/firebase/services"
 import { Container, Section, Button, Card, CardContent } from "@voryent/ui"
 import { 
   ArrowRight, 
@@ -79,7 +80,13 @@ const technologies = [
 
 /* ──────────────────────────── PAGE ──────────────────────────── */
 
-export default function IndustriesPage() {
+export default async function IndustriesPage() {
+  let dbIndustries = await getIndustries().catch(() => []);
+
+  const displayIndustries = dbIndustries.length > 0
+    ? dbIndustries.map((i: any) => ({ title: i.name, description: i.description, slug: i.slug, icon: Building2 }))
+    : industries;
+
   return (
     <>
       {/* ─── HERO ─── */}
@@ -106,13 +113,13 @@ export default function IndustriesPage() {
       <Section className="bg-muted/30">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {industries.map((industry) => (
+            {displayIndustries.map((industry: any) => (
               <Card key={industry.title} className="flex flex-col h-full border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group">
                 <CardContent className="p-6 flex flex-col flex-grow">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 transition-colors group-hover:bg-primary/20">
                     <industry.icon className="h-6 w-6" />
                   </div>
-                  <h2 className="text-xl font-semibold text-foreground mb-3">{industry.title}</h2>
+                  <h2 className="text-xl font-semibold text-foreground mb-3" id={industry.slug}>{industry.title}</h2>
                   <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
                     {industry.description}
                   </p>

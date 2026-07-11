@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { getHomepageData, getServices, getIndustries } from "@/lib/firebase/services"
 import {
   Code2,
   Cloud,
@@ -163,10 +164,33 @@ const testimonials = [
 
 /* ──────────────────────────── PAGE ──────────────────────────── */
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [homepageData, dbServices, dbIndustries] = await Promise.all([
+    getHomepageData().catch(() => null),
+    getServices().catch(() => []),
+    getIndustries().catch(() => []),
+  ]);
+
+  // Use dynamic data if available, otherwise fallback to static
+  const displayServices = dbServices.length > 0 
+    ? dbServices.map((s: any) => ({ title: s.title, description: s.shortDescription || s.description, href: `/services/${s.slug}`, icon: Code2 }))
+    : services;
+    
+  const displayIndustries = dbIndustries.length > 0
+    ? dbIndustries.map((i: any) => ({ name: i.name, href: `/industries#${i.slug}`, icon: Building2 }))
+    : industries;
+
+  const sections = homepageData?.["sections"] || [];
+  const isEnabled = (id: string) => {
+    const s = sections.find((s: any) => s.id === id);
+    return s ? s.enabled !== false : true; // Default to true if not found in CMS
+  };
+  const getSection = (id: string) => sections.find((s: any) => s.id === id) || {};
+
   return (
     <>
       {/* ─── HERO ─── */}
+      {isEnabled("hero") && (
       <section className="relative overflow-hidden pt-16">
         {/* Subtle gradient backdrop */}
         <div
@@ -181,12 +205,10 @@ export default function HomePage() {
             {/* Copy */}
             <div className="max-w-xl">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                Engineering the Future of Digital Products
+                {getSection("hero").title || "Engineering the Future of Digital Products"}
               </h1>
               <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-                Voryent Solutions partners with ambitious teams to architect,
-                build, and scale software that drives real business outcomes —
-                from cloud infrastructure to intelligent interfaces.
+                {getSection("hero").description || "Voryent Solutions partners with ambitious teams to architect, build, and scale software that drives real business outcomes — from cloud infrastructure to intelligent interfaces."}
               </p>
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
@@ -219,22 +241,23 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── SERVICES PREVIEW ─── */}
+      {isEnabled("services-preview") && (
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              What We Do
+              {getSection("services-preview").title || "What We Do"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              End-to-end engineering services designed to take your product from
-              concept to scale.
+              {getSection("services-preview").description || "End-to-end engineering services designed to take your product from concept to scale."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
+            {displayServices.slice(0, 6).map((service: any) => (
               <Link
                 key={service.title}
                 href={service.href}
@@ -246,7 +269,7 @@ export default function HomePage() {
                 <h3 className="text-lg font-semibold text-foreground">
                   {service.title}
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">
                   {service.description}
                 </p>
                 <span className="mt-4 inline-flex items-center text-sm font-medium text-primary opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
@@ -258,18 +281,19 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── WHY VORYENT ─── */}
+      {isEnabled("why-choose-us") && (
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                Why Voryent
+                {getSection("why-choose-us").title || "Why Voryent"}
               </h2>
               <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-lg">
-                We combine deep engineering discipline with genuine partnership
-                to deliver outcomes that matter — not just features.
+                {getSection("why-choose-us").description || "We combine deep engineering discipline with genuine partnership to deliver outcomes that matter — not just features."}
               </p>
             </div>
 
@@ -291,17 +315,18 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── PROCESS ─── */}
+      {isEnabled("process") && (
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              How We Work
+              {getSection("process").title || "How We Work"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              A proven, repeatable process that minimises risk and maximises
-              velocity at every stage.
+              {getSection("process").description || "A proven, repeatable process that minimises risk and maximises velocity at every stage."}
             </p>
           </div>
 
@@ -327,22 +352,23 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── INDUSTRIES ─── */}
+      {isEnabled("industries") && (
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Industries We Serve
+              {getSection("industries").title || "Industries We Serve"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              Domain expertise across verticals that demand reliability,
-              compliance, and scale.
+              {getSection("industries").description || "Domain expertise across verticals that demand reliability, compliance, and scale."}
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
-            {industries.map((industry) => (
+            {displayIndustries.map((industry: any) => (
               <Link
                 key={industry.name}
                 href={industry.href}
@@ -357,16 +383,18 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── FEATURED WORK ─── */}
+      {isEnabled("featured-work") && (
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Featured Work
+              {getSection("featured-work").title || "Featured Work"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              A selection of projects that showcase our engineering craft.
+              {getSection("featured-work").description || "A selection of projects that showcase our engineering craft."}
             </p>
           </div>
 
@@ -420,16 +448,18 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── TESTIMONIALS ─── */}
+      {isEnabled("testimonials") && (
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Client Outcomes
+              {getSection("testimonials")?.title || "Client Outcomes"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              Don&apos;t just take our word for it. Hear from the partners we&apos;ve built with.
+              {getSection("testimonials")?.description || "Don't just take our word for it. Hear from the partners we've built with."}
             </p>
           </div>
 
@@ -456,8 +486,10 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── CTA BANNER ─── */}
+      {isEnabled("cta") && (
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="relative rounded-2xl bg-primary px-8 py-16 md:px-16 md:py-20 text-center overflow-hidden">
@@ -469,12 +501,10 @@ export default function HomePage() {
 
             <div className="relative z-10 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary-foreground">
-                Ready to Build Something Exceptional?
+                {getSection("cta").title || "Ready to Build Something Exceptional?"}
               </h2>
               <p className="mt-4 text-lg text-primary-foreground/80 leading-relaxed">
-                Let&apos;s discuss your next project. No sales pitch — just a
-                genuine conversation about what you&apos;re trying to achieve
-                and how we can help.
+                {getSection("cta").description || "Let's discuss your next project. No sales pitch — just a genuine conversation about what you're trying to achieve and how we can help."}
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
                 <Link
@@ -495,6 +525,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
     </>
   )
 }

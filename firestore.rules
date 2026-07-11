@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Public readable, Admin writable (simplified admin check to just auth for now)
+    match /jobs/{jobId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    match /careers/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    match /settings/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Applications: Public can create, only internal can read/update
+    match /applications/{applicationId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // Users: Users can read/write their own data, internal can read/write all
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(userId);
+      // Note: A real production rule would verify if the user has 'admin' role
+      allow read, write: if isAuthenticated(); 
+    }
+
+    // Internal collections (Operations & Admin)
+    match /roles/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /permissions/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /projects/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /contacts/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /companies/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /investors/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /finance/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /reports/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /employees/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /activityLogs/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /analytics/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /aiRequests/{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // CMS Collections
+    match /pages/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /services/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /industries/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /faqs/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /resources/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /blogs/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

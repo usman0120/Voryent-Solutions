@@ -57,6 +57,7 @@ export const viewport: Viewport = {
 }
 
 import { JsonLd } from "@/components/json-ld"
+import { Analytics } from "@/components/analytics"
 
 export default function RootLayout({
   children,
@@ -76,6 +77,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <JsonLd data={orgJsonLd} />
+        <Analytics />
       </head>
       <body
         suppressHydrationWarning

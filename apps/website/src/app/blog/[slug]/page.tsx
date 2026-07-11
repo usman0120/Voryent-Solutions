@@ -5,6 +5,7 @@ import { Container, Section, Button, Card, CardContent } from "@voryent/ui"
 import { ChevronRight, Calendar, Clock, User, List } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { getPostBySlug, getAllPosts } from "../../../lib/blog"
+import { getBlogPostBySlug, getBlogPosts } from "../../../lib/firebase/services"
 import { JsonLd } from "../../../components/json-ld"
 // Helper to extract headings from markdown content for TOC
 function extractHeadings(content: string) {
@@ -28,13 +29,46 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const post = getPostBySlug(slug)
+  
+  let dbPostRaw: any = null;
+  try {
+    dbPostRaw = await getBlogPostBySlug(slug);
+  } catch (err) {}
 
-  if (!post) {
+  const staticPost = getPostBySlug(slug)
+
+  if (!dbPostRaw && !staticPost) {
     notFound()
   }
 
-  const allPosts = getAllPosts()
+  const post = dbPostRaw ? {
+    slug: dbPostRaw.slug,
+    title: dbPostRaw.title,
+    excerpt: dbPostRaw.excerpt || "",
+    category: dbPostRaw.category || "General",
+    readingTime: dbPostRaw.readingTime || "5 min read",
+    publishDate: (dbPostRaw.publishedAt ? new Date(dbPostRaw.publishedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]) as string,
+    author: dbPostRaw.author?.name || "Voryent Team",
+    imageSrc: dbPostRaw.coverImage || "/Assets/Illustrations/Blog.png",
+    content: dbPostRaw.content || ""
+  } : staticPost!
+
+  const dbAllRaw = await getBlogPosts().catch(() => []);
+  const dbAll = dbAllRaw.map((p: any) => ({
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt || "",
+    category: p.category || "General",
+    readingTime: p.readingTime || "5 min read",
+    publishDate: (p.publishedAt ? new Date(p.publishedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]) as string,
+    author: p.author?.name || "Voryent Team",
+    imageSrc: p.coverImage || "/Assets/Illustrations/Blog.png",
+    content: p.content || ""
+  }));
+
+  const staticAll = getAllPosts()
+  const allPosts = [...dbAll, ...staticAll].filter((v, i, a) => a.findIndex(t => (t.slug === v.slug)) === i);
+
   const relatedPosts = allPosts
     .filter((p) => p.slug !== slug && p.category === post.category)
     .slice(0, 3)

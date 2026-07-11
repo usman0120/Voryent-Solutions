@@ -13,11 +13,13 @@ import {
   Compass
 } from "lucide-react"
 
+import { getResources } from "../../lib/firebase/services"
 import { getAllContent } from "../../lib/content"
 import type { LucideIcon } from "lucide-react"
 
 export default async function ResourcesPage() {
-  const content = getAllContent("resources")
+  const contentRaw = await getResources().catch(() => [])
+  const content = contentRaw.length > 0 ? contentRaw : getAllContent("resources")
 
   const categories = [
     { title: "Articles", icon: BookOpen, description: "Deep dives into engineering practices and tech trends.", link: "/blog" },
@@ -28,8 +30,8 @@ export default async function ResourcesPage() {
     { title: "Documentation", icon: FileBox, description: "Technical docs for our open-source tools.", link: "#tools" },
   ]
 
-  const guidesContent = content.filter(c => c["type"] === "guide").sort((a, b) => (a["order"] as number) - (b["order"] as number))
-  const faqsContent = content.filter(c => c["type"] === "faq").sort((a, b) => (a["order"] as number) - (b["order"] as number))
+  const guidesContent = content.filter((c: any) => c.type === "guide" || c.type === "Guide").sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+  const faqsContent = content.filter((c: any) => c.type === "faq" || c.type === "FAQ").sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
 
   const iconMap: Record<string, LucideIcon> = {
     BookOpen,
@@ -37,16 +39,16 @@ export default async function ResourcesPage() {
     HelpCircle,
   }
 
-  const guides = guidesContent.map(g => ({
-    title: g["title"] as string,
-    description: g["summary"] as string,
-    link: g["link"] as string,
-    icon: iconMap[g["icon"] as string] || Map
+  const guides = guidesContent.map((g: any) => ({
+    title: g.title || g.name || "",
+    description: g.summary || g.description || "",
+    link: g.link || g.url || "#",
+    icon: iconMap[g.icon as string] || Map
   }))
 
-  const faqs = faqsContent.map(f => ({
-    question: f["question"] as string,
-    answer: f.content as string,
+  const faqs = faqsContent.map((f: any) => ({
+    question: f.question || f.title || "",
+    answer: f.content || f.description || "",
   }))
 
   return (

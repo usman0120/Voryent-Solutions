@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { getServices, getFaqs } from "@/lib/firebase/services"
 import { Container, Section, Button, Card, CardContent } from "@voryent/ui"
 import { FaqComponent } from "@voryent/ui"
 import { 
@@ -109,7 +110,25 @@ const faqs = [
 
 /* ──────────────────────────── PAGE ──────────────────────────── */
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const [dbServices, dbFaqs] = await Promise.all([
+    getServices().catch(() => []),
+    getFaqs().catch(() => [])
+  ]);
+
+  const displayServices = dbServices.length > 0
+    ? dbServices.map((s: any) => ({
+        title: s.title,
+        description: s.shortDescription || s.description,
+        slug: s.slug,
+        icon: Code2
+      }))
+    : services;
+
+  const displayFaqs = dbFaqs.length > 0
+    ? dbFaqs.map((f: any) => ({ question: f.question, answer: f.answer }))
+    : faqs;
+
   return (
     <>
       {/* ─── HERO ─── */}
@@ -140,14 +159,14 @@ export default function ServicesPage() {
       <Section className="bg-muted/30">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {services.map((service) => (
+            {displayServices.map((service: any) => (
               <Card key={service.slug} className="flex flex-col h-full border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group">
                 <CardContent className="p-6 flex flex-col flex-grow">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 transition-colors group-hover:bg-primary/20">
                     <service.icon className="h-6 w-6" />
                   </div>
                   <h2 className="text-xl font-semibold text-foreground mb-3">{service.title}</h2>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow line-clamp-3">
                     {service.description}
                   </p>
                   <Button asChild variant="ghost" className="w-fit p-0 h-auto hover:bg-transparent text-primary hover:text-primary/80 font-medium group-hover:translate-x-1 transition-transform">
@@ -225,7 +244,7 @@ export default function ServicesPage() {
             </p>
           </div>
           
-          <FaqComponent items={faqs} />
+          <FaqComponent items={displayFaqs} />
           
           <div className="mt-10 text-center">
             <Button asChild variant="link" className="text-primary text-base">
