@@ -59,6 +59,8 @@ export default function EmployeeDetailPage({ params }: EmployeeDetailPageProps) 
           relationship: employee.emergencyContact?.relationship || "",
           phone: employee.emergencyContact?.phone || "",
         },
+        performanceReviews: employee.performanceReviews || [],
+        skills: employee.skills || [],
         notes: employee.notes || "",
       });
     }
@@ -167,7 +169,7 @@ export default function EmployeeDetailPage({ params }: EmployeeDetailPageProps) 
                   <TabsTrigger value="personal">Personal</TabsTrigger>
                   <TabsTrigger value="employment">Employment</TabsTrigger>
                   <TabsTrigger value="documents">Docs</TabsTrigger>
-                  <TabsTrigger value="coming-soon">More Modules</TabsTrigger>
+                  <TabsTrigger value="performance">Performance</TabsTrigger>
                 </TabsList>
 
                 {/* OVERVIEW TAB */}
@@ -392,36 +394,133 @@ export default function EmployeeDetailPage({ params }: EmployeeDetailPageProps) 
                   )}
                 </TabsContent>
 
-                {/* COMING SOON MODULES TAB */}
-                <TabsContent value="coming-soon" className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="border-dashed bg-muted/10 p-6 flex flex-col justify-between h-44">
-                      <div>
-                        <h4 className="font-semibold text-base flex items-center gap-2">
-                          <ShieldCheck className="h-4 w-4 text-blue-500" /> Leave Management
-                        </h4>
-                        <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                          Request leave, track approval states, and review remaining balances dynamically.
-                        </p>
-                      </div>
-                      <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20 w-fit self-start text-[10px]">
-                        Coming Soon
-                      </Badge>
-                    </Card>
+                {/* PERFORMANCE TAB */}
+                <TabsContent value="performance" className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-semibold flex items-center gap-2">
+                      <NotebookPen className="h-4 w-4 text-emerald-500" /> Performance Reviews
+                    </h4>
+                    {isEditing && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => setFormData({
+                          ...formData,
+                          performanceReviews: [
+                            ...(formData.performanceReviews || []),
+                            { reviewDate: new Date().toISOString().split("T")[0], reviewer: "", rating: 3, comments: "" }
+                          ]
+                        })}
+                      >
+                        Add Review
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {formData.performanceReviews?.length > 0 ? (
+                    <div className="space-y-4">
+                      {formData.performanceReviews.map((review: any, i: number) => (
+                        <Card key={i} className="p-4 border bg-muted/5 relative">
+                          {isEditing && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute top-2 right-2 text-destructive h-8 w-8 p-0"
+                              onClick={() => {
+                                const newReviews = [...formData.performanceReviews];
+                                newReviews.splice(i, 1);
+                                setFormData({ ...formData, performanceReviews: newReviews });
+                              }}
+                            >
+                              x
+                            </Button>
+                          )}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="space-y-2">
+                              <label className="text-xs font-semibold text-muted-foreground">Date</label>
+                              <Input
+                                type="date"
+                                disabled={!isEditing}
+                                value={review.reviewDate}
+                                onChange={(e) => {
+                                  const newReviews = [...formData.performanceReviews];
+                                  newReviews[i].reviewDate = e.target.value;
+                                  setFormData({ ...formData, performanceReviews: newReviews });
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-xs font-semibold text-muted-foreground">Reviewer</label>
+                              <Input
+                                disabled={!isEditing}
+                                value={review.reviewer}
+                                placeholder="Manager Name"
+                                onChange={(e) => {
+                                  const newReviews = [...formData.performanceReviews];
+                                  newReviews[i].reviewer = e.target.value;
+                                  setFormData({ ...formData, performanceReviews: newReviews });
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-xs font-semibold text-muted-foreground">Rating (1-5)</label>
+                              <Input
+                                type="number"
+                                min="1"
+                                max="5"
+                                disabled={!isEditing}
+                                value={review.rating}
+                                onChange={(e) => {
+                                  const newReviews = [...formData.performanceReviews];
+                                  newReviews[i].rating = parseInt(e.target.value) || 0;
+                                  setFormData({ ...formData, performanceReviews: newReviews });
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-xs font-semibold text-muted-foreground">Comments</label>
+                            <Textarea
+                              disabled={!isEditing}
+                              value={review.comments}
+                              placeholder="Performance summary..."
+                              onChange={(e) => {
+                                const newReviews = [...formData.performanceReviews];
+                                newReviews[i].comments = e.target.value;
+                                setFormData({ ...formData, performanceReviews: newReviews });
+                              }}
+                            />
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-muted-foreground border border-dashed rounded-md">No performance reviews yet.</div>
+                  )}
 
-                    <Card className="border-dashed bg-muted/10 p-6 flex flex-col justify-between h-44">
-                      <div>
-                        <h4 className="font-semibold text-base flex items-center gap-2">
-                          <NotebookPen className="h-4 w-4 text-emerald-500" /> Performance & Payroll
-                        </h4>
-                        <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                          Manage monthly pay cycles, bonuses, performance scorecards, and salary history.
-                        </p>
-                      </div>
-                      <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 w-fit self-start text-[10px]">
-                        Coming Soon
-                      </Badge>
-                    </Card>
+                  <div className="pt-6 border-t mt-6">
+                    <h4 className="text-sm font-semibold flex items-center gap-2 mb-4">
+                      <Briefcase className="h-4 w-4 text-primary" /> Core Skills
+                    </h4>
+                    <div className="space-y-2">
+                      <Input
+                        disabled={!isEditing}
+                        placeholder="Comma separated (e.g. React, Node.js, Project Management)"
+                        value={(formData.skills || []).join(", ")}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          skills: e.target.value.split(",").map(s => s.trim()).filter(Boolean)
+                        })}
+                      />
+                      {!isEditing && formData.skills?.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {formData.skills.map((skill: string, i: number) => (
+                            <Badge key={i} variant="secondary">{skill}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>

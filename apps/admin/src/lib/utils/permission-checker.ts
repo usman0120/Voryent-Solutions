@@ -6,11 +6,13 @@
  * Usage example:
  * can(currentUser, "Blog", "Publish")
  */
-export function can(user: any, module: string, action: string): boolean {
+export function can(user: any, module: string, action: string, roleString?: string | null): boolean {
+  if (roleString === "admin" || roleString === "Super Admin" || roleString === "Founder") return true;
+
   if (!user || !user.roleData) {
     // If the user object doesn't have populated roleData, default to checking role name strings for super users, 
     // but ideally roleData should be pre-populated by the AuthProvider.
-    if (user?.role === "Super Admin" || user?.role === "Founder") return true;
+    if (user?.role === "Super Admin" || user?.role === "Founder" || user?.role === "admin") return true;
     return false;
   }
 

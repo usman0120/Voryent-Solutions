@@ -8,7 +8,7 @@ export interface FooterSection {
 
 export interface FooterProps extends React.HTMLAttributes<HTMLElement> {
   logo?: React.ReactNode
-  description?: string
+  description?: React.ReactNode
   sections?: FooterSection[]
   copyright?: string
   socialLinks?: React.ReactNode
@@ -52,7 +52,7 @@ export function Footer({
               )}
             </a>
             {description && (
-              <p className="text-sm leading-6 max-w-xs">{description}</p>
+              <div className="text-sm leading-6 max-w-xs">{description}</div>
             )}
             {socialLinks && <div>{socialLinks}</div>}
           </div>

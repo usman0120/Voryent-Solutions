@@ -21,6 +21,7 @@ const pageSchema = baseEntitySchema.extend({
   slug: z.string().min(1, "Slug is required"),
   type: z.string().default("General"),
   seo: seoSchema.optional(),
+  contentBlocks: z.any().optional(),
 });
 
 type PageFormValues = z.infer<typeof pageSchema>;
@@ -28,6 +29,31 @@ type PageFormValues = z.infer<typeof pageSchema>;
 interface PageFormProps {
   initialData?: Page;
   id?: string;
+}
+
+function JsonEditor({ value, onChange }: { value: any, onChange: (val: any) => void }) {
+  const [strVal, setStrVal] = useState(value ? JSON.stringify(value, null, 2) : "{\n}");
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-2">
+      <textarea
+        className="flex min-h-[400px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-mono"
+        value={strVal}
+        onChange={(e) => {
+          setStrVal(e.target.value);
+          try {
+            const parsed = JSON.parse(e.target.value);
+            setError(null);
+            onChange(parsed);
+          } catch (err: any) {
+            setError(err.message);
+          }
+        }}
+      />
+      {error && <p className="text-[0.8rem] font-medium text-destructive">{error}</p>}
+    </div>
+  );
 }
 
 export function PageForm({ initialData, id }: PageFormProps) {
@@ -44,6 +70,7 @@ export function PageForm({ initialData, id }: PageFormProps) {
       type: initialData?.type || "General",
       status: initialData?.status || "Draft",
       seo: initialData?.seo || {},
+      contentBlocks: initialData?.contentBlocks || {},
     },
   });
 
@@ -105,6 +132,21 @@ export function PageForm({ initialData, id }: PageFormProps) {
                         sourceValue={form.watch("title")} 
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="contentBlocks"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Content Blocks (JSON)</FormLabel>
+                    <FormControl>
+                      <JsonEditor value={field.value} onChange={field.onChange} />
+                    </FormControl>
+                    <p className="text-[0.8rem] text-muted-foreground">Raw JSON object representing sections and content arrays.</p>
                     <FormMessage />
                   </FormItem>
                 )}

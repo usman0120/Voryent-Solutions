@@ -24,6 +24,7 @@ import {
   Quote,
   Star
 } from "lucide-react"
+import { FadeIn } from "@/components/animations/fade-in"
 
 /* ──────────────────────────── DATA ──────────────────────────── */
 
@@ -181,6 +182,8 @@ export default async function HomePage() {
     : industries;
 
   const sections = homepageData?.["sections"] || [];
+  const blocks = homepageData?.["contentBlocks"] || {};
+  
   const isEnabled = (id: string) => {
     const s = sections.find((s: any) => s.id === id);
     return s ? s.enabled !== false : true; // Default to true if not found in CMS
@@ -201,14 +204,14 @@ export default async function HomePage() {
         </div>
 
         <div className="container mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28 lg:py-36">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <FadeIn className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Copy */}
             <div className="max-w-xl">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                {getSection("hero").title || "Engineering the Future of Digital Products"}
+                {getSection("hero").title || blocks?.hero?.title || "Engineering the Future of Digital Products"}
               </h1>
               <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-                {getSection("hero").description || "Voryent Solutions partners with ambitious teams to architect, build, and scale software that drives real business outcomes — from cloud infrastructure to intelligent interfaces."}
+                {getSection("hero").description || blocks?.hero?.description || "Voryent Solutions partners with ambitious teams to architect, build, and scale software that drives real business outcomes — from cloud infrastructure to intelligent interfaces."}
               </p>
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
@@ -238,7 +241,7 @@ export default async function HomePage() {
                 priority
               />
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
       )}
@@ -247,36 +250,38 @@ export default async function HomePage() {
       {isEnabled("services-preview") && (
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center mb-16">
+          <FadeIn className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              {getSection("services-preview").title || "What We Do"}
+              {getSection("services-preview").title || blocks?.servicesPreview?.title || "What We Do"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              {getSection("services-preview").description || "End-to-end engineering services designed to take your product from concept to scale."}
+              {getSection("services-preview").description || blocks?.servicesPreview?.description || "End-to-end engineering services designed to take your product from concept to scale."}
             </p>
-          </div>
+          </FadeIn>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayServices.slice(0, 6).map((service: any) => (
-              <Link
-                key={service.title}
-                href={service.href}
-                className="group relative rounded-xl border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4 transition-colors group-hover:bg-primary/20">
-                  <service.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  {service.title}
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">
-                  {service.description}
-                </p>
-                <span className="mt-4 inline-flex items-center text-sm font-medium text-primary opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                  Learn more
-                  <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                </span>
-              </Link>
+            {displayServices.slice(0, 6).map((service: any, index: number) => (
+              <FadeIn delay={0.1 * index} key={service.title}>
+                <Link
+                  href={service.href}
+                  aria-label={`Learn more about ${service.title}`}
+                  className="group relative flex flex-col h-full rounded-2xl border bg-card p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6 transition-colors group-hover:bg-primary/20">
+                    <service.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">
+                    {service.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed flex-grow">
+                    {service.description}
+                  </p>
+                  <span className="mt-6 inline-flex items-center font-medium text-primary opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                    Learn more
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </span>
+                </Link>
+              </FadeIn>
             ))}
           </div>
         </div>
@@ -287,18 +292,18 @@ export default async function HomePage() {
       {isEnabled("why-choose-us") && (
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+          <FadeIn className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                {getSection("why-choose-us").title || "Why Voryent"}
+                {getSection("why-choose-us").title || blocks?.whyVoryent?.title || "Why Voryent"}
               </h2>
               <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-lg">
-                {getSection("why-choose-us").description || "We combine deep engineering discipline with genuine partnership to deliver outcomes that matter — not just features."}
+                {getSection("why-choose-us").description || blocks?.whyVoryent?.description || "We combine deep engineering discipline with genuine partnership to deliver outcomes that matter — not just features."}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {whyVoryent.map((item) => (
+              {(blocks?.whyVoryent?.items || whyVoryent).map((item: any) => (
                 <div key={item.title} className="space-y-3">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
@@ -312,7 +317,7 @@ export default async function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
       )}
@@ -323,22 +328,27 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              {getSection("process").title || "How We Work"}
+              {getSection("process").title || blocks?.process?.title || "How We Work"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              {getSection("process").description || "A proven, repeatable process that minimises risk and maximises velocity at every stage."}
+              {getSection("process").description || blocks?.process?.description || "A proven, repeatable process that minimises risk and maximises velocity at every stage."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {process.map((item) => (
-              <div key={item.step} className="relative text-center">
+            {(blocks?.process?.items || process).map((item: any, index: number) => {
+              const IconComp = item.icon === "Lightbulb" ? Lightbulb :
+                               item.icon === "Search" ? Search :
+                               item.icon === "Rocket" ? Rocket :
+                               item.icon === "Headphones" ? Headphones : Code2;
+              return (
+              <FadeIn delay={0.1 * index} key={item.step} className="relative text-center">
                 <div className="flex flex-col items-center">
                   <span className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
                     Step {item.step}
                   </span>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
-                    <item.icon className="h-6 w-6" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary mb-4 transition-transform duration-300 hover:scale-110">
+                    <IconComp className="h-6 w-6" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground">
                     {item.title}
@@ -347,8 +357,9 @@ export default async function HomePage() {
                     {item.description}
                   </p>
                 </div>
-              </div>
-            ))}
+              </FadeIn>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -368,17 +379,18 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
-            {displayIndustries.map((industry: any) => (
-              <Link
-                key={industry.name}
-                href={industry.href}
-                className="group flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center transition-all duration-300 hover:shadow-md hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <industry.icon className="h-8 w-8 text-muted-foreground transition-colors group-hover:text-primary" />
-                <span className="text-sm font-medium text-foreground">
-                  {industry.name}
-                </span>
-              </Link>
+            {displayIndustries.map((industry: any, index: number) => (
+              <FadeIn delay={0.05 * index} key={industry.name}>
+                <Link
+                  href={industry.href}
+                  className="group flex flex-col items-center gap-4 rounded-2xl border bg-card p-6 text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <industry.icon className="h-10 w-10 text-muted-foreground transition-colors group-hover:text-primary" />
+                  <span className="text-sm font-medium text-foreground">
+                    {industry.name}
+                  </span>
+                </Link>
+              </FadeIn>
             ))}
           </div>
         </div>
@@ -391,50 +403,54 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              {getSection("featured-work").title || "Featured Work"}
+              {getSection("featured-work").title || blocks?.featuredWork?.title || "Featured Work"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              {getSection("featured-work").description || "A selection of projects that showcase our engineering craft."}
+              {getSection("featured-work").description || blocks?.featuredWork?.description || "A selection of projects that showcase our engineering craft."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
-            {featuredProjects.map((project, i) => (
-              <div key={i} className="group relative rounded-xl border bg-card overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/30 flex flex-col">
-                <div className="relative aspect-[16/9] w-full bg-muted border-b overflow-hidden">
-                  <Image
-                    src={project.imageSrc}
-                    alt={project.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                  />
-                </div>
-                <div className="p-8 flex flex-col flex-grow">
-                  <div className="text-sm font-semibold text-primary mb-2 uppercase tracking-wider">
-                    {project.category}
+            {(blocks?.featuredWork?.items || featuredProjects).map((project: any, index: number) => (
+              <FadeIn delay={0.1 * index} key={index}>
+                <div className="group relative rounded-2xl border bg-card overflow-hidden shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 hover:border-primary/40 flex flex-col h-full">
+                  <div className="relative aspect-[16/9] w-full bg-muted border-b overflow-hidden">
+                    <Image
+                      src={project.imageSrc || "https://placehold.co/800x450/EEE/31343C"}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
                   </div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4 leading-tight">
-                    {project.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed mb-6 flex-grow">
-                    {project.summary}
-                  </p>
-                  <div className="mb-8 flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <span key={tech} className="inline-flex items-center rounded-md bg-secondary/50 px-2.5 py-0.5 text-xs font-medium text-secondary-foreground">
-                        {tech}
-                      </span>
-                    ))}
+                  <div className="p-8 md:p-10 flex flex-col flex-grow">
+                    <div className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">
+                      {project.category}
+                    </div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4 leading-tight">
+                      {project.title}
+                    </h3>
+                    <p className="text-muted-foreground text-lg leading-relaxed mb-8 flex-grow">
+                      {project.summary}
+                    </p>
+                    <div className="mb-10 flex flex-wrap gap-2">
+                      {(project.technologies || []).map((tech: string) => (
+                        <span key={tech} className="inline-flex items-center rounded-full bg-secondary/50 px-3 py-1 text-xs font-medium text-secondary-foreground border border-secondary">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    <Link
+                      href={project.link || "/work"}
+                      aria-label={`View Project: ${project.title}`}
+                      className="inline-flex items-center text-sm font-bold text-primary opacity-90 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-2"
+                    >
+                      View Project <ArrowRight className="ml-1.5 h-4 w-4" />
+                    </Link>
                   </div>
-                  <Link
-                    href={project.link}
-                    className="inline-flex items-center text-sm font-medium text-primary opacity-90 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1"
-                  >
-                    View Project <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
                 </div>
-              </div>
+              </FadeIn>
             ))}
           </div>
           
@@ -456,15 +472,15 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              {getSection("testimonials")?.title || "Client Outcomes"}
+              {getSection("testimonials")?.title || blocks?.testimonials?.title || "Client Outcomes"}
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              {getSection("testimonials")?.description || "Don't just take our word for it. Hear from the partners we've built with."}
+              {getSection("testimonials")?.description || blocks?.testimonials?.description || "Don't just take our word for it. Hear from the partners we've built with."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, i) => (
+            {(blocks?.testimonials?.items || testimonials).map((testimonial: any, i: number) => (
               <div key={i} className="relative rounded-2xl border bg-card p-8 md:p-10 shadow-sm flex flex-col justify-between">
                 <div>
                   <Quote className="h-10 w-10 text-primary/20 mb-6" />
@@ -501,10 +517,10 @@ export default async function HomePage() {
 
             <div className="relative z-10 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary-foreground">
-                {getSection("cta").title || "Ready to Build Something Exceptional?"}
+                {getSection("cta").title || blocks?.cta?.title || "Ready to Build Something Exceptional?"}
               </h2>
               <p className="mt-4 text-lg text-primary-foreground/80 leading-relaxed">
-                {getSection("cta").description || "Let's discuss your next project. No sales pitch — just a genuine conversation about what you're trying to achieve and how we can help."}
+                {getSection("cta").description || blocks?.cta?.description || "Let's discuss your next project. No sales pitch — just a genuine conversation about what you're trying to achieve and how we can help."}
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
                 <Link

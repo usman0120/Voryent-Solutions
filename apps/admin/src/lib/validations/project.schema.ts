@@ -28,6 +28,13 @@ export const projectSchema = z.object({
   })).default([]),
   notes: z.string().optional(),
   tags: z.array(z.string()).default([]),
+  milestones: z.array(z.object({
+    id: z.string().optional(),
+    title: z.string(),
+    description: z.string().optional(),
+    dueDate: z.string().optional(),
+    status: z.enum(["Pending", "In Progress", "Completed"]).default("Pending"),
+  })).default([]),
 });
 
 export type ProjectFormValues = z.infer<typeof projectSchema>;

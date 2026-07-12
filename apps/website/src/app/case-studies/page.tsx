@@ -2,10 +2,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { Container, Section, Button, Card, CardContent } from "@voryent/ui"
 import { ArrowRight, Code2 } from "lucide-react"
-import { getCaseStudies } from "../../lib/caseStudies"
+import { getCaseStudiesFromDb } from "@/lib/firebase/services"
 
-export default function CaseStudiesPage() {
-  const caseStudies = getCaseStudies()
+export default async function CaseStudiesPage() {
+  const caseStudies = await getCaseStudiesFromDb()
 
   return (
     <>
@@ -28,17 +28,22 @@ export default function CaseStudiesPage() {
       <Section className="bg-muted/30 pb-24 pt-16">
         <Container>
           {caseStudies.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-              {caseStudies.map((study) => (
-                <Card key={study.slug} className="flex flex-col h-full border-border/50 shadow-sm overflow-hidden group hover:border-primary/30 transition-all">
-                  <div className="relative aspect-[16/9] w-full bg-muted border-b border-border/50 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {caseStudies.map((study: any, index: number) => (
+                <Card key={study.slug || index} className="group overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all flex flex-col h-full bg-card">
+                  <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-muted">
                     <Image
-                      src={study.imageSrc}
+                      src={study.imageSrc || study.coverImage || "/Assets/Illustrations/AI Illustration.jpg"}
                       alt={study.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
                     />
+                    {study.category && (
+                      <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm px-3 py-1 text-xs font-semibold rounded-full border shadow-sm">
+                        {study.category}
+                      </div>
+                    )}
                   </div>
                   <CardContent className="p-8 flex flex-col flex-grow">
                     <div className="flex justify-between items-center mb-4">
@@ -56,7 +61,7 @@ export default function CaseStudiesPage() {
                       {study.outcomeSummary}
                     </p>
                     <div className="mb-8 flex flex-wrap gap-2">
-                      {study.technologies.slice(0, 4).map(tech => (
+                      {study.technologies.slice(0, 4).map((tech: string) => (
                         <span key={tech} className="inline-flex items-center rounded-md border border-border/50 bg-background px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                           {tech}
                         </span>

@@ -29,6 +29,15 @@ export const employeeSchema = z.object({
       uploadedAt: z.string(),
     })
   ).default([]),
+  performanceReviews: z.array(
+    z.object({
+      reviewDate: z.string(),
+      reviewer: z.string(),
+      rating: z.number().min(1).max(5),
+      comments: z.string(),
+    })
+  ).default([]),
+  skills: z.array(z.string()).default([]),
   notes: z.string().optional(),
 });
 

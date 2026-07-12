@@ -1,5 +1,3 @@
-/* eslint-disable */
-/* eslint-disable @typescript-eslint/no-confusing-void-expression */
 import * as React from "react"
 
 import type {

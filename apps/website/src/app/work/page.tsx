@@ -3,10 +3,9 @@ import Link from "next/link"
 import { Container, Section, Button, Card, CardContent } from "@voryent/ui"
 import { ArrowRight, Code2, Brain, Globe, Smartphone, Cloud, CheckCircle2 } from "lucide-react"
 
-import { getAllContent } from "../../lib/content"
+import { getProjects } from "@/lib/firebase/services"
 
 /* ──────────────────────────── DATA ──────────────────────────── */
-
 
 const capabilities = [
   { icon: Code2, title: "Custom Software" },
@@ -19,15 +18,15 @@ const capabilities = [
 /* ──────────────────────────── PAGE ──────────────────────────── */
 
 export default async function WorkPage() {
-  const allProjects = getAllContent("projects")
+  const allProjects = await getProjects() || [];
   // Map content item to project format
   const projects = allProjects.map(p => ({
-    title: p["title"] as string,
-    category: p["category"] as string,
-    summary: p["summary"] as string,
+    title: p["name"] as string,
+    category: p["type"] as string,
+    summary: p["description"] as string,
     technologies: p["technologies"] as string[] || [],
-    imageSrc: p["coverImage"] as string || "",
-    link: "/contact" // Still linking to contact for projects
+    imageSrc: p["attachments"]?.[0]?.url || "/placeholder-image.jpg",
+    link: `/work/${p["slug"]}`
   }))
 
   return (

@@ -6,6 +6,7 @@ export interface Page extends BaseEntity {
   type: string;
   hero?: any;
   sections?: any[];
+  contentBlocks?: any;
   seo?: any;
   publishedAt?: any;
   publishedBy?: string;

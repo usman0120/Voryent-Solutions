@@ -9,7 +9,8 @@ import {
   contactSettingsSchema,
   socialSettingsSchema,
   seoSettingsSchema,
-  analyticsSettingsSchema
+  analyticsSettingsSchema,
+  legalSettingsSchema
 } from "@/lib/validations/settings.schema";
 
 export default function SettingsPage() {
@@ -30,6 +31,7 @@ export default function SettingsPage() {
               <TabsTrigger value="social" className="w-full justify-start data-[state=active]:bg-muted">Social Media</TabsTrigger>
               <TabsTrigger value="seo" className="w-full justify-start data-[state=active]:bg-muted">SEO Foundation</TabsTrigger>
               <TabsTrigger value="analytics" className="w-full justify-start data-[state=active]:bg-muted">Analytics</TabsTrigger>
+              <TabsTrigger value="legal" className="w-full justify-start data-[state=active]:bg-muted">Legal Pages</TabsTrigger>
             </TabsList>
           </div>
           
@@ -163,6 +165,23 @@ export default function SettingsPage() {
                     { name: "gscVerificationId", label: "Google Search Console Verification Tag" },
                     { name: "bingVerificationId", label: "Bing Webmaster Verification Tag" },
                     { name: "clarityId", label: "Microsoft Clarity Project ID" },
+                  ]}
+                />
+              </ModuleGuard>
+            </TabsContent>
+
+            <TabsContent value="legal" className="m-0">
+              <ModuleGuard module="Settings" action="Edit">
+                <SettingsSection
+                  groupId="legal"
+                  title="Legal Pages"
+                  description="Manage URLs for public legal documents."
+                  schema={legalSettingsSchema}
+                  defaultValues={{ privacyPolicyUrl: "", termsOfServiceUrl: "", cookiePolicyUrl: "" }}
+                  fields={[
+                    { name: "privacyPolicyUrl", label: "Privacy Policy URL", type: "url" },
+                    { name: "termsOfServiceUrl", label: "Terms of Service URL", type: "url" },
+                    { name: "cookiePolicyUrl", label: "Cookie Policy URL", type: "url" },
                   ]}
                 />
               </ModuleGuard>

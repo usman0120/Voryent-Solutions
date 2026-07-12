@@ -11,7 +11,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { can } from "@/lib/utils/permission-checker";
 import { seedDefaultRoles } from "@/lib/services/seed-roles";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RoleForm } from "./role-form";
 import { RoleType } from "@/lib/services/roles.service";
@@ -40,8 +40,10 @@ export default function RolesPage() {
 
   const canManage = (user as any)?.role === "Super Admin" || (user as any)?.role === "Founder";
 
-  const columns = getColumns(canManage, handleEdit, handleRefresh);
-
+  const columns = useMemo(
+    () => getColumns(canManage, handleEdit, handleRefresh),
+    [canManage] // handleEdit and handleRefresh are stable enough or we don't want to re-render if they change reference
+  );
   const handleSeed = async () => {
     setIsSeeding(true);
     try {

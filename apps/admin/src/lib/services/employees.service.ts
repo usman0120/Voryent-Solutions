@@ -29,6 +29,13 @@ export interface Employee extends Omit<BaseEntity, "status"> {
   };
   address?: string;
   documents?: EmployeeDocument[];
+  performanceReviews?: {
+    reviewDate: string;
+    reviewer: string;
+    rating: number;
+    comments: string;
+  }[];
+  skills?: string[];
   notes?: string;
 }
 

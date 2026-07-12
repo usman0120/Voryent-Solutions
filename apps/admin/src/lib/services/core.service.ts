@@ -53,6 +53,18 @@ export class CoreService<T extends BaseEntity> {
     return docRef.id;
   }
 
+  async set(id: string, data: Omit<T, "id" | "createdAt" | "updatedAt">, userId?: string): Promise<void> {
+    const { setDoc } = await import("firebase/firestore");
+    const docRef = doc(db, this.collectionName, id);
+    await setDoc(docRef, {
+      ...data,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      createdBy: userId || null,
+      isArchived: false,
+    });
+  }
+
   async update(id: string, data: Partial<T>, userId?: string): Promise<void> {
     const docRef = doc(db, this.collectionName, id);
     await updateDoc(docRef, {

@@ -207,7 +207,7 @@ export default async function CareersPage() {
               description={emptyState.description}
               action={
                 <Button asChild size="lg">
-                  <Link href="/contact">
+                  <Link href="/careers/apply">
                     Submit General Application
                   </Link>
                 </Button>
@@ -283,7 +283,7 @@ export default async function CareersPage() {
               </p>
               <div className="mt-10 flex justify-center">
                 <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
-                  <Link href="/contact">{cta.buttonText}</Link>
+                  <Link href="/careers/apply">{cta.buttonText}</Link>
                 </Button>
               </div>
             </div>

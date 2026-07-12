@@ -3,7 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Container, Section, Button, Card, CardContent } from "@voryent/ui"
 import { ArrowRight, CheckCircle2, ChevronRight, Layers } from "lucide-react"
-import { getCaseStudyBySlug, getCaseStudies } from "../../../lib/caseStudies"
+import { getCaseStudyBySlug, getCaseStudiesFromDb } from "@/lib/firebase/services"
 import { JsonLd } from "../../../components/json-ld"
 
 export default async function CaseStudyDetailPage({
@@ -12,13 +12,13 @@ export default async function CaseStudyDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const caseStudy = getCaseStudyBySlug(slug)
+  const caseStudy = await getCaseStudyBySlug(slug)
 
   if (!caseStudy) {
     notFound()
   }
 
-  const allCaseStudies = getCaseStudies()
+  const allCaseStudies = await getCaseStudiesFromDb()
   const relatedProjects = allCaseStudies
     .filter((s) => s.slug !== slug)
     .slice(0, 3)
@@ -26,9 +26,9 @@ export default async function CaseStudyDetailPage({
   const caseStudyJsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
-    "name": caseStudy.title,
+    "name": caseStudy?.title || "",
     "image": [
-      "https://voryentsolutions.com" + caseStudy.imageSrc
+      "https://voryentsolutions.com" + (caseStudy?.imageSrc || "")
     ],
     "description": caseStudy.heroSubheadline,
     "creator": {
@@ -79,7 +79,7 @@ export default async function CaseStudyDetailPage({
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-foreground mb-6">Overview</h2>
                 <div className="space-y-4">
-                  {caseStudy.overview.map((paragraph, i) => (
+                  {(caseStudy.overview || []).map((paragraph: string, i: number) => (
                     <p key={i} className="text-lg text-muted-foreground leading-relaxed">
                       {paragraph}
                     </p>
@@ -91,14 +91,14 @@ export default async function CaseStudyDetailPage({
               <div className="pt-8">
                 <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6">The Challenge</h2>
                 <div className="space-y-4">
-                  {caseStudy.challenge.map((paragraph, i) => (
+                  {(caseStudy.challenge || []).map((paragraph: string, i: number) => (
                     <p key={i} className="text-lg text-muted-foreground leading-relaxed">
                       {paragraph}
                     </p>
                   ))}
-                  {caseStudy.challengeList.length > 0 && (
+                  {(caseStudy.challengeList || []).length > 0 && (
                     <ul className="mt-6 space-y-3">
-                      {caseStudy.challengeList.map((item, i) => (
+                      {(caseStudy.challengeList || []).map((item: string, i: number) => (
                         <li key={i} className="flex gap-3">
                           <CheckCircle2 className="h-6 w-6 text-primary shrink-0" />
                           <span className="text-muted-foreground">{item}</span>
@@ -113,14 +113,14 @@ export default async function CaseStudyDetailPage({
               <div className="pt-8">
                 <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6">Our Solution</h2>
                 <div className="space-y-4">
-                  {caseStudy.solution.map((paragraph, i) => (
+                  {(caseStudy.solution || []).map((paragraph: string, i: number) => (
                     <p key={i} className="text-lg text-muted-foreground leading-relaxed">
                       {paragraph}
                     </p>
                   ))}
-                  {caseStudy.solutionList.length > 0 && (
+                  {(caseStudy.solutionList || []).length > 0 && (
                     <ul className="mt-6 space-y-3">
-                      {caseStudy.solutionList.map((item, i) => (
+                      {(caseStudy.solutionList || []).map((item: string, i: number) => (
                         <li key={i} className="flex gap-3">
                           <CheckCircle2 className="h-6 w-6 text-primary shrink-0" />
                           <span className="text-muted-foreground">{item}</span>
@@ -137,8 +137,8 @@ export default async function CaseStudyDetailPage({
               <div className="sticky top-24 space-y-8">
                 <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden shadow-xl border border-border/50 bg-muted">
                   <Image
-                    src={caseStudy.imageSrc}
-                    alt={caseStudy.title}
+                    src={caseStudy.imageSrc || caseStudy.coverImage || "/Assets/Illustrations/AI Illustration.jpg"}
+                    alt={caseStudy.title || ""}
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -151,7 +151,7 @@ export default async function CaseStudyDetailPage({
                     Technology Stack
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {caseStudy.technologies.map((tech) => (
+                    {(caseStudy.technologies || []).map((tech: string) => (
                       <span key={tech} className="inline-flex items-center rounded-md bg-secondary/50 px-3 py-1.5 text-sm font-medium text-secondary-foreground">
                         {tech}
                       </span>
@@ -176,7 +176,7 @@ export default async function CaseStudyDetailPage({
 
           <div className="max-w-3xl mx-auto">
             <div className="space-y-8">
-              {caseStudy.processSteps.map((step, index) => (
+              {(caseStudy.processSteps || []).map((step: any, index: number) => (
                 <div key={index} className="relative pl-8 md:pl-0">
                   {/* Desktop layout: alternating or left-aligned. We will use a clean left-aligned list with large numbers. */}
                   <div className="md:flex gap-6 items-start">
@@ -201,13 +201,13 @@ export default async function CaseStudyDetailPage({
       </Section>
 
       {/* ─── RESULTS ─── */}
-      {caseStudy.results.length > 0 && (
+      {(caseStudy.results || []).length > 0 && (
         <Section className="py-16 md:py-24">
           <Container>
             <div className="max-w-3xl mx-auto">
               <h2 className="text-3xl font-bold tracking-tight text-foreground mb-8">Outcomes & Results</h2>
               <div className="space-y-6">
-                {caseStudy.results.map((res, i) => (
+                {(caseStudy.results || []).map((res: string, i: number) => (
                   <div key={i} className="p-6 rounded-xl border border-border/50 bg-card shadow-sm">
                     <p className="text-lg text-foreground leading-relaxed">
                       {res}
@@ -239,8 +239,8 @@ export default async function CaseStudyDetailPage({
                 <Link key={project.slug} href={`/case-studies/${project.slug}`} className="group relative rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col">
                   <div className="relative aspect-video w-full bg-muted border-b border-border/50 overflow-hidden">
                     <Image
-                      src={project.imageSrc}
-                      alt={project.title}
+                      src={project.imageSrc || project.coverImage || "/Assets/Illustrations/AI Illustration.jpg"}
+                      alt={project.title || ""}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, 33vw"

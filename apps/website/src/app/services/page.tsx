@@ -116,18 +116,14 @@ export default async function ServicesPage() {
     getFaqs().catch(() => [])
   ]);
 
-  const displayServices = dbServices.length > 0
-    ? dbServices.map((s: any) => ({
+  const displayServices = dbServices.map((s: any) => ({
         title: s.title,
         description: s.shortDescription || s.description,
         slug: s.slug,
         icon: Code2
-      }))
-    : services;
+      }));
 
-  const displayFaqs = dbFaqs.length > 0
-    ? dbFaqs.map((f: any) => ({ question: f.question, answer: f.answer }))
-    : faqs;
+  const displayFaqs = dbFaqs.map((f: any) => ({ question: f.question, answer: f.answer }));
 
   return (
     <>
@@ -210,29 +206,7 @@ export default async function ServicesPage() {
         </Container>
       </Section>
 
-      {/* ─── TECHNOLOGY STACK ─── */}
-      <Section className="bg-muted/30">
-        <Container>
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Technology Stack</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              We leverage an elite, modern technology stack to ensure performance, type safety, and developer velocity.
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-4">
-            {technologies.map((tech) => (
-              <div 
-                key={tech} 
-                className="px-6 py-3 rounded-full bg-background border border-border shadow-sm text-foreground font-medium flex items-center gap-2 hover:border-primary/50 transition-colors"
-              >
-                <div className="w-2 h-2 rounded-full bg-primary/80" />
-                {tech}
-              </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
+
 
       {/* ─── FAQ PREVIEW ─── */}
       <Section>

@@ -28,6 +28,13 @@ export interface Project extends BaseEntity {
   }>;
   notes?: string;
   tags: string[];
+  milestones?: {
+    id?: string;
+    title: string;
+    description?: string;
+    dueDate?: string;
+    status: "Pending" | "In Progress" | "Completed";
+  }[];
   createdBy?: string | null;
   updatedBy?: string | null;
 }

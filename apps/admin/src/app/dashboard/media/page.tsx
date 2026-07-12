@@ -34,8 +34,18 @@ export default function MediaLibraryPage() {
           continue;
         }
 
+        // Size Validation (max 2MB before compression)
+        if (file.size > 2 * 1024 * 1024) {
+          toast({ title: `${file.name} is too large (Max 2MB)`, variant: "destructive" });
+          continue;
+        }
+
         // Compress and resize
         const base64Data = await compressImage(file, 1024, 1024, 0.7);
+
+        // Generate tags from filename
+        const baseName = file.name.split('.')[0] || '';
+        const generatedTags = baseName.split(/[-_ ]/).filter(t => t.length > 2).map(t => t.toLowerCase());
 
         // Save to Firestore
         await mediaService.create({
@@ -45,6 +55,7 @@ export default function MediaLibraryPage() {
           mimeType: file.type,
           size: Math.round((base64Data.length * 3) / 4), // Approximate bytes from base64
           folder: "root",
+          tags: generatedTags,
         });
       }
       
@@ -129,11 +140,28 @@ export default function MediaLibraryPage() {
                   </Button>
                 </div>
               </div>
-              <div className="p-2 truncate text-xs">
-                <p className="font-medium truncate" title={item.name}>{item.name}</p>
-                <p className="text-muted-foreground">
-                  {Math.round(item.size / 1024)} KB
-                </p>
+              <div className="p-3">
+                <p className="font-semibold text-sm truncate" title={item.name}>{item.name}</p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-muted-foreground text-xs font-medium">
+                    {Math.round(item.size / 1024)} KB
+                  </p>
+                  <p className="text-muted-foreground text-[10px]">
+                    {item.mimeType.split('/')[1]?.toUpperCase()}
+                  </p>
+                </div>
+                {item.tags && item.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {item.tags.slice(0, 2).map((tag, i) => (
+                      <span key={i} className="bg-primary/10 text-primary text-[9px] px-1.5 py-0.5 rounded-sm font-medium truncate max-w-full">
+                        {tag}
+                      </span>
+                    ))}
+                    {item.tags.length > 2 && (
+                      <span className="text-muted-foreground text-[9px] font-medium">+{item.tags.length - 2}</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}

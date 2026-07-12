@@ -13,9 +13,9 @@ interface ModuleGuardProps {
 }
 
 export function ModuleGuard({ module, action = "Read", children }: ModuleGuardProps) {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   
-  const hasAccess = can(user, module, action);
+  const hasAccess = can(user, module, action, role);
 
   if (!hasAccess) {
     return (

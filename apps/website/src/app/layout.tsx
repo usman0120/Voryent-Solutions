@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SiteFooter } from "@/components/layout/site-footer"
 import { siteConfig } from "@/config/site"
+import { Toaster } from "@voryent/ui"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -46,6 +47,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://voryentsolutions.com",
   },
+  icons: {
+    icon: "/Assets/Logos/Transparent logos/Icon-only_version_Logo_transparent.png",
+    shortcut: "/Assets/Logos/Transparent logos/Icon-only_version_Logo_transparent.png",
+    apple: "/Assets/Logos/Transparent logos/Icon-only_version_Logo_transparent.png",
+  },
   manifest: "/site.webmanifest",
 }
 
@@ -58,6 +64,7 @@ export const viewport: Viewport = {
 
 import { JsonLd } from "@/components/json-ld"
 import { Analytics } from "@/components/analytics"
+import NextTopLoader from "nextjs-toploader"
 
 export default function RootLayout({
   children,
@@ -74,7 +81,7 @@ export default function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
         <JsonLd data={orgJsonLd} />
         <Analytics />
@@ -89,6 +96,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <NextTopLoader color="hsl(var(--primary))" showSpinner={true} />
           <div className="relative flex min-h-screen flex-col">
             <SiteHeader />
             <main id="main-content" className="flex-1">
@@ -96,6 +104,7 @@ export default function RootLayout({
             </main>
             <SiteFooter />
           </div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

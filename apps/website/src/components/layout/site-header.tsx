@@ -30,27 +30,24 @@ export function SiteHeader() {
       className="h-16" // 64px height specified
       logo={
         <div className="flex items-center gap-2">
-          {/* Light mode: icon designed for light backgrounds */}
-          <div className="w-8 h-8 relative block dark:hidden">
+          <div className="w-[180px] h-10 relative">
             <Image 
-              src="/Assets/Logos/Light BG/Icon-only_version_Logo_White.png" 
+              src="/Assets/Logos/Transparent logos/Horizontal_layout_Logo_Transparent.png" 
               alt="Voryent Solutions" 
               fill
-              sizes="32px" 
-              className="object-contain"
+              sizes="180px" 
+              className="object-contain dark:hidden"
+              priority
             />
-          </div>
-          {/* Dark mode: icon designed for dark backgrounds */}
-          <div className="w-8 h-8 relative hidden dark:block">
             <Image 
-              src="/Assets/Logos/Dark BG/Icon-only_version_Logo_Dark.png" 
+              src="/Assets/Logos/Dark BG/Horizontal_layout_Logo_Dark.png" 
               alt="Voryent Solutions" 
               fill
-              sizes="32px" 
-              className="object-contain"
+              sizes="180px" 
+              className="object-contain hidden dark:block"
+              priority
             />
           </div>
-          <span className="font-bold tracking-tight">Voryent</span>
         </div>
       }
       links={navigationLinks}

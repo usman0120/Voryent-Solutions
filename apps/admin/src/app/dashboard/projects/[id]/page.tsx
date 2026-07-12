@@ -108,6 +108,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                   <TabsTrigger value="timeline">Timeline</TabsTrigger>
                   <TabsTrigger value="repository">Links & Repo</TabsTrigger>
                   <TabsTrigger value="team">Team</TabsTrigger>
+                  <TabsTrigger value="milestones">Milestones</TabsTrigger>
                   <TabsTrigger value="notes">Notes</TabsTrigger>
                 </TabsList>
 
@@ -239,7 +240,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                   {project.teamMembers && project.teamMembers.length > 0 ? (
                     <ul className="space-y-2">
                       {project.teamMembers.map((member: string) => (
-                        <li key={member} className="p-3 border rounded-md text-sm font-medium">
+                        <li key={member} className="p-3 border rounded-md text-sm font-medium bg-muted/20">
                           {member}
                         </li>
                       ))}
@@ -247,6 +248,41 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                   ) : (
                     <p className="text-sm text-muted-foreground text-center py-8 border border-dashed rounded-lg">
                       No team members assigned yet.
+                    </p>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="milestones" className="space-y-4">
+                  {project.milestones && project.milestones.length > 0 ? (
+                    <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                      {project.milestones.map((milestone: any, i: number) => (
+                        <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                          <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-background shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow ${milestone.status === "Completed" ? "bg-green-500" : milestone.status === "In Progress" ? "bg-blue-500" : "bg-slate-300"}`}>
+                          </div>
+                          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border bg-background shadow">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4 className="font-bold text-slate-900 dark:text-slate-100">{milestone.title}</h4>
+                              {milestone.dueDate && (
+                                <span className="text-xs font-medium text-muted-foreground">
+                                  {format(new Date(milestone.dueDate), "MMM d, yyyy")}
+                                </span>
+                              )}
+                            </div>
+                            {milestone.description && (
+                              <p className="text-sm text-muted-foreground mt-2">{milestone.description}</p>
+                            )}
+                            <div className="mt-3">
+                              <Badge variant={milestone.status === "Completed" ? "default" : milestone.status === "In Progress" ? "secondary" : "outline"}>
+                                {milestone.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-8 border border-dashed rounded-lg">
+                      No milestones created yet.
                     </p>
                   )}
                 </TabsContent>

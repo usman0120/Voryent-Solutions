@@ -12,9 +12,9 @@ interface PermissionGuardProps {
 }
 
 export function PermissionGuard({ module, action, children, fallback = null }: PermissionGuardProps) {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   
-  const hasAccess = can(user, module, action);
+  const hasAccess = can(user, module, action, role);
 
   if (!hasAccess) {
     return <>{fallback}</>;

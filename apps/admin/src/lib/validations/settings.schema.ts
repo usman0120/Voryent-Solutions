@@ -63,3 +63,9 @@ export const analyticsSettingsSchema = z.object({
   clarityId: z.string().optional(),
 });
 
+export const legalSettingsSchema = z.object({
+  privacyPolicyUrl: z.string().url().optional().or(z.literal("")),
+  termsOfServiceUrl: z.string().url().optional().or(z.literal("")),
+  cookiePolicyUrl: z.string().url().optional().or(z.literal("")),
+});
+

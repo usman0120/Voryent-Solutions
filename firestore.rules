@@ -11,98 +11,107 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    // Public readable, Admin writable (simplified admin check to just auth for now)
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Public readable, Admin writable
     match /jobs/{jobId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
     match /careers/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
     match /settings/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     // Applications: Public can create, only internal can read/update
     match /applications/{applicationId} {
       allow create: if true;
-      allow read, update, delete: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
     }
 
     // Users: Users can read/write their own data, internal can read/write all
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && isOwner(userId);
-      // Note: A real production rule would verify if the user has 'admin' role
-      allow read, write: if isAuthenticated(); 
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
     }
 
     // Internal collections (Operations & Admin)
     match /roles/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /permissions/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /projects/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read: if true;
+      allow write: if isAdmin();
     }
     match /contacts/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /companies/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /investors/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /finance/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /reports/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /employees/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /activityLogs/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /analytics/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     match /aiRequests/{document=**} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
     
     // CMS Collections
     match /pages/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     match /services/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     match /industries/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     match /faqs/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /faqItems/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
     match /resources/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
-    match /blogs/{document=**} {
+    match /blogPosts/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
     // Default deny

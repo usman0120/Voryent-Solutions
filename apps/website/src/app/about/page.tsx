@@ -23,7 +23,15 @@ import {
   Cpu
 } from "lucide-react"
 
-export default function AboutPage() {
+import { getAboutData, getEmployees, getInvestors } from "@/lib/firebase/services"
+
+export default async function AboutPage() {
+  const [aboutData, employees, investors] = await Promise.all([
+    getAboutData().catch(() => null),
+    getEmployees().catch(() => []),
+    getInvestors().catch(() => []),
+  ]);
+  const blocks = aboutData?.["contentBlocks"] || {};
   return (
     <>
       {/* ─── HERO ─── */}
@@ -36,12 +44,10 @@ export default function AboutPage() {
                 About Voryent
               </Badge>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                Building modern digital products with engineering excellence and long-term partnerships.
+                {blocks?.hero?.title || "Building modern digital products with engineering excellence and long-term partnerships."}
               </h1>
               <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-                We are a dedicated team of engineers, designers, and strategists. 
-                We build scalable, high-performance software solutions for ambitious organizations 
-                who demand robust architectures, intelligent AI workflows, and flawless user experiences.
+                {blocks?.hero?.description || "We are a dedicated team of engineers, designers, and strategists. We build scalable, high-performance software solutions for ambitious organizations who demand robust architectures, intelligent AI workflows, and flawless user experiences."}
               </p>
               <div className="mt-10 flex flex-wrap gap-4">
                 <Button asChild size="lg" className="h-12 px-8">
@@ -77,64 +83,53 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                Who We Are
+                {blocks?.whoWeAre?.title || "Who We Are"}
               </h2>
               <div className="mt-6 space-y-6 text-lg text-muted-foreground leading-relaxed">
-                <p>
-                  Voryent Solutions exists to bridge the gap between complex business challenges and elegant technical solutions. 
-                  In a rapidly evolving digital landscape, organizations need more than just code—they need reliable architectures that can scale seamlessly from day one.
-                </p>
-                <p>
-                  We focus on modern engineering practices, clean architecture, and AI-first workflows. 
-                  Our approach isn&apos;t just about delivering a project; it&apos;s about forming long-term partnerships 
-                  where we deeply understand your business domain and continuously add value.
-                </p>
-                <p>
-                  We don&apos;t build black boxes. We prioritize transparency, rigorous testing, and maintainable codebases 
-                  so that your team is always empowered and your infrastructure is always secure.
-                </p>
+                {(blocks?.whoWeAre?.paragraphs || [
+                  "Voryent Solutions exists to bridge the gap between complex business challenges and elegant technical solutions. In a rapidly evolving digital landscape, organizations need more than just code—they need reliable architectures that can scale seamlessly from day one.",
+                  "We focus on modern engineering practices, clean architecture, and AI-first workflows. Our approach isn't just about delivering a project; it's about forming long-term partnerships where we deeply understand your business domain and continuously add value.",
+                  "We don't build black boxes. We prioritize transparency, rigorous testing, and maintainable codebases so that your team is always empowered and your infrastructure is always secure."
+                ]).map((p: string, i: number) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
             </div>
             <div className="grid gap-6">
-              <Card className="shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-6 flex items-start gap-4">
-                  <div className="rounded-lg bg-primary/10 p-3 text-primary flex-shrink-0">
-                    <Code2 className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground text-lg">Engineering First</h3>
-                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                      Rigorous code reviews, comprehensive testing, and scalable cloud-native architectures are our standard, not an afterthought.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-6 flex items-start gap-4">
-                  <div className="rounded-lg bg-primary/10 p-3 text-primary flex-shrink-0">
-                    <Briefcase className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground text-lg">Business Focused</h3>
-                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                      We align technical decisions directly with your business KPIs to ensure measurable ROI and sustainable growth.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-6 flex items-start gap-4">
-                  <div className="rounded-lg bg-primary/10 p-3 text-primary flex-shrink-0">
-                    <Bot className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground text-lg">AI Powered</h3>
-                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                      Integrating intelligent automation and data pipelines to give you a decisive competitive advantage in your market.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              {(blocks?.whoWeAre?.pillars || [
+                {
+                  icon: "Code2",
+                  title: "Engineering First",
+                  description: "Rigorous code reviews, comprehensive testing, and scalable cloud-native architectures are our standard, not an afterthought."
+                },
+                {
+                  icon: "Briefcase",
+                  title: "Business Focused",
+                  description: "We align technical decisions directly with your business KPIs to ensure measurable ROI and sustainable growth."
+                },
+                {
+                  icon: "Bot",
+                  title: "AI Powered",
+                  description: "Integrating intelligent automation and data pipelines to give you a decisive competitive advantage in your market."
+                }
+              ]).map((pillar: any, i: number) => {
+                const IconComp = pillar.icon === "Briefcase" ? Briefcase : pillar.icon === "Bot" ? Bot : Code2;
+                return (
+                  <Card key={i} className="shadow-sm hover:shadow-md transition-shadow">
+                    <CardContent className="p-6 flex items-start gap-4">
+                      <div className="rounded-lg bg-primary/10 p-3 text-primary flex-shrink-0">
+                        <IconComp className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground text-lg">{pillar.title}</h3>
+                        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                          {pillar.description}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </Container>
@@ -149,7 +144,7 @@ export default function AboutPage() {
                 <Target className="h-12 w-12 mb-6 opacity-90" />
                 <h2 className="text-2xl font-bold tracking-tight mb-4">Our Mission</h2>
                 <p className="text-lg leading-relaxed opacity-90">
-                  To empower organizations with robust, modern digital products that solve complex problems, driving sustainable business growth through relentless engineering excellence and uncompromising quality.
+                  {blocks?.missionVision?.mission || "To empower organizations with robust, modern digital products that solve complex problems, driving sustainable business growth through relentless engineering excellence and uncompromising quality."}
                 </p>
               </CardContent>
             </Card>
@@ -158,7 +153,7 @@ export default function AboutPage() {
                 <Eye className="h-12 w-12 mb-6 text-primary" />
                 <h2 className="text-2xl font-bold tracking-tight text-foreground mb-4">Our Vision</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  To be the trusted technology partner of choice for ambitious companies globally, recognized for building resilient, AI-enhanced architectures that define the next generation of software.
+                  {blocks?.missionVision?.vision || "To be the trusted technology partner of choice for ambitious companies globally, recognized for building resilient, AI-enhanced architectures that define the next generation of software."}
                 </p>
               </CardContent>
             </Card>
@@ -170,24 +165,32 @@ export default function AboutPage() {
       <Section className="bg-muted/30">
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Core Values</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+              {blocks?.coreValues?.title || "Core Values"}
+            </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              The fundamental principles that guide our decisions, shape our culture, and define how we build.
+              {blocks?.coreValues?.description || "The fundamental principles that guide our decisions, shape our culture, and define how we build."}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: Award, title: "Quality", desc: "We never compromise on the integrity of our code or the polish of our interfaces." },
-              { icon: Eye, title: "Transparency", desc: "Honest communication, clear timelines, and open collaboration at every step." },
-              { icon: Lightbulb, title: "Innovation", desc: "Continuously adopting proven modern paradigms to deliver better solutions, faster." },
-              { icon: ShieldCheck, title: "Reliability", desc: "Building systems you can depend on, backed by responsive and accountable support." },
-              { icon: Layers, title: "Scalability", desc: "Architecting for the future so you never have to throw away code as you grow." },
-              { icon: Lock, title: "Security", desc: "Security-by-design principles baked into every component and deployment." },
-            ].map((value, i) => (
+            {(blocks?.coreValues?.items || [
+              { icon: "Award", title: "Quality", desc: "We never compromise on the integrity of our code or the polish of our interfaces." },
+              { icon: "Eye", title: "Transparency", desc: "Honest communication, clear timelines, and open collaboration at every step." },
+              { icon: "Lightbulb", title: "Innovation", desc: "Continuously adopting proven modern paradigms to deliver better solutions, faster." },
+              { icon: "ShieldCheck", title: "Reliability", desc: "Building systems you can depend on, backed by responsive and accountable support." },
+              { icon: "Layers", title: "Scalability", desc: "Architecting for the future so you never have to throw away code as you grow." },
+              { icon: "Lock", title: "Security", desc: "Security-by-design principles baked into every component and deployment." },
+            ]).map((value: any, i: number) => {
+              const IconComp = value.icon === "Eye" ? Eye :
+                               value.icon === "Lightbulb" ? Lightbulb :
+                               value.icon === "ShieldCheck" ? ShieldCheck :
+                               value.icon === "Layers" ? Layers :
+                               value.icon === "Lock" ? Lock : Award;
+              return (
               <Card key={i} className="shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
-                    <value.icon className="h-6 w-6" />
+                    <IconComp className="h-6 w-6" />
                   </div>
                   <CardTitle className="text-xl">{value.title}</CardTitle>
                 </CardHeader>
@@ -195,7 +198,7 @@ export default function AboutPage() {
                   <p className="text-muted-foreground text-sm leading-relaxed">{value.desc}</p>
                 </CardContent>
               </Card>
-            ))}
+            )})}
           </div>
         </Container>
       </Section>
@@ -204,9 +207,11 @@ export default function AboutPage() {
       <Section>
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Our Process</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+              {blocks?.processSteps?.title || "Our Process"}
+            </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              A systematic, transparent approach from the first conversation to continuous deployment.
+              {blocks?.processSteps?.description || "A systematic, transparent approach from the first conversation to continuous deployment."}
             </p>
           </div>
           
@@ -215,84 +220,138 @@ export default function AboutPage() {
             <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-border -translate-y-1/2 z-0" aria-hidden="true" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 relative z-10">
-              {[
-                { icon: Search, title: "Discover" },
-                { icon: PenTool, title: "Plan" },
-                { icon: Eye, title: "Design" },
-                { icon: Code2, title: "Develop" },
-                { icon: Rocket, title: "Deploy" },
-                { icon: LifeBuoy, title: "Support" },
-              ].map((step, i) => (
+              {(blocks?.processSteps?.items || [
+                { icon: "Search", title: "Discover" },
+                { icon: "PenTool", title: "Plan" },
+                { icon: "Eye", title: "Design" },
+                { icon: "Code2", title: "Develop" },
+                { icon: "Rocket", title: "Deploy" },
+                { icon: "LifeBuoy", title: "Support" },
+              ]).map((step: any, i: number) => {
+                const IconComp = step.icon === "PenTool" ? PenTool :
+                                 step.icon === "Eye" ? Eye :
+                                 step.icon === "Code2" ? Code2 :
+                                 step.icon === "Rocket" ? Rocket :
+                                 step.icon === "LifeBuoy" ? LifeBuoy : Search;
+                return (
                 <div key={i} className="flex flex-col items-center text-center group">
                   <div className="w-16 h-16 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
-                    <step.icon className="h-7 w-7" />
+                    <IconComp className="h-7 w-7" />
                   </div>
                   <h3 className="font-semibold text-foreground text-lg">{step.title}</h3>
                   <span className="text-xs font-medium text-muted-foreground mt-1 uppercase tracking-wider">Step 0{i+1}</span>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
         </Container>
       </Section>
 
-      {/* ─── TECHNOLOGIES ─── */}
-      <Section className="bg-muted/30">
-        <Container>
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Technologies</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              We leverage an elite, modern technology stack to ensure performance, type safety, and developer velocity.
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-4">
-            {[
-              "Next.js", "React", "TypeScript", "Node.js", "Supabase", 
-              "Tailwind CSS", "PostgreSQL", "Clerk", "Resend", "Vercel"
-            ].map((tech) => (
-              <div 
-                key={tech} 
-                className="px-6 py-3 rounded-full bg-background border border-border shadow-sm text-foreground font-medium flex items-center gap-2 hover:border-primary/50 transition-colors"
-              >
-                <div className="w-2 h-2 rounded-full bg-primary/80" />
-                {tech}
-              </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
 
       {/* ─── WHY CHOOSE VORYENT ─── */}
       <Section>
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Why Choose Voryent</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+              {blocks?.whyChooseVoryent?.title || "Why Choose Voryent"}
+            </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              What sets us apart in delivering exceptional digital products.
+              {blocks?.whyChooseVoryent?.description || "What sets us apart in delivering exceptional digital products."}
             </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: Layers, title: "Modern Stack", desc: "We use the latest tools that are proven in production to ensure high performance and maintainability." },
-              { icon: Zap, title: "Fast Delivery", desc: "Agile methodologies and CI/CD pipelines enable rapid iterations and faster time-to-market." },
-              { icon: Server, title: "Scalable Architecture", desc: "Systems designed to handle growing user bases and expanding data demands effortlessly." },
-              { icon: Cpu, title: "AI-Enhanced Development", desc: "Leveraging AI internally to accelerate development and writing AI integrations for your products." },
-              { icon: Code2, title: "Clean Code", desc: "Strict typing, modularity, and comprehensive documentation ensure code is easily understandable." },
-              { icon: Clock, title: "Long-Term Support", desc: "We don't just build and leave; we provide ongoing maintenance, updates, and strategic guidance." },
-            ].map((reason, i) => (
+            {(blocks?.whyChooseVoryent?.items || [
+              { icon: "Layers", title: "Modern Stack", desc: "We use the latest tools that are proven in production to ensure high performance and maintainability." },
+              { icon: "Zap", title: "Fast Delivery", desc: "Agile methodologies and CI/CD pipelines enable rapid iterations and faster time-to-market." },
+              { icon: "Server", title: "Scalable Architecture", desc: "Systems designed to handle growing user bases and expanding data demands effortlessly." },
+              { icon: "Cpu", title: "AI-Enhanced Development", desc: "Leveraging AI internally to accelerate development and writing AI integrations for your products." },
+              { icon: "Code2", title: "Clean Code", desc: "Strict typing, modularity, and comprehensive documentation ensure code is easily understandable." },
+              { icon: "Clock", title: "Long-Term Support", desc: "We don't just build and leave; we provide ongoing maintenance, updates, and strategic guidance." },
+            ]).map((reason: any, i: number) => {
+              const IconComp = reason.icon === "Zap" ? Zap :
+                               reason.icon === "Server" ? Server :
+                               reason.icon === "Cpu" ? Cpu :
+                               reason.icon === "Code2" ? Code2 :
+                               reason.icon === "Clock" ? Clock : Layers;
+              return (
               <Card key={i} className="border-border/50 shadow-sm hover:shadow-md transition-all">
                 <CardContent className="p-6">
-                  <reason.icon className="h-8 w-8 text-primary mb-4" />
+                  <IconComp className="h-8 w-8 text-primary mb-4" />
                   <h3 className="font-semibold text-lg text-foreground mb-2">{reason.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{reason.desc}</p>
                 </CardContent>
               </Card>
-            ))}
+            )})}
           </div>
         </Container>
       </Section>
+
+      {/* ─── OUR TEAM ─── */}
+      {employees.length > 0 && (
+        <Section className="bg-muted/10">
+          <Container>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                Meet the Team
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                The talented engineers, designers, and strategists behind Voryent Solutions.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {employees.map((emp: any, i: number) => (
+                <Card key={emp.id || i} className="border-border/50 shadow-sm hover:shadow-md transition-all text-center">
+                  <CardContent className="p-6">
+                    <div className="w-24 h-24 rounded-full bg-muted border-2 border-primary/20 mx-auto mb-4 overflow-hidden relative flex items-center justify-center text-primary font-bold text-2xl">
+                      {emp.firstName?.[0]}{emp.lastName?.[0]}
+                    </div>
+                    <h3 className="font-semibold text-lg text-foreground">{emp.firstName} {emp.lastName}</h3>
+                    <p className="text-sm text-primary font-medium mt-1 mb-2">{emp.position}</p>
+                    {emp.department && (
+                      <Badge variant="secondary" className="text-xs">
+                        {emp.department}
+                      </Badge>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
+
+      {/* ─── OUR INVESTORS ─── */}
+      {investors.length > 0 && (
+        <Section className="bg-muted/5">
+          <Container>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                Backed By
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                We are proud to be supported by visionary investors and strategic partners.
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6">
+              {investors.map((inv: any, i: number) => (
+                <div key={inv.id || i} className="bg-card border border-border/50 rounded-xl p-6 text-center shadow-sm w-full sm:w-[250px] hover:shadow-md transition-shadow">
+                  <div className="w-16 h-16 rounded-lg bg-primary/10 mx-auto mb-4 flex items-center justify-center text-primary">
+                    <Briefcase className="h-8 w-8" />
+                  </div>
+                  <h3 className="font-semibold text-foreground text-lg">{inv.name}</h3>
+                  {inv.organization && (
+                    <p className="text-sm text-muted-foreground mt-1">{inv.organization}</p>
+                  )}
+                  <Badge variant="outline" className="mt-3">
+                    {inv.type} Investor
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
 
       {/* ─── CTA ─── */}
       <Section className="pb-24">

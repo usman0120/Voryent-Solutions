@@ -6,7 +6,7 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   experimental: {
-    optimizePackageImports: ["@voryent/ui"],
+    optimizePackageImports: ["@voryent/ui", "lucide-react", "framer-motion", "date-fns"],
   },
 };
 
