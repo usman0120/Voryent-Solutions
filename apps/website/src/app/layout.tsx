@@ -47,11 +47,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://voryentsolutions.com",
   },
-  icons: {
-    icon: "/Assets/Logos/Transparent logos/Icon-only_version_Logo_transparent.png",
-    shortcut: "/Assets/Logos/Transparent logos/Icon-only_version_Logo_transparent.png",
-    apple: "/Assets/Logos/Transparent logos/Icon-only_version_Logo_transparent.png",
-  },
   manifest: "/site.webmanifest",
 };
 
