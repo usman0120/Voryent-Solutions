@@ -114,6 +114,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     
+    // Notifications: Public can create (e.g. contact forms, job apps), Admin can read/manage
+    match /notifications/{document=**} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    
     // Default deny
     match /{document=**} {
       allow read, write: if false;

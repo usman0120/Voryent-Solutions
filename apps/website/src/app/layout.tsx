@@ -1,11 +1,11 @@
-import type { Metadata, Viewport } from "next"
-import { fontSans, fontMono, fontSerif } from "@/lib/fonts"
-import { ThemeProvider } from "@/components/theme-provider"
-import { SiteHeader } from "@/components/layout/site-header"
-import { SiteFooter } from "@/components/layout/site-footer"
-import { siteConfig } from "@/config/site"
-import { Toaster } from "@voryent/ui"
-import "./globals.css"
+import type { Metadata, Viewport } from "next";
+import { fontSans, fontMono, fontSerif } from "@/lib/fonts";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { siteConfig } from "@/config/site";
+import { Toaster } from "@voryent/ui";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
@@ -53,42 +53,48 @@ export const metadata: Metadata = {
     apple: "/Assets/Logos/Transparent logos/Icon-only_version_Logo_transparent.png",
   },
   manifest: "/site.webmanifest",
-}
+};
 
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
-}
+};
 
-import { JsonLd } from "@/components/json-ld"
-import { Analytics } from "@/components/analytics"
-import NextTopLoader from "nextjs-toploader"
+import { JsonLd } from "@/components/json-ld";
+import { Analytics } from "@/components/analytics";
+import NextTopLoader from "nextjs-toploader";
+import { ConditionalWrapper } from "@/components/layout/conditional-wrapper";
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": siteConfig.name,
-    "url": siteConfig.url,
-    "logo": "https://voryentsolutions.com/Assets/Logos/Voryent%20Solutions%20-%20Dark%20Background.svg",
-    "description": siteConfig.description
-  }
+    name: siteConfig.name,
+    url: siteConfig.url,
+    logo: "https://voryentsolutions.com/Assets/Logos/Voryent%20Solutions%20-%20Dark%20Background.svg",
+    description: siteConfig.description,
+  };
 
   return (
-    <html lang="en" suppressHydrationWarning className="scroll-smooth" data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="scroll-smooth"
+      data-scroll-behavior="smooth"
+    >
       <head>
         <JsonLd data={orgJsonLd} />
         <Analytics />
       </head>
       <body
         suppressHydrationWarning
-        className={`min-h-screen bg-background font-sans text-foreground antialiased ${fontSans.variable} ${fontMono.variable} ${fontSerif.variable}`}
+        className={`bg-background text-foreground min-h-screen font-sans antialiased ${fontSans.variable} ${fontMono.variable} ${fontSerif.variable}`}
       >
         <ThemeProvider
           attribute="class"
@@ -97,16 +103,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NextTopLoader color="hsl(var(--primary))" showSpinner={true} />
-          <div className="relative flex min-h-screen flex-col">
-            <SiteHeader />
-            <main id="main-content" className="flex-1">
-              {children}
-            </main>
-            <SiteFooter />
-          </div>
+          <ConditionalWrapper header={<SiteHeader />} footer={<SiteFooter />}>
+            {children}
+          </ConditionalWrapper>
           <Toaster />
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

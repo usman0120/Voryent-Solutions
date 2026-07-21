@@ -13,8 +13,11 @@ import {
   FaqComponent,
   CareerCard
 } from "@voryent/ui"
-import * as LucideIcons from "lucide-react"
-import { ArrowRight, MapPin, Code2, BookOpen, Heart, Rocket, Briefcase, FileText, Search, Users, Settings, Award, ThumbsUp } from "lucide-react"
+import { ArrowRight, MapPin, Code2, BookOpen, Heart, Rocket, Briefcase, FileText, Search, Users, Settings, Award, ThumbsUp, Code, Laptop, ShieldCheck, Globe, Zap, Cpu, Layers } from "lucide-react"
+
+const iconMap: Record<string, any> = {
+  ArrowRight, MapPin, Code2, BookOpen, Heart, Rocket, Briefcase, FileText, Search, Users, Settings, Award, ThumbsUp, Code, Laptop, ShieldCheck, Globe, Zap, Cpu, Layers
+};
 import { getCareersData, getCareersJobs } from "@/lib/firebase/services"
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -104,7 +107,7 @@ export default async function CareersPage() {
   };
 
   const getIcon = (name: string, fallbackIcon: any) => {
-    const Icon = (LucideIcons as any)[name];
+    const Icon = iconMap[name];
     return Icon || fallbackIcon;
   };
 
@@ -192,11 +195,11 @@ export default async function CareersPage() {
                   location={job.location}
                   type={job.employmentType}
                   action={
-                    <Link href={`/careers/${job.slug}`} className="w-full">
-                      <Button variant="outline" className="w-full">
+                    <Button asChild variant="outline" className="w-full">
+  <Link href={`/careers/${job.slug}`} className="w-full">
                         View Details
-                      </Button>
-                    </Link>
+                      </Link>
+</Button>
                   }
                 />
               ))}

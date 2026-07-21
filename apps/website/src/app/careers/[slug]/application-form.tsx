@@ -128,8 +128,9 @@ export function ApplicationForm({ jobId, jobTitle }: ApplicationFormProps) {
         appliedAt: serverTimestamp(),
       };
 
-      // Add application to Firestore
-      await addDoc(collection(db, "applications"), appData);
+      // Submit using service function
+      const { submitJobApplication } = await import("@/lib/firebase/services");
+      await submitJobApplication(appData);
 
       // Add to activityLogs
       await addDoc(collection(db, "activityLogs"), {
@@ -360,3 +361,4 @@ export function ApplicationForm({ jobId, jobTitle }: ApplicationFormProps) {
     </Card>
   );
 }
+

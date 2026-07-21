@@ -1,7 +1,0 @@
-@import "@voryent/ui/src/globals.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Additional admin specific styles if needed */

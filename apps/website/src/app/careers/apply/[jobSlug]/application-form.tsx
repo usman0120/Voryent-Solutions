@@ -123,3 +123,4 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
     </form>
   );
 }
+

@@ -1,4 +1,4 @@
-import { getSocialSettings } from "@/lib/firebase/services"
+import { getSocialSettings, getContactSettings } from "@/lib/firebase/services"
 import ContactClient from "./contact-client"
 
 export const metadata = {
@@ -8,5 +8,6 @@ export const metadata = {
 
 export default async function ContactPage() {
   const socialSettings = await getSocialSettings().catch(() => null)
-  return <ContactClient socialSettings={socialSettings} />
+  const contactSettings = await getContactSettings().catch(() => null)
+  return <ContactClient socialSettings={socialSettings} contactSettings={contactSettings} />
 }

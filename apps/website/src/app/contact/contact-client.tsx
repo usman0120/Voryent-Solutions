@@ -438,6 +438,7 @@ function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
+        suppressHydrationWarning
         className="inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {status === "submitting" ? (
@@ -483,6 +484,7 @@ function FaqItem({
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-controls={answerId}
+        suppressHydrationWarning
         className="flex w-full items-center justify-between py-4 text-left text-sm font-medium text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
       >
         {question}
@@ -508,7 +510,12 @@ function FaqItem({
 
 /* ──────────────────────────── PAGE COMPONENT ──────────────────────────── */
 
-export default function ContactClient({ socialSettings }: { socialSettings: any }) {
+interface ContactClientProps {
+  socialSettings: any;
+  contactSettings: any;
+}
+
+export default function ContactClient({ socialSettings, contactSettings }: ContactClientProps) {
   return (
     <>
       {/* ─── HERO ─── */}
@@ -551,10 +558,10 @@ export default function ContactClient({ socialSettings }: { socialSettings: any 
                         Email
                       </p>
                       <a
-                        href="mailto:hello@voryentsolutions.com"
+                        href={`mailto:${contactSettings?.email || "hello@voryentsolutions.com"}`}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
-                        hello@voryentsolutions.com
+                        {contactSettings?.email || "hello@voryentsolutions.com"}
                       </a>
                     </div>
                   </div>
@@ -565,24 +572,26 @@ export default function ContactClient({ socialSettings }: { socialSettings: any 
                         Phone
                       </p>
                       <a
-                        href="tel:+15550000000"
+                        href={`tel:${contactSettings?.phone?.replace(/[^0-9+]/g, "") || "+15550000000"}`}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
-                        +1 (555) 000-0000
+                        {contactSettings?.phone || "+1 (555) 000-0000"}
                       </a>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        Response Time
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        1–2 business days
-                      </p>
+                  {contactSettings?.address && (
+                    <div className="flex items-start gap-3">
+                      <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          Address
+                        </p>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                          {contactSettings.address}
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -697,3 +706,4 @@ export default function ContactClient({ socialSettings }: { socialSettings: any 
     </>
   )
 }
+
