@@ -12,9 +12,8 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuthenticated() && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      let role = isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role : null;
+      return role == 'admin' || role == 'Admin' || role == 'Founder' || role == 'founder' || role == 'Super Admin' || role == 'super admin';
     }
 
     // Public readable, Admin writable
@@ -63,7 +62,8 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
     match /investors/{document=**} {
-      allow read, write: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
     match /finance/{document=**} {
       allow read, write: if isAdmin();
@@ -72,7 +72,8 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
     match /employees/{document=**} {
-      allow read, write: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
     match /activityLogs/{document=**} {
       allow read, write: if isAdmin();
@@ -86,6 +87,10 @@ service cloud.firestore {
     
     // CMS Collections
     match /pages/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /case-studies/{document=**} {
       allow read: if true;
       allow write: if isAdmin();
     }

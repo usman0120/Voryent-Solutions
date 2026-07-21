@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges(async (currentUser) => {
+      setLoading(true);
       setUser(currentUser);
       if (currentUser) {
         // Fetch user role from Firestore
@@ -45,6 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         
         setRole(userDoc.role || "Founder");
+        console.log("Auth Provider: Fetched Role:", userDoc.role, "Final Role State:", userDoc.role || "Founder");
       } else {
         setRole(null);
       }
@@ -64,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (!user && !isPublicAdminRoute) {
         router.push("/admin/login");
-      } else if (user && role !== "admin" && role !== "Founder" && !isPublicAdminRoute && pathname !== "/admin/unauthorized") {
+      } else if (user && !["admin", "super admin", "founder"].includes(role?.toLowerCase() || "") && !isPublicAdminRoute && pathname !== "/admin/unauthorized") {
         // User is logged in but not an admin or founder, redirect to unauthorized
         router.push("/admin/unauthorized");
       }
