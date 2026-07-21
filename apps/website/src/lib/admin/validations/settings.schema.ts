@@ -56,12 +56,6 @@ export const seoSettingsSchema = z.object({
   organizationAddress: z.string().optional(),
 });
 
-export const analyticsSettingsSchema = z.object({
-  ga4Id: z.string().optional(),
-  gscVerificationId: z.string().optional(),
-  bingVerificationId: z.string().optional(),
-  clarityId: z.string().optional(),
-});
 
 export const legalSettingsSchema = z.object({
   privacyPolicyUrl: z.string().url().optional().or(z.literal("")),

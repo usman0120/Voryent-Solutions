@@ -165,17 +165,6 @@ export async function getSeoSettings() {
   return data;
 }
 
-export async function getAnalyticsSettings() {
-  const key = "analyticsSettings";
-  const cached = getCached<any>(key);
-  if (cached) return cached;
-
-  const docRef = doc(db(), "settings", "analytics");
-  const docSnap = await getDoc(docRef);
-  const data = docSnap.exists() ? docSnap.data() : null;
-  if (data) setCacheWithPrune(key, data, LONG_TTL);
-  return data;
-}
 
 // --- Careers CMS & Jobs ---
 export async function getCareersData() {

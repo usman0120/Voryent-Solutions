@@ -69,7 +69,7 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="bg-background flex hidden w-64 flex-col overflow-y-auto border-r md:flex">
+    <aside className="bg-background hidden w-64 flex-col overflow-y-auto border-r md:flex">
       <div className="bg-background sticky top-0 z-10 border-b p-6">
         <div className="flex items-center gap-2">
           <div className="relative h-8 w-8">

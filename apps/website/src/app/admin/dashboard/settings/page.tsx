@@ -11,7 +11,6 @@ import {
   contactSettingsSchema,
   socialSettingsSchema,
   seoSettingsSchema,
-  analyticsSettingsSchema,
   legalSettingsSchema
 } from "@/lib/admin/validations/settings.schema";
 
@@ -33,7 +32,6 @@ export default function SettingsPage() {
               <TabsTrigger value="contact" className="w-full justify-start data-[state=active]:bg-muted">Contact Info</TabsTrigger>
               <TabsTrigger value="social" className="w-full justify-start data-[state=active]:bg-muted">Social Media</TabsTrigger>
               <TabsTrigger value="seo" className="w-full justify-start data-[state=active]:bg-muted">SEO Foundation</TabsTrigger>
-              <TabsTrigger value="analytics" className="w-full justify-start data-[state=active]:bg-muted">Analytics</TabsTrigger>
               <TabsTrigger value="legal" className="w-full justify-start data-[state=active]:bg-muted">Legal Pages</TabsTrigger>
               <TabsTrigger value="audit" className="w-full justify-start data-[state=active]:bg-muted">Audit Logs</TabsTrigger>
             </TabsList>
@@ -160,23 +158,6 @@ export default function SettingsPage() {
               </ModuleGuard>
             </TabsContent>
 
-            <TabsContent value="analytics" className="m-0">
-              <ModuleGuard module="Settings" action="Edit">
-                <SettingsSection
-                  groupId="analytics"
-                  title="Analytics & Verification"
-                  description="Connect Google Analytics, Search Console, and Bing Webmaster."
-                  schema={analyticsSettingsSchema}
-                  defaultValues={{ ga4Id: "", gscVerificationId: "", bingVerificationId: "", clarityId: "" }}
-                  fields={[
-                    { name: "ga4Id", label: "Google Analytics 4 ID (G-XXXXX)" },
-                    { name: "gscVerificationId", label: "Google Search Console Verification Tag" },
-                    { name: "bingVerificationId", label: "Bing Webmaster Verification Tag" },
-                    { name: "clarityId", label: "Microsoft Clarity Project ID" },
-                  ]}
-                />
-              </ModuleGuard>
-            </TabsContent>
 
             <TabsContent value="legal" className="m-0">
               <ModuleGuard module="Settings" action="Edit">
