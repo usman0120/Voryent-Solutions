@@ -47,6 +47,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://voryentsolutions.com",
   },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   manifest: "/site.webmanifest",
 };
 
@@ -73,7 +78,7 @@ export default function RootLayout({
     "@type": "Organization",
     name: siteConfig.name,
     url: siteConfig.url,
-    logo: "https://voryentsolutions.com/Assets/Logos/Voryent%20Solutions%20-%20Dark%20Background.svg",
+    logo: "https://voryentsolutions.com/logo.png",
     description: siteConfig.description,
   };
 
