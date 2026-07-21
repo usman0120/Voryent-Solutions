@@ -64,6 +64,7 @@ export const viewport: Viewport = {
 
 import { JsonLd } from "@/components/json-ld";
 import { Analytics } from "@/components/analytics";
+import ClarityAnalytics from "@/components/analytics/clarity";
 import NextTopLoader from "nextjs-toploader";
 import { ConditionalWrapper } from "@/components/layout/conditional-wrapper";
 
@@ -96,6 +97,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`bg-background text-foreground min-h-screen font-sans antialiased ${fontSans.variable} ${fontMono.variable} ${fontSerif.variable}`}
       >
+        <ClarityAnalytics />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
