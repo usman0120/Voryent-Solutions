@@ -6,8 +6,6 @@ import { collection, getDocs } from "firebase/firestore";
 import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Checkbox, Label } from "@voryent/ui";
 import { useToast } from "@/hooks/use-toast";
 import { Download, FileJson, FileText, FileSpreadsheet } from "lucide-react";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
 const COLLECTIONS = [
   "users",
@@ -86,18 +84,19 @@ export default function ExportPage() {
           const values = headers.map(header => {
             let val = row[header as keyof typeof row];
             if (typeof val === "object" && val !== null) {
-              val = JSON.stringify(val);
+              try { val = JSON.stringify(val); } catch (e) { val = "[Object]"; }
             }
-            const escaped = (val?.toString() || "").replace(/"/g, '""');
+            const strVal = val === undefined || val === null ? "" : String(val);
+            const escaped = strVal.replace(/"/g, '""');
             return `"${escaped}"`;
           });
-          csvRows.push(values.join("\n"));
+          csvRows.push(values.join(","));
         }
 
-        const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+        const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
         downloadBlob(blob, `${col}-export-${new Date().toISOString().split("T")[0]}.csv`);
         
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 800));
       }
       toast({ title: "CSV Export successful" });
     } catch (err: any) {
@@ -112,6 +111,9 @@ export default function ExportPage() {
     
     setIsExporting(true);
     try {
+      const { default: jsPDF } = await import("jspdf");
+      const { default: autoTable } = await import("jspdf-autotable");
+
       const doc = new jsPDF();
       doc.text(`Voryent Solutions - Database Export`, 14, 15);
       doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 22);

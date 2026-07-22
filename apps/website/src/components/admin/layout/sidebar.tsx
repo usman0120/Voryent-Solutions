@@ -31,8 +31,9 @@ const websiteNavItems = [
 ];
 
 const systemNavItems = [
-  { href: "/admin/dashboard/settings", icon: Settings, label: "Global Settings" },
   { href: "/admin/dashboard/export", icon: FileText, label: "Data Export & Backup" },
+  { href: "/admin/dashboard/activity-logs", icon: Activity, label: "Audit Logs" },
+  { href: "/admin/dashboard/account-security", icon: UserCheck, label: "Account & Security" },
 ];
 
 export function Sidebar() {

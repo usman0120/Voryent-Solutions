@@ -16,14 +16,6 @@ export const generalSettingsSchema = z.object({
   dateFormat: z.string(),
 });
 
-export const brandingSettingsSchema = z.object({
-  logo: z.string().url().optional().or(z.literal("")),
-  wordmark: z.string().url().optional().or(z.literal("")),
-  favicon: z.string().url().optional().or(z.literal("")),
-  primaryColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Must be a valid hex color"),
-  secondaryColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Must be a valid hex color"),
-});
-
 export const contactSettingsSchema = z.object({
   email: z.string().email(),
   phone: z.string(),
@@ -33,33 +25,9 @@ export const contactSettingsSchema = z.object({
 });
 
 export const socialSettingsSchema = z.object({
-  linkedIn: z.string().url().optional().or(z.literal("")),
-  github: z.string().url().optional().or(z.literal("")),
-  youtube: z.string().url().optional().or(z.literal("")),
-  x: z.string().url().optional().or(z.literal("")), // Twitter/X
-  facebook: z.string().url().optional().or(z.literal("")),
-  whatsapp: z.string().optional(),
-});
-
-export const seoSettingsSchema = z.object({
-  siteTitle: z.string().min(1, "Site Title is required"),
-  siteDescription: z.string().min(10, "Site Description must be at least 10 characters"),
-  defaultKeywords: z.string().optional(),
-  defaultOgImage: z.string().url().optional().or(z.literal("")),
-  twitterImage: z.string().url().optional().or(z.literal("")),
-  robots: z.string().optional().default("index, follow"),
-  canonicalBaseUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  organizationName: z.string().optional(),
-  organizationLogo: z.string().url().optional().or(z.literal("")),
-  organizationEmail: z.string().email().optional().or(z.literal("")),
-  organizationPhone: z.string().optional(),
-  organizationAddress: z.string().optional(),
-});
-
-
-export const legalSettingsSchema = z.object({
-  privacyPolicyUrl: z.string().url().optional().or(z.literal("")),
-  termsOfServiceUrl: z.string().url().optional().or(z.literal("")),
-  cookiePolicyUrl: z.string().url().optional().or(z.literal("")),
+  platforms: z.array(z.object({
+    platform: z.string().min(1, "Platform name is required"),
+    url: z.string().min(1, "URL/Link is required"),
+  })).default([]),
 });
 

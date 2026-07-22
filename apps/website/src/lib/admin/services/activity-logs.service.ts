@@ -34,12 +34,32 @@ class ActivityLogsService extends CoreService<ActivityLog> {
         action,
         summary,
         module: moduleName,
-        entityId,
+        entityId: entityId || null as any,
         entityType: moduleName,
-        userId,
+        userId: userId || null as any,
         userName: userId ? "User" : "System", // Ideally resolved via auth context or user cache
-        metadata,
+        metadata: metadata || null as any,
       };
+
+      // Strip any top-level undefined just to be safe
+      Object.keys(payload).forEach(key => (payload as any)[key] === undefined && delete (payload as any)[key]);
+
+      // Deep clean metadata to remove undefined fields recursively
+      if (payload.metadata) {
+        const cleanUndefined = (obj: any): any => {
+          if (obj === undefined) return null;
+          if (typeof obj !== 'object' || obj === null) return obj;
+          if (Array.isArray(obj)) return obj.map(cleanUndefined);
+          const cleaned: any = {};
+          for (const [key, value] of Object.entries(obj)) {
+            if (value !== undefined) {
+              cleaned[key] = cleanUndefined(value);
+            }
+          }
+          return cleaned;
+        };
+        payload.metadata = cleanUndefined(payload.metadata);
+      }
       
       return await this.create(payload, userId);
     } catch (error) {

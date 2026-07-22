@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     // Only apply auth redirects on /admin routes
     if (pathname.startsWith("/admin")) {
-      const isPublicAdminRoute = pathname === "/admin/login" || pathname === "/admin/forgot-password";
+      const isPublicAdminRoute = pathname === "/admin/login";
       
       if (!user && !isPublicAdminRoute) {
         router.push("/admin/login");

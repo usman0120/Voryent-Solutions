@@ -13,7 +13,7 @@ import {
   QueryConstraint,
   setDoc
 } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db, auth } from "../firebase/config";
 
 export interface BaseEntity {
   id?: string;
@@ -43,14 +43,28 @@ export class CoreService<T extends BaseEntity> {
     return { id: snapshot.id, ...snapshot.data() } as T;
   }
 
+  private async _log(action: string, summary: string) {
+    if (this.collectionName === "activityLogs") return;
+    try {
+      const { logActivity } = await import("./activity-logs.service");
+      const user = auth.currentUser;
+      const performedBy = user ? user.uid : "System";
+      await logActivity(action, summary, performedBy);
+    } catch (e) {
+      console.error("Failed to auto-log activity:", e);
+    }
+  }
+
   async create(data: Omit<T, "id" | "createdAt" | "updatedAt">, userId?: string): Promise<string> {
     const docRef = await addDoc(collection(db, this.collectionName), {
       ...data,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      createdBy: userId || null,
+      createdBy: userId || auth.currentUser?.uid || null,
       isArchived: false,
     });
+    
+    await this._log(`${this.collectionName} Created`, `A new record was created in ${this.collectionName}`);
     return docRef.id;
   }
 
@@ -60,9 +74,11 @@ export class CoreService<T extends BaseEntity> {
       ...data,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      createdBy: userId || null,
+      createdBy: userId || auth.currentUser?.uid || null,
       isArchived: false,
     });
+    
+    await this._log(`${this.collectionName} Set`, `Record ${id} was set in ${this.collectionName}`);
   }
 
   async update(id: string, data: Partial<T>, userId?: string): Promise<void> {
@@ -70,12 +86,15 @@ export class CoreService<T extends BaseEntity> {
     await updateDoc(docRef, {
       ...data,
       updatedAt: serverTimestamp(),
-      lastEditedBy: userId || null,
+      lastEditedBy: userId || auth.currentUser?.uid || null,
     });
+    
+    await this._log(`${this.collectionName} Updated`, `Record ${id} was updated in ${this.collectionName}`);
   }
 
   async delete(id: string): Promise<void> {
     await deleteDoc(doc(db, this.collectionName, id));
+    await this._log(`${this.collectionName} Deleted`, `Record ${id} was deleted from ${this.collectionName}`);
   }
 
   async archive(id: string, userId?: string): Promise<void> {

@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from "@/lib/admin/react-query/notifications.hooks";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/providers/auth-provider";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
@@ -26,6 +27,7 @@ export function Header() {
   const { data: notifications, isLoading: notificationsLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+  const { user, role } = useAuth();
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -131,7 +133,13 @@ export function Header() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user?.displayName || "Admin User"}</p>
+                <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                {role && <p className="text-[10px] uppercase tracking-wider text-primary mt-1">{typeof role === 'string' ? role : (role as any).name}</p>}
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/admin/dashboard/settings" className="cursor-pointer">

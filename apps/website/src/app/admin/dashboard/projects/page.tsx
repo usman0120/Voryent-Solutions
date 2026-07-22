@@ -10,6 +10,7 @@ import Link from "next/link";
 import { DataTableToolbar } from "@/components/admin/cms/data-toolbar";
 import { useAuth } from "@/providers/auth-provider";
 import { hasPermission } from "@/lib/admin/utils/permissions";
+import { TableGridSkeleton } from "@/components/ui/generic-grid-skeleton";
 
 export default function ProjectsPage() {
   const queryClient = useQueryClient();
@@ -41,9 +42,7 @@ export default function ProjectsPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-64 border rounded-md">
-          <p className="text-muted-foreground">Loading projects...</p>
-        </div>
+        <TableGridSkeleton rows={5} />
       ) : (
         <div className="space-y-4">
           <DataTableToolbar
