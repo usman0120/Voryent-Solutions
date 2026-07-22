@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@voryent/ui";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Button, Label } from "@voryent/ui";
 import { Input } from "@voryent/ui";
 import { Textarea } from "@voryent/ui";
 import { Switch } from "@/components/admin/ui/switch";
@@ -15,9 +15,10 @@ import { RichTextEditor } from "@/components/admin/cms/rich-text-editor";
 import { baseEntitySchema, seoSchema } from "@/lib/admin/validations/cms";
 import { type BlogPost, blogService } from "@/lib/admin/services/blog.service";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { Upload, X } from "lucide-react";
 
 const blogSchema = baseEntitySchema.extend({
   title: z.string().min(1, "Title is required"),
@@ -26,6 +27,7 @@ const blogSchema = baseEntitySchema.extend({
   content: z.string().optional(),
   coverImage: z.string().optional(),
   category: z.string().optional(),
+  tags: z.array(z.string()).optional(),
   author: z.string().optional(),
   featured: z.boolean().default(false),
   seo: seoSchema.optional(),
@@ -43,6 +45,8 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tagInput, setTagInput] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<BlogFormValues>({
     resolver: zodResolver(blogSchema),
@@ -52,13 +56,50 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
       excerpt: initialData?.excerpt || "",
       content: initialData?.content || "",
       coverImage: initialData?.coverImage || "",
-      category: initialData?.category || "Uncategorized",
-      author: initialData?.author || "",
+      category: initialData?.category || "General",
+      tags: initialData?.tags || [],
+      author: initialData?.author || "Voryent Team",
       status: initialData?.status || "Draft",
       featured: initialData?.featured || false,
       seo: initialData?.seo || {},
     },
   });
+
+  const currentTags = form.watch("tags") || [];
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const val = tagInput.trim().replace(/^,|,$/g, "");
+      if (val && !currentTags.includes(val)) {
+        form.setValue("tags", [...currentTags, val]);
+        setTagInput("");
+      }
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    form.setValue("tags", currentTags.filter((t) => t !== tagToRemove));
+  };
+
+  const handleCoverImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({ title: "Image too large", description: "Please upload an image under 2MB.", variant: "destructive" });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        if (base64) {
+          form.setValue("coverImage", base64);
+          toast({ title: "Cover image uploaded successfully." });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const onSubmit = async (values: BlogFormValues) => {
     try {
@@ -71,7 +112,7 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
         toast({ title: "Post created successfully." });
       }
       queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
-      router.push("/dashboard/blog");
+      router.push("/admin/dashboard/blog");
       router.refresh();
     } catch (error: any) {
       toast({ title: "Error saving post", description: error.message, variant: "destructive" });
@@ -99,7 +140,7 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
                   <FormItem>
                     <FormLabel>Post Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="10 Ways to..." {...field} />
+                      <Input placeholder="10 Ways to Scale Your Software Platform" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,7 +170,7 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
                   <FormItem>
                     <FormLabel>Excerpt</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Short summary..." {...field} />
+                      <Textarea placeholder="Short summary for post preview cards..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,7 +181,7 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Content</FormLabel>
+                    <FormLabel>Article Content</FormLabel>
                     <FormControl>
                       <RichTextEditor value={field.value || ""} onChange={field.onChange} />
                     </FormControl>
@@ -184,12 +225,42 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. Technology" />
+                      <Input {...field} placeholder="e.g. Engineering, AI, Cloud" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Tags / Keywords Input */}
+              <div className="space-y-2">
+                <Label>Tags & Keywords</Label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {currentTags.map((tag) => (
+                    <span 
+                      key={tag} 
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20"
+                    >
+                      {tag}
+                      <button 
+                        type="button" 
+                        onClick={() => handleRemoveTag(tag)}
+                        className="hover:text-destructive transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <Input 
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleAddTag}
+                  placeholder="Type tag & press Enter or comma..."
+                />
+                <p className="text-xs text-muted-foreground">Press Enter or comma to add tags. Used for matching related blogs.</p>
+              </div>
+
               <FormField
                 control={form.control}
                 name="author"
@@ -197,33 +268,59 @@ export function BlogForm({ initialData, id }: BlogFormProps) {
                   <FormItem>
                     <FormLabel>Author Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="John Doe" />
+                      <Input {...field} placeholder="Voryent Team" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Cover Image URL + Base64 Upload */}
               <FormField
                 control={form.control}
                 name="coverImage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cover Image URL (or Media library)</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://..." />
-                    </FormControl>
+                    <FormLabel>Cover Image</FormLabel>
+                    <div className="space-y-2">
+                      <FormControl>
+                        <Input {...field} placeholder="https://... or upload local image" />
+                      </FormControl>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef}
+                        onChange={handleCoverImageUpload}
+                        accept="image/*"
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full flex items-center justify-center gap-2"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="h-4 w-4" /> Upload Image (Base64)
+                      </Button>
+                      {field.value && (
+                        <div className="mt-2 relative aspect-[16/9] w-full rounded-md overflow-hidden border">
+                          <img src={field.value} alt="Cover Preview" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="featured"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Featured</FormLabel>
-                      <p className="text-sm text-muted-foreground">Highlight on blog index</p>
+                      <FormLabel className="text-base">Featured Post</FormLabel>
+                      <p className="text-sm text-muted-foreground">Highlight on main blog index</p>
                     </div>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />

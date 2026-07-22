@@ -7,6 +7,7 @@ export interface BlogPost {
   title: string
   excerpt: string
   category: string
+  tags?: string[]
   readingTime: string
   publishDate: string
   author: string
@@ -40,6 +41,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
       title: data["title"] as string,
       excerpt: data["excerpt"] as string,
       category: data["category"] as string,
+      tags: (data["tags"] as string[]) || [],
       readingTime: data["readingTime"] as string,
       publishDate: data["publishDate"] as string,
       author: data["author"] as string,

@@ -57,11 +57,11 @@ export const columns: ColumnDef<BlogPost>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/blog/${item.id}`}>
-              <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link href={`/admin/dashboard/blog/${item.id}`}>
                 <Pencil className="mr-2 h-4 w-4" /> Edit Post
-              </DropdownMenuItem>
-            </Link>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
               className="cursor-pointer text-destructive focus:bg-destructive focus:text-destructive-foreground"

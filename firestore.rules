@@ -125,9 +125,15 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
     
+    match /blogSubscriptions/{document=**} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    
     // Default deny
     match /{document=**} {
       allow read, write: if false;
     }
   }
 }
+

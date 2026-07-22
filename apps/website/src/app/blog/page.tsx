@@ -1,25 +1,35 @@
-import { getAllPosts } from "../../lib/blog"
-import { getBlogPosts } from "../../lib/firebase/services"
-import { BlogList } from "../../components/blog/blog-list"
+import { getBlogPosts } from "../../lib/firebase/services";
+import { BlogList } from "../../components/blog/blog-list";
+
+function calculateReadingTime(content: string): string {
+  if (!content) return "2 min read";
+  const cleanText = content.replace(/<[^>]*>/g, " ").replace(/[^\w\s]/gi, "");
+  const words = cleanText.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
 
 export default async function BlogPage() {
   const dbPostsRaw = await getBlogPosts().catch(() => []);
-  const dbPosts = dbPostsRaw.map((p: any) => ({
+  
+  const posts = dbPostsRaw.map((p: any) => ({
+    id: p.id,
     slug: p.slug,
     title: p.title,
     excerpt: p.excerpt || "",
     category: p.category || "General",
-    readingTime: p.readingTime || "5 min read",
-    publishDate: (p.publishedAt ? new Date(p.publishedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]) as string,
-    author: p.author?.name || "Voryent Team",
+    tags: p.tags || [],
+    featured: Boolean(p.featured),
+    readingTime: calculateReadingTime(p.content || ""),
+    publishDate: String(
+      p.publishedAt?.seconds 
+        ? new Date(p.publishedAt.seconds * 1000).toISOString().split('T')[0] 
+        : (p.createdAt?.seconds ? new Date(p.createdAt.seconds * 1000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0])
+    ),
+    author: typeof p.author === 'string' ? p.author : p.author?.name || "Voryent Team",
     imageSrc: p.coverImage || "/Assets/Illustrations/Blog.png",
     content: p.content || ""
   }));
 
-  const staticPosts = getAllPosts()
-  
-  // Combine, giving DB posts precedence or just merging (for now, concat)
-  const posts = [...dbPosts, ...staticPosts].filter((v, i, a) => a.findIndex(t => (t.slug === v.slug)) === i); // deduplicate by slug
-
-  return <BlogList posts={posts} />
+  return <BlogList posts={posts} />;
 }

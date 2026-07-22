@@ -29,6 +29,7 @@
     "@voryent/utils": "*",
     "date-fns": "^4.4.0",
     "firebase": "^12.16.0",
+    "firebase-admin": "^14.2.0",
     "framer-motion": "^12.42.2",
     "gray-matter": "^4.0.3",
     "jspdf": "^4.2.1",

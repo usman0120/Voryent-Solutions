@@ -93,12 +93,18 @@ export async function getBlogPosts() {
   if (cached) return cached;
 
   try {
-    const q = query(collection(db(), "blogPosts"), where("status", "==", "published"));
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(collection(db(), "blogPosts"));
     const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
-    const data = docs.sort((a, b) => {
-      const timeA = a.publishedAt?.toMillis?.() || 0;
-      const timeB = b.publishedAt?.toMillis?.() || 0;
+    
+    // Resilient filter for published posts (case-insensitive) or posts without status constraint
+    const publishedDocs = docs.filter((d) => {
+      if (!d.status) return true;
+      return String(d.status).toLowerCase() === "published";
+    });
+
+    const data = publishedDocs.sort((a, b) => {
+      const timeA = a.publishedAt?.toMillis?.() || a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+      const timeB = b.publishedAt?.toMillis?.() || b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
       return timeB - timeA;
     });
     setCacheWithPrune(key, data, SHORT_TTL);
@@ -114,13 +120,35 @@ export async function getBlogPostBySlug(slug: string) {
   const cached = getCached<any>(key);
   if (cached) return cached;
 
-  const q = query(collection(db(), "blogPosts"), where("slug", "==", slug), limit(1));
-  const snapshot = await getDocs(q);
-  const firstDoc = snapshot.docs[0];
-  if (!firstDoc) return null;
-  const data = { id: firstDoc.id, ...firstDoc.data() };
-  setCacheWithPrune(key, data, SHORT_TTL);
-  return data;
+  try {
+    const q = query(collection(db(), "blogPosts"), where("slug", "==", slug), limit(1));
+    const snapshot = await getDocs(q);
+    const firstDoc = snapshot.docs[0];
+    if (!firstDoc) return null;
+    const data = { id: firstDoc.id, ...firstDoc.data() };
+    setCacheWithPrune(key, data, SHORT_TTL);
+    return data;
+  } catch (error) {
+    console.error(`Failed to fetch blog post by slug (${slug}):`, error);
+    return null;
+  }
+}
+
+export async function subscribeBlogNewsletter(email: string) {
+  if (!email || !email.includes("@")) throw new Error("Please enter a valid email address.");
+  const cleanEmail = email.trim().toLowerCase();
+
+  const { addDoc, collection, serverTimestamp } = await import("firebase/firestore");
+  
+  const docRef = await addDoc(collection(db(), "blogSubscriptions"), {
+    email: cleanEmail,
+    subscribedAt: serverTimestamp(),
+    createdAt: new Date().toISOString(),
+    status: "Active",
+    isArchived: false,
+  });
+
+  return { id: docRef.id, success: true };
 }
 
 // --- FAQ ---
@@ -354,9 +382,14 @@ export async function getCaseStudiesFromDb(): Promise<any[]> {
 }
 
 export async function getCaseStudyBySlug(slug: string): Promise<any> {
-  const q = query(collection(db(), "case-studies"), where("slug", "==", slug), limit(1));
-  const snapshot = await getDocs(q);
-  const firstDoc = snapshot.docs[0];
-  if (!firstDoc) return null;
-  return { id: firstDoc.id, ...firstDoc.data() };
+  try {
+    const q = query(collection(db(), "case-studies"), where("slug", "==", slug), limit(1));
+    const snapshot = await getDocs(q);
+    const firstDoc = snapshot.docs[0];
+    if (!firstDoc) return null;
+    return { id: firstDoc.id, ...firstDoc.data() };
+  } catch (error) {
+    console.error(`Failed to fetch case study by slug (${slug}):`, error);
+    return null;
+  }
 }

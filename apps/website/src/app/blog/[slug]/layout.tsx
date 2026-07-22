@@ -1,35 +1,43 @@
-import type { Metadata } from "next"
-import { constructMetadata } from "../../../lib/utils"
-import { getPostBySlug } from "../../../lib/blog"
-import { notFound } from "next/navigation"
+import type { Metadata } from "next";
+import { constructMetadata } from "../../../lib/utils";
+import { getBlogPostBySlug } from "../../../lib/firebase/services";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params
-  const post = getPostBySlug(slug)
+  const { slug } = await params;
+  let post: any = null;
+  try {
+    post = await getBlogPostBySlug(slug);
+  } catch (e) {}
 
   if (!post) {
     return constructMetadata({
-      title: "Article Not Found",
-      description: "The article you are looking for could not be found.",
-    })
+      title: "Article | Blog",
+      description: "Read engineering insights and articles from Voryent Solutions.",
+    });
   }
 
+  const title = post.title ? `${post.title} | Voryent Solutions` : "Article | Blog";
+  const description = post.excerpt || "Read engineering insights and articles from Voryent Solutions.";
+  const image = post.coverImage?.startsWith("http") || post.coverImage?.startsWith("data:") 
+    ? post.coverImage 
+    : `https://voryentsolutions.com${post.coverImage || "/Assets/Illustrations/Blog.png"}`;
+
   return constructMetadata({
-    title: `${post.title} | Blog`,
-    description: post.excerpt,
+    title,
+    description,
     canonicalUrl: `https://voryentsolutions.com/blog/${slug}`,
-    image: `https://voryentsolutions.com${post.imageSrc}`,
-  })
+    image,
+  });
 }
 
 export default function BlogDetailLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return children
+  return children;
 }
