@@ -13,43 +13,97 @@ import {
   Compass
 } from "lucide-react"
 
-import { getResources } from "../../lib/firebase/services"
+import { getResources, getResourcesPageData } from "../../lib/firebase/services"
 import { getAllContent } from "../../lib/content"
 import type { LucideIcon } from "lucide-react"
 
 export default async function ResourcesPage() {
-  const contentRaw = await getResources().catch(() => [])
-  const content = contentRaw.length > 0 ? contentRaw : getAllContent("resources")
+  const [contentRaw, pageDataRaw] = await Promise.all([
+    getResources().catch(() => []),
+    getResourcesPageData().catch(() => null)
+  ]);
+  
+  const content = contentRaw.length > 0 ? contentRaw : getAllContent("resources");
+  const blocks = pageDataRaw?.contentBlocks || {};
 
-  const categories = [
-    { title: "Articles", icon: BookOpen, description: "Deep dives into engineering practices and tech trends.", link: "/blog" },
-    { title: "Guides", icon: Map, description: "Step-by-step tutorials on digital transformation.", link: "#guides" },
-    { title: "Downloads", icon: DownloadCloud, description: "E-books, whitepapers, and valuable assets.", link: "#downloads" },
-    { title: "Checklists", icon: FileText, description: "Actionable lists for planning and deploying software.", link: "#downloads" },
-    { title: "Templates", icon: Layers, description: "Starter kits and architectural boilerplates.", link: "#tools" },
-    { title: "Documentation", icon: FileBox, description: "Technical docs for our open-source tools.", link: "#tools" },
-  ]
+  const categories = blocks.categories?.items?.length > 0 ? blocks.categories.items : [
+    { title: "Articles", icon: "BookOpen", description: "Deep dives into engineering practices and tech trends.", link: "/blog" },
+    { title: "Guides", icon: "Map", description: "Step-by-step tutorials on digital transformation.", link: "#guides" },
+    { title: "Downloads", icon: "DownloadCloud", description: "E-books, whitepapers, and valuable assets.", link: "#downloads" },
+    { title: "Checklists", icon: "FileText", description: "Actionable lists for planning and deploying software.", link: "#downloads" },
+    { title: "Templates", icon: "Layers", description: "Starter kits and architectural boilerplates.", link: "#tools" },
+    { title: "Documentation", icon: "FileBox", description: "Technical docs for our open-source tools.", link: "#tools" },
+  ];
 
-  const guidesContent = content.filter((c: any) => c.type === "guide" || c.type === "Guide").sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
-  const faqsContent = content.filter((c: any) => c.type === "faq" || c.type === "FAQ").sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+  const guidesContent = content.filter((c: any) => c.type === "guide" || c.type === "Guide").sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+  const faqsContent = content.filter((c: any) => c.type === "faq" || c.type === "FAQ").sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
 
   const iconMap: Record<string, LucideIcon> = {
     BookOpen,
     Compass,
     HelpCircle,
-  }
+    DownloadCloud,
+    FileText,
+    Layers,
+    Map,
+    Wrench,
+    FileBox,
+    ArrowRight
+  };
 
   const guides = guidesContent.map((g: any) => ({
     title: g.title || g.name || "",
     description: g.summary || g.description || "",
     link: g.link || g.url || "#",
     icon: iconMap[g.icon as string] || Map
-  }))
+  }));
 
   const faqs = faqsContent.map((f: any) => ({
     question: f.question || f.title || "",
     answer: f.content || f.description || "",
-  }))
+  }));
+
+  const hero = blocks.hero || {
+    title: "Knowledge Base",
+    description: "Everything useful in one place. Explore our curated collection of articles, guides, templates, and digital tools."
+  };
+
+  const categoriesSection = blocks.categories || {
+    title: "Explore by Category",
+    description: "Find exactly what you need to accelerate your next project."
+  };
+
+  const downloadsSection = blocks.downloads || {
+    title: "Downloads & Checklists",
+    emptyStateTitle: "Resources coming soon",
+    emptyStateDescription: "Our engineering team is currently crafting extensive checklists, templates, and whitepapers. Check back shortly.",
+    items: []
+  };
+
+  const toolsSection = blocks.tools || {
+    title: "Open Tools & Utilities",
+    emptyStateTitle: "Tools coming soon",
+    emptyStateDescription: "We are working on open-sourcing several internal CLI utilities and design systems.",
+    items: []
+  };
+
+  const guidesSection = blocks.guides || {
+    title: "Essential Guides"
+  };
+
+  const faqsSection = blocks.faqs || {
+    title: "Frequently Asked Questions",
+    description: "Everything you need to know about our knowledge base and resources."
+  };
+
+  const ctaSection = blocks.cta || {
+    title: "Can't find what you're looking for?",
+    description: "Contact our team directly and we'll point you in the right direction or build a custom solution for your needs.",
+    primaryButtonText: "Get in Touch",
+    primaryButtonLink: "/contact",
+    secondaryButtonText: "View Services",
+    secondaryButtonLink: "/services"
+  };
 
   return (
     <>
@@ -59,10 +113,10 @@ export default async function ResourcesPage() {
         <Container>
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-              Knowledge Base
+              {hero.title}
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground leading-relaxed">
-              Everything useful in one place. Explore our curated collection of articles, guides, templates, and digital tools.
+              {hero.description}
             </p>
           </div>
         </Container>
@@ -72,28 +126,33 @@ export default async function ResourcesPage() {
       <Section className="py-16 md:py-24 bg-muted/30">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Explore by Category</h2>
-            <p className="mt-4 text-muted-foreground text-lg">Find exactly what you need to accelerate your next project.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">{categoriesSection.title}</h2>
+            {categoriesSection.description && (
+              <p className="mt-4 text-muted-foreground text-lg">{categoriesSection.description}</p>
+            )}
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((cat, i) => (
-              <Link key={i} href={cat.link} className="group block h-full">
-                <Card className="h-full border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/30 bg-background">
-                  <CardContent className="p-8 flex flex-col items-center text-center">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
-                      <cat.icon className="h-7 w-7" />
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors">
-                      {cat.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {cat.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {categories.map((cat: any, i: number) => {
+              const Icon = iconMap[cat.icon as string] || BookOpen;
+              return (
+                <Link key={i} href={cat.link} className="group block h-full">
+                  <Card className="h-full border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/30 bg-background">
+                    <CardContent className="p-8 flex flex-col items-center text-center">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <Icon className="h-7 w-7" />
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors">
+                        {cat.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {cat.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         </Container>
       </Section>
@@ -105,23 +164,53 @@ export default async function ResourcesPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <DownloadCloud className="h-5 w-5" />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Downloads & Checklists</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">{downloadsSection.title}</h2>
           </div>
           
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/20 p-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted/50 text-muted-foreground mb-4">
-              <FileBox className="h-8 w-8" />
+          {downloadsSection.items && downloadsSection.items.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {downloadsSection.items.map((item: any, i: number) => {
+                const Icon = iconMap[item.icon as string] || FileBox;
+                return (
+                  <Card key={i} className="flex flex-col h-full border-border/50 shadow-sm bg-background">
+                    <CardContent className="p-6 flex flex-col flex-grow">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <h3 className="text-lg font-bold text-foreground leading-tight">{item.title}</h3>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed flex-grow mb-6 text-sm">
+                        {item.description}
+                      </p>
+                      {item.link && (
+                        <Button asChild variant="outline" className="w-full">
+                          <Link href={item.link} target="_blank" rel="noopener noreferrer">
+                            <DownloadCloud className="mr-2 h-4 w-4" /> Download
+                          </Link>
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              Resources coming soon
-            </h3>
-            <p className="text-muted-foreground max-w-sm leading-relaxed mb-6">
-              Our engineering team is currently crafting extensive checklists, templates, and whitepapers. Check back shortly.
-            </p>
-            <Button variant="outline" disabled>
-              Notify Me When Available
-            </Button>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/20 p-16 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted/50 text-muted-foreground mb-4">
+                <FileBox className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                {downloadsSection.emptyStateTitle}
+              </h3>
+              <p className="text-muted-foreground max-w-sm leading-relaxed mb-6">
+                {downloadsSection.emptyStateDescription}
+              </p>
+              <Button variant="outline" disabled>
+                Notify Me When Available
+              </Button>
+            </div>
+          )}
         </Container>
       </Section>
 
@@ -132,11 +221,11 @@ export default async function ResourcesPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Map className="h-5 w-5" />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Essential Guides</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">{guidesSection.title}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {guides.map((guide, i) => (
+            {guides.map((guide: any, i: number) => (
               <Card key={i} className="flex flex-col h-full border-border/50 shadow-sm hover:border-primary/30 transition-all bg-background">
                 <CardContent className="p-8 flex flex-col flex-grow">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary/50 text-secondary-foreground mb-6">
@@ -167,20 +256,50 @@ export default async function ResourcesPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Wrench className="h-5 w-5" />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Open Tools & Utilities</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">{toolsSection.title}</h2>
           </div>
 
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/20 p-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted/50 text-muted-foreground mb-4">
-              <Wrench className="h-8 w-8" />
+          {toolsSection.items && toolsSection.items.length > 0 ? (
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {toolsSection.items.map((item: any, i: number) => {
+                const Icon = iconMap[item.icon as string] || Wrench;
+                return (
+                  <Card key={i} className="flex flex-col h-full border-border/50 shadow-sm bg-background">
+                    <CardContent className="p-6 flex flex-col flex-grow">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <h3 className="text-lg font-bold text-foreground leading-tight">{item.title}</h3>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed flex-grow mb-6 text-sm">
+                        {item.description}
+                      </p>
+                      {item.link && (
+                        <Button asChild variant="outline" className="w-full">
+                          <Link href={item.link} target="_blank" rel="noopener noreferrer">
+                            Access Tool <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              Tools coming soon
-            </h3>
-            <p className="text-muted-foreground max-w-sm leading-relaxed">
-              We are working on open-sourcing several internal CLI utilities and design systems.
-            </p>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/20 p-16 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted/50 text-muted-foreground mb-4">
+                <Wrench className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                {toolsSection.emptyStateTitle}
+              </h3>
+              <p className="text-muted-foreground max-w-sm leading-relaxed">
+                {toolsSection.emptyStateDescription}
+              </p>
+            </div>
+          )}
         </Container>
       </Section>
 
@@ -190,10 +309,10 @@ export default async function ResourcesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             <div className="lg:col-span-5">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-6">
-                Frequently Asked Questions
+                {faqsSection.title}
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                Everything you need to know about our knowledge base and resources.
+                {faqsSection.description}
               </p>
               <Button asChild variant="outline">
                 <Link href="/contact">Ask a Different Question</Link>
@@ -201,7 +320,7 @@ export default async function ResourcesPage() {
             </div>
             <div className="lg:col-span-7">
               <div className="space-y-4">
-                {faqs.map((faq, i) => (
+                {faqs.map((faq: any, i: number) => (
                   <div key={i} className="rounded-xl border border-border/50 bg-card p-6 shadow-sm">
                     <h3 className="text-lg font-bold text-foreground mb-3">
                       {faq.question}
@@ -224,18 +343,22 @@ export default async function ResourcesPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 pointer-events-none" aria-hidden="true" />
             <div className="relative z-10 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground mb-6 leading-tight">
-                Can&apos;t find what you&apos;re looking for?
+                {ctaSection.title}
               </h2>
               <p className="text-lg text-primary-foreground/80 mb-10">
-                Contact our team directly and we'll point you in the right direction or build a custom solution for your needs.
+                {ctaSection.description}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
-                  <Link href="/contact">Get in Touch</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-                  <Link href="/services">View Services</Link>
-                </Button>
+                {ctaSection.primaryButtonText && ctaSection.primaryButtonLink && (
+                  <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
+                    <Link href={ctaSection.primaryButtonLink}>{ctaSection.primaryButtonText}</Link>
+                  </Button>
+                )}
+                {ctaSection.secondaryButtonText && ctaSection.secondaryButtonLink && (
+                  <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
+                    <Link href={ctaSection.secondaryButtonLink}>{ctaSection.secondaryButtonText}</Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

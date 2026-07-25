@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container, Section, Button, Card, CardContent } from "@voryent/ui";
 import { ArrowRight, CheckCircle2, ChevronRight, Layers } from "lucide-react";
+import * as Icons from "lucide-react";
 import { getCaseStudyBySlug, getCaseStudiesFromDb } from "@/lib/firebase/services";
 import { JsonLd } from "../../../components/json-ld";
 
@@ -190,25 +191,30 @@ export default async function CaseStudyDetailPage({
 
           <div className="mx-auto max-w-3xl">
             <div className="space-y-8">
-              {(caseStudy.processSteps || []).map((step: any, index: number) => (
-                <div key={index} className="relative pl-8 md:pl-0">
-                  {/* Desktop layout: alternating or left-aligned. We will use a clean left-aligned list with large numbers. */}
-                  <div className="items-start gap-6 md:flex">
-                    <div className="bg-background border-border/50 text-primary hidden h-16 w-16 shrink-0 items-center justify-center rounded-2xl border text-2xl font-bold shadow-sm md:flex">
-                      0{index + 1}
-                    </div>
-                    <div>
-                      <h3 className="text-foreground mb-2 flex items-center gap-3 text-xl font-bold">
-                        <span className="text-primary md:hidden">0{index + 1}.</span>
-                        {step.title}
-                      </h3>
-                      <p className="text-muted-foreground text-lg leading-relaxed">
-                        {step.description}
-                      </p>
+              {(caseStudy.processSteps || []).map((step: any, index: number) => {
+                const StepIcon = step.icon && (Icons as any)[step.icon] ? (Icons as any)[step.icon] : null;
+
+                return (
+                  <div key={index} className="relative pl-8 md:pl-0">
+                    <div className="items-start gap-6 md:flex">
+                      <div className="bg-background border-border/50 text-primary hidden h-16 w-16 shrink-0 items-center justify-center rounded-2xl border text-2xl font-bold shadow-sm md:flex">
+                        {StepIcon ? <StepIcon className="h-8 w-8" /> : `0${index + 1}`}
+                      </div>
+                      <div>
+                        <h3 className="text-foreground mb-2 flex items-center gap-3 text-xl font-bold">
+                          <span className="text-primary md:hidden">
+                            {StepIcon ? <StepIcon className="h-6 w-6" /> : `0${index + 1}.`}
+                          </span>
+                          {step.title}
+                        </h3>
+                        <p className="text-muted-foreground text-lg leading-relaxed">
+                          {step.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </Container>

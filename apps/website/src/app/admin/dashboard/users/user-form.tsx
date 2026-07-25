@@ -118,15 +118,7 @@ export function UserForm({ initialData, onSuccess }: UserFormProps) {
                   </FormControl>
                   <SelectContent>
                     {/* Placeholder for seeded roles */}
-                    <SelectItem value="Super Admin">Super Admin</SelectItem>
-                    <SelectItem value="Founder">Founder</SelectItem>
-                    <SelectItem value="CEO">CEO</SelectItem>
-                    <SelectItem value="HR">HR</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Marketing">Marketing</SelectItem>
-                    <SelectItem value="Editor">Editor</SelectItem>
-                    <SelectItem value="Analyst">Analyst</SelectItem>
-                    <SelectItem value="Developer">Developer</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="Guest">Guest</SelectItem>
                   </SelectContent>
                 </Select>

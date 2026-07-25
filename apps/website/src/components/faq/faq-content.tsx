@@ -17,25 +17,42 @@ export type FaqItem = {
   category: string
 }
 
-const CATEGORIES = ["All", "General", "Services", "Process", "Pricing", "Support", "Security"]
 export function FaqContent({ faqs }: { faqs: FaqItem[] }) {
   const [activeCategory, setActiveCategory] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
 
+  // Compute dynamic categories from FAQs
+  const dynamicCategories = ["All", ...Array.from(new Set(faqs.map(faq => faq.category || "General")))]
+
+  // Fuzzy match function: each word in the query must be a subsequence of the text
+  const isMatch = (query: string, text: string) => {
+    if (!query.trim()) return true;
+    const terms = query.toLowerCase().trim().split(/\s+/);
+    const textLower = text.toLowerCase();
+    
+    return terms.every(term => {
+      let pIdx = 0;
+      for (let i = 0; i < textLower.length && pIdx < term.length; i++) {
+        if (textLower[i] === term[pIdx]) pIdx++;
+      }
+      return pIdx === term.length;
+    });
+  };
+
   // Filter FAQs based on category and search query
   const filteredFaqs = faqs.filter((faq) => {
     const matchesCategory = activeCategory === "All" || faq.category === activeCategory
-    const matchesSearch =
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+    const combinedText = `${faq.question} ${faq.answer}`;
+    const matchesSearch = isMatch(searchQuery, combinedText);
     return matchesCategory && matchesSearch
   })
 
   // Group by category to display them nicely
   const groupedFaqs = filteredFaqs.reduce((acc, faq) => {
-    const arr = acc[faq.category] || []
+    const cat = faq.category || "General";
+    const arr = acc[cat] || []
     arr.push(faq)
-    acc[faq.category] = arr
+    acc[cat] = arr
     return acc
   }, {} as Record<string, FaqItem[]>)
 
@@ -80,7 +97,7 @@ export function FaqContent({ faqs }: { faqs: FaqItem[] }) {
               <div className="sticky top-24">
                 <h3 className="text-lg font-bold text-foreground mb-4">Categories</h3>
                 <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-4 lg:pb-0 scrollbar-hide">
-                  {CATEGORIES.map((category) => (
+                  {dynamicCategories.map((category) => (
                     <button
                       key={category}
                       onClick={() => setActiveCategory(category)}

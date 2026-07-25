@@ -24,7 +24,7 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
   const { data: report, isLoading } = useReport(resolvedParams.id);
   const updateMutation = useUpdateReport();
   
-  const canManage = role === "Founder" || role === "admin" || role === "Super Admin" || role === "CEO" || role === "Finance" || role === "HR" || role === "Marketing";
+  const canManage = role === "admin";
 
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center">Loading report...</div>;

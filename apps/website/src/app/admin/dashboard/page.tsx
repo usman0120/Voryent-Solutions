@@ -9,20 +9,17 @@ import { Skeleton, Button } from "@voryent/ui";
 import { contactsService } from "@/lib/admin/services/contacts.service";
 import { projectsService } from "@/lib/admin/services/projects.service";
 import { jobsService } from "@/lib/admin/services/jobs.service";
-import { applicationsService } from "@/lib/admin/services/applications.service";
 
 export default function DashboardPage() {
   const { data: contacts = [], isLoading: loadingContacts } = useQuery({ queryKey: ["contacts"], queryFn: () => contactsService.getAll() });
   const { data: projects = [], isLoading: loadingProjects } = useQuery({ queryKey: ["projects"], queryFn: () => projectsService.getAll() });
   const { data: jobs = [], isLoading: loadingJobs } = useQuery({ queryKey: ["jobs"], queryFn: () => jobsService.getAll() });
-  const { data: applications = [], isLoading: loadingApps } = useQuery({ queryKey: ["applications"], queryFn: () => applicationsService.getAll() });
 
-  const loading = loadingContacts || loadingProjects || loadingJobs || loadingApps;
+  const loading = loadingContacts || loadingProjects || loadingJobs;
 
   const stats = [
     { name: "Total Projects", value: projects.length.toString(), icon: FolderOpen, color: "text-blue-500", bg: "bg-blue-500/10" },
     { name: "Active Job Postings", value: jobs.filter((j: any) => j.status === "Published").length.toString(), icon: Briefcase, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { name: "HR Applications", value: applications.length.toString(), icon: Users, color: "text-purple-500", bg: "bg-purple-500/10" },
     { name: "Contact Inquiries", value: contacts.length.toString(), icon: MessageSquare, color: "text-orange-500", bg: "bg-orange-500/10" },
   ];
 

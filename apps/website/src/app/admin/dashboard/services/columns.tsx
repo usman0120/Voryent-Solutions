@@ -57,7 +57,7 @@ export const columns: ColumnDef<Service>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/services/${service.id}`}>
+            <Link href={`/admin/dashboard/services/${service.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Pencil className="mr-2 h-4 w-4" /> Edit Service
               </DropdownMenuItem>

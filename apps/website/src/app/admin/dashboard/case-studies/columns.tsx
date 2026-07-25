@@ -67,7 +67,7 @@ export const columns: ColumnDef<CaseStudy>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href={`/dashboard/case-studies/${caseStudy.id}`}>
+              <Link href={`/admin/dashboard/case-studies/${caseStudy.id}`}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </Link>

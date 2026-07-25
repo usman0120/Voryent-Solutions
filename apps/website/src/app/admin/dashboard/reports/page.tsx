@@ -20,7 +20,7 @@ export default function ReportsPage() {
   };
 
   const columns = getColumns(role, handleRefresh);
-  const canCreate = role === "Founder" || role === "admin" || role === "Super Admin" || role === "CEO" || role === "Finance" || role === "HR" || role === "Marketing";
+  const canCreate = role === "admin";
 
   return (
     <div className="space-y-6">

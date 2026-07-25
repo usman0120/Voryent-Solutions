@@ -17,7 +17,7 @@ export default function PermissionsPage() {
   const [isSeeding, setIsSeeding] = useState(false);
 
   // Fallback before permissions are fully wired to backend auth: 
-  const canManage = (user as any)?.role === "Super Admin" || (user as any)?.role === "Founder" || (user as any)?.role === "admin" || (user as any)?.role === "HR Manager";
+  const canManage = (user as any)?.role === "admin";
 
   const handleSeed = async () => {
     setIsSeeding(true);

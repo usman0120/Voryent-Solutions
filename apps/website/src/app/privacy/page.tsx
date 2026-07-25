@@ -60,6 +60,11 @@ export default function PrivacyPage() {
         including for the purposes of satisfying any legal, regulatory, tax, accounting or reporting requirements.
       </p>
 
+      <h2>Contact Forms and Communication</h2>
+      <p>
+        When you submit a message or project request through our Contact forms, we collect the information provided (such as your name, email, phone number, and project details). We use this information solely to respond to your inquiry and evaluate potential projects. Your information is stored securely and is only accessible to authorized team members handling client communications. We do not use this information for marketing purposes without your explicit consent.
+      </p>
+
       <h2>Security</h2>
       <p>
         We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used or accessed in an unauthorised way, altered or disclosed. 

@@ -25,6 +25,11 @@ export default function TermsPage() {
         and Statement of Work (SOW).
       </p>
 
+      <h2>Contact and Project Inquiries</h2>
+      <p>
+        By submitting information through our Contact or Project Request forms, you agree that all information provided is accurate and truthful. Submitting an inquiry does not create a binding client-agency relationship until a formal agreement or SOW is signed. We reserve the right to decline or reject any project request at our sole discretion.
+      </p>
+
       <h2>Intellectual Property</h2>
       <p>
         The Service and its original content, features, and functionality are and will remain the exclusive property of 

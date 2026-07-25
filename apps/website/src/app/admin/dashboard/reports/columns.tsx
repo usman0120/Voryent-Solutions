@@ -69,7 +69,7 @@ export const getColumns = (userRole: string | null, onRefresh: () => void): Colu
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/reports/${report.id}`}>
+            <Link href={`/admin/dashboard/reports/${report.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Eye className="mr-2 h-4 w-4" /> View Details
               </DropdownMenuItem>
@@ -83,7 +83,7 @@ export const getColumns = (userRole: string | null, onRefresh: () => void): Colu
 
             {canManage && (
               <>
-                <Link href={`/dashboard/reports/${report.id}/edit`}>
+                <Link href={`/admin/dashboard/reports/${report.id}/edit`}>
                   <DropdownMenuItem className="cursor-pointer">
                     <Pencil className="mr-2 h-4 w-4" /> Edit Config
                   </DropdownMenuItem>
@@ -121,5 +121,5 @@ export const getColumns = (userRole: string | null, onRefresh: () => void): Colu
 ];
 
 function roleHasWriteAccess(role: string | null) {
-  return role === "Founder" || role === "admin" || role === "Super Admin" || role === "CEO" || role === "Finance" || role === "HR" || role === "Marketing";
+  return role === "admin";
 }

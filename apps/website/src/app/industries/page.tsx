@@ -1,79 +1,12 @@
 import Link from "next/link"
 import { getIndustries } from "@/lib/firebase/services"
 import { Container, Section, Button, Card, CardContent } from "@voryent/ui"
-import { 
-  ArrowRight, 
-  HeartPulse, 
-  GraduationCap, 
-  Landmark, 
-  ShoppingBag, 
-  Factory, 
-  Building2, 
-  Truck, 
-  Rocket, 
-  Cloud, 
-  Briefcase,
-  Layers,
-  Zap,
-  Brain
-} from "lucide-react"
+import { ArrowRight, Layers, Zap, Brain, Building2 } from "lucide-react"
+import * as LucideIcons from "lucide-react"
 
 /* ──────────────────────────── DATA ──────────────────────────── */
 
-const industries = [
-  {
-    icon: HeartPulse,
-    title: "Healthcare",
-    description: "HIPAA-compliant platforms, telemedicine infrastructure, and patient data management systems designed for modern medical providers.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Education",
-    description: "Scalable e-learning portals, student management systems, and interactive educational tools that power the future of learning.",
-  },
-  {
-    icon: Landmark,
-    title: "Finance",
-    description: "Highly secure fintech applications, real-time trading dashboards, and blockchain-integrated platforms built for absolute reliability.",
-  },
-  {
-    icon: ShoppingBag,
-    title: "Retail & E-commerce",
-    description: "Headless commerce architectures, inventory management systems, and high-conversion storefronts designed to scale.",
-  },
-  {
-    icon: Factory,
-    title: "Manufacturing",
-    description: "IoT integrations, supply chain visibility tools, and resource planning software to optimize your production lines.",
-  },
-  {
-    icon: Building2,
-    title: "Real Estate",
-    description: "Property management platforms, virtual tour integrations, and CRM tools built specifically for real estate professionals.",
-  },
-  {
-    icon: Truck,
-    title: "Logistics",
-    description: "Real-time fleet tracking, predictive maintenance systems, and automated routing software for modern supply chains.",
-  },
-  {
-    icon: Rocket,
-    title: "Startups",
-    description: "Rapid MVP development, scalable architectures, and agile engineering designed to help founders iterate and find product-market fit.",
-  },
-  {
-    icon: Cloud,
-    title: "SaaS",
-    description: "Multi-tenant architectures, subscription billing integrations, and robust APIs to power your software-as-a-service product.",
-  },
-  {
-    icon: Briefcase,
-    title: "Enterprise",
-    description: "Complex system migrations, legacy software modernization, and internal workflow automation for large-scale organizations.",
-  },
-]
-
-const technologies = [
+const defaultTechnologies = [
   "Next.js", "React", "TypeScript", "Node.js", "Supabase", 
   "Tailwind CSS", "PostgreSQL", "Clerk", "Resend", "Vercel"
 ]
@@ -81,11 +14,13 @@ const technologies = [
 /* ──────────────────────────── PAGE ──────────────────────────── */
 
 export default async function IndustriesPage() {
-  let dbIndustries = await getIndustries().catch(() => []);
+  const dbIndustries = await getIndustries().catch(() => []);
+  const activeIndustries = dbIndustries.filter((i: any) => i.status === "Published" || !i.status);
 
-  const displayIndustries = dbIndustries.length > 0
-    ? dbIndustries.map((i: any) => ({ title: i.name, description: i.description, slug: i.slug, icon: Building2 }))
-    : industries;
+  // Extract all unique technologies from industries
+  const allTechnologies = activeIndustries.flatMap((i: any) => i.technologies || []);
+  const uniqueTechnologies = Array.from(new Set(allTechnologies));
+  const displayTechnologies = uniqueTechnologies.length > 0 ? uniqueTechnologies : defaultTechnologies;
 
   return (
     <>
@@ -112,26 +47,56 @@ export default async function IndustriesPage() {
       {/* ─── INDUSTRIES GRID ─── */}
       <Section className="bg-muted/30">
         <Container>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {displayIndustries.map((industry: any) => (
-              <Card key={industry.title} className="flex flex-col h-full border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group">
-                <CardContent className="p-6 flex flex-col flex-grow">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 transition-colors group-hover:bg-primary/20">
-                    <industry.icon className="h-6 w-6" />
-                  </div>
-                  <h2 className="text-xl font-semibold text-foreground mb-3" id={industry.slug}>{industry.title}</h2>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
-                    {industry.description}
-                  </p>
-                  <Button asChild variant="ghost" className="w-fit p-0 h-auto hover:bg-transparent text-primary hover:text-primary/80 font-medium group-hover:translate-x-1 transition-transform">
-                    <Link href="/contact">
-                      Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {activeIndustries.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {activeIndustries.map((industry: any) => {
+                const IconComponent = (LucideIcons as any)[industry.icon || "Building2"] || Building2;
+                return (
+                  <Card key={industry.slug} className="flex flex-col h-full border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group overflow-hidden">
+                    {industry.coverImage && (
+                      <div className="h-32 w-full overflow-hidden bg-muted/50 border-b border-border/30 relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={industry.coverImage} alt={industry.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      </div>
+                    )}
+                    <CardContent className={`p-6 flex flex-col flex-grow ${industry.coverImage ? 'pt-6' : ''}`}>
+                      {!industry.coverImage && (
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 transition-colors group-hover:bg-primary/20">
+                          <IconComponent className="h-6 w-6" />
+                        </div>
+                      )}
+                      {industry.coverImage && (
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+                            <IconComponent className="h-4 w-4" />
+                          </div>
+                          <h2 className="text-xl font-semibold text-foreground m-0" id={industry.slug}>{industry.title}</h2>
+                        </div>
+                      )}
+                      
+                      {!industry.coverImage && (
+                        <h2 className="text-xl font-semibold text-foreground mb-3" id={industry.slug}>{industry.title}</h2>
+                      )}
+                      
+                      <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
+                        {industry.description}
+                      </p>
+                      <Button asChild variant="ghost" className="w-fit p-0 h-auto hover:bg-transparent text-primary hover:text-primary/80 font-medium group-hover:translate-x-1 transition-transform">
+                        <Link href={`/industries/${industry.slug}`}>
+                          Learn More <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-20 text-muted-foreground">
+              <Building2 className="h-12 w-12 mx-auto mb-4 opacity-20" />
+              <p>No industries found. Please add them in the CMS.</p>
+            </div>
+          )}
         </Container>
       </Section>
 
@@ -190,7 +155,7 @@ export default async function IndustriesPage() {
           </div>
           
           <div className="flex flex-wrap justify-center gap-4">
-            {technologies.map((tech) => (
+            {displayTechnologies.map((tech: string) => (
               <div 
                 key={tech} 
                 className="px-6 py-3 rounded-full bg-background border border-border shadow-sm text-foreground font-medium flex items-center gap-2 hover:border-primary/50 transition-colors"

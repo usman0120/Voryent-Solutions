@@ -24,7 +24,7 @@ export default function EditProjectPage() {
         <h1 className="text-3xl font-bold tracking-tight">Edit Project</h1>
         <p className="text-muted-foreground">Update details for {project.name}.</p>
       </div>
-      <ProjectForm initialData={project} onSuccess={() => router.push(`/dashboard/projects/${id}`)} />
+      <ProjectForm initialData={project} onSuccess={() => router.push(`/admin/dashboard/projects/${id}`)} />
     </div>
   );
 }

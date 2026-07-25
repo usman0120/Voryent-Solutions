@@ -20,6 +20,10 @@ import { cn } from "@voryent/ui";
 import { logoutAdmin } from "@/lib/admin/firebase/auth";
 
 const websiteNavItems = [
+  { href: "/admin/dashboard/contact-cms", icon: FileText, label: "Contact CMS" },
+  { href: "/admin/dashboard/about", icon: FileText, label: "About Page CMS" },
+  { href: "/admin/dashboard/resources-page", icon: FileText, label: "Resources Page CMS" },
+  { href: "/admin/dashboard/faq", icon: FileText, label: "FAQ CMS" },
   { href: "/admin/dashboard/projects", icon: Briefcase, label: "Projects CMS" },
   { href: "/admin/dashboard/case-studies", icon: BookOpen, label: "Case Studies CMS" },
   { href: "/admin/dashboard/services", icon: LayoutDashboard, label: "Services CMS" },

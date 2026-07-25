@@ -74,7 +74,7 @@ export const getColumns = (canManage: boolean, onRefresh: () => void): ColumnDef
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/users/${userProfile.id}`}>
+            <Link href={`/admin/dashboard/users/${userProfile.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Eye className="mr-2 h-4 w-4" /> View Profile
               </DropdownMenuItem>
@@ -82,7 +82,7 @@ export const getColumns = (canManage: boolean, onRefresh: () => void): ColumnDef
             
             {canManage && (
               <>
-                <Link href={`/dashboard/users/${userProfile.id}/edit`}>
+                <Link href={`/admin/dashboard/users/${userProfile.id}/edit`}>
                   <DropdownMenuItem className="cursor-pointer">
                     <Pencil className="mr-2 h-4 w-4" /> Edit User
                   </DropdownMenuItem>

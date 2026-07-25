@@ -64,7 +64,7 @@ export const columns: ColumnDef<Resource>[] = [
                 </DropdownMenuItem>
               </a>
             )}
-            <Link href={`/dashboard/resources/${item.id}`}>
+            <Link href={`/admin/dashboard/resources/${item.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Pencil className="mr-2 h-4 w-4" /> Edit Resource
               </DropdownMenuItem>

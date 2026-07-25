@@ -96,6 +96,14 @@ function ContactForm() {
   const [errors, setErrors] = React.useState<FormErrors>({})
   const [status, setStatus] = React.useState<FormStatus>("idle")
 
+  const [securityToken, setSecurityToken] = React.useState("")
+  React.useEffect(() => {
+    const timestamp = Date.now()
+    const expectedHash = (timestamp * 7).toString(36)
+    setSecurityToken(`${timestamp.toString(36)}_${expectedHash}`)
+  }, [])
+
+
   function validate(): boolean {
     const newErrors: FormErrors = {}
 
@@ -195,23 +203,7 @@ function ContactForm() {
       suppressHydrationWarning
       className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm"
     >
-      {status === "error" && (
-        <div
-          className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
-          role="alert"
-        >
-          <AlertCircle className="h-5 w-5 flex-shrink-0" />
-          <p>
-            Something went wrong. Please try again or email us directly at{" "}
-            <a
-              href="mailto:hello@voryentsolutions.com"
-              className="font-medium underline"
-            >
-              hello@voryentsolutions.com
-            </a>
-          </p>
-        </div>
-      )}
+
 
       {/* Row: Name + Company */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

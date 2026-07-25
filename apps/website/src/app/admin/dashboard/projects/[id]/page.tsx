@@ -25,7 +25,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { role } = useAuth();
   
   const { data: project, isLoading } = useProject(resolvedParams.id);
-  const canManage = role === "Founder" || role === "admin" || role === "Super Admin" || role === "CEO" || role === "Developer"; 
+  const canManage = role === "admin"; 
 
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center">Loading project...</div>;
@@ -43,7 +43,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
         </Link>
         {canManage && (
           <Button asChild size="sm" variant="outline">
-  <Link href={`/dashboard/projects/${project.id}/edit`}>
+  <Link href={`/admin/dashboard/projects/${project.id}/edit`}>
               <Pencil className="mr-2 h-4 w-4" /> Edit Project
             </Link>
 </Button>

@@ -10,8 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@voryent/ui";
-import {
-  ArrowRight,
+import { ArrowRight,
   Code2,
   Briefcase,
   Bot,
@@ -30,7 +29,7 @@ import {
   Layers,
   Clock,
   Cpu,
-} from "lucide-react";
+  Linkedin } from "lucide-react";
 
 import { getAboutData, getEmployees, getInvestors } from "@/lib/firebase/services";
 
@@ -77,7 +76,7 @@ export default async function AboutPage() {
             </div>
             <div className="bg-muted relative aspect-square w-full overflow-hidden rounded-2xl shadow-xl md:aspect-[4/3] lg:ml-auto">
               <Image
-                src="/Assets/Illustrations/AI Illustration.webp"
+                src={blocks?.hero?.image || "/Assets/Illustrations/AI Illustration.webp"}
                 alt="AI and Data Architecture Illustration"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -154,6 +153,39 @@ export default async function AboutPage() {
           </div>
         </Container>
       </Section>
+
+
+      {/* ─── COMPANY PROFILE ─── */}
+      {blocks?.companyProfile?.fields?.length > 0 && (
+        <Section className="border-y border-border">
+          <Container>
+            <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12">
+              <div className="lg:col-span-4">
+                <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+                  {blocks.companyProfile.title || "Company Profile"}
+                </h2>
+                <div className="mt-6 w-20 h-1 bg-primary rounded-full"></div>
+              </div>
+              <div className="lg:col-span-8">
+                <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
+                  <div className="divide-y divide-border">
+                    {blocks.companyProfile.fields.map((field: any, i: number) => (
+                      <div key={i} className="flex flex-col sm:flex-row sm:items-center py-4 px-6 hover:bg-muted/50 transition-colors">
+                        <div className="sm:w-1/3 text-sm font-semibold text-foreground mb-1 sm:mb-0 pr-4">
+                          {field.label}
+                        </div>
+                        <div className="sm:w-2/3 text-sm text-muted-foreground">
+                          {field.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </Section>
+      )}
 
       {/* ─── MISSION & VISION ─── */}
       <Section>
@@ -395,6 +427,50 @@ export default async function AboutPage() {
           </div>
         </Container>
       </Section>
+
+
+      {/* ─── OUR LEADERSHIP ─── */}
+      {blocks?.leadership?.members?.length > 0 && (
+        <Section className="bg-background pt-16">
+          <Container>
+            <div className="mx-auto mb-16 max-w-2xl text-center">
+              <h2 className="text-foreground text-4xl font-extrabold tracking-tight">
+                {blocks.leadership.title || "Our Leadership"}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+              {blocks.leadership.members.map((member: any, i: number) => (
+                <div key={i} className="flex flex-col">
+                  <div className="relative mb-6 h-80 w-full overflow-hidden rounded-lg">
+                    <Image
+                      src={member.image || "/Assets/Illustrations/AI Illustration.webp"}
+                      alt={member.name}
+                      fill
+                      className="object-cover object-top"
+                    />
+                  </div>
+                  <h3 className="text-foreground text-2xl font-bold">
+                    {member.name}
+                  </h3>
+                  <p className="text-muted-foreground mt-2 text-base">
+                    {member.title}
+                  </p>
+                  {member.linkedin && (
+                    <a
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 text-foreground hover:text-primary transition-colors"
+                    >
+                      <Linkedin className="h-6 w-6" />
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
 
       {/* ─── OUR TEAM ─── */}
       {employees.length > 0 && (

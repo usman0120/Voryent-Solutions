@@ -19,10 +19,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCreateProject, useUpdateProject } from "@/lib/admin/react-query/projects.hooks";
 import { toast } from "sonner";
 import { ProjectType } from "@/lib/admin/services/projects.service";
+import * as React from "react";
 import { useState } from "react";
-import { RichTextEditor } from "@/components/admin/cms/rich-text-editor";
+import { ArrayInput } from "@/components/admin/array-input";
 import { Slider } from "@/components/admin/ui/slider";
-import { Separator } from "@voryent/ui";
+import { Separator, Label } from "@voryent/ui";
+import { Switch } from "@/components/admin/ui/switch";
+import { Upload, X, Trash2, Plus } from "lucide-react";
 
 interface ProjectFormProps {
   initialData?: ProjectType;
@@ -33,6 +36,21 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const createMutation = useCreateProject();
   const updateMutation = useUpdateProject();
+
+  const formatDate = (date: any) => {
+    if (!date) return "";
+    if (typeof date === "string") {
+      // Return YYYY-MM-DD from an ISO string
+      return date.split("T")[0];
+    }
+    if (date.toDate) {
+      return date.toDate().toISOString().split("T")[0];
+    }
+    if (date instanceof Date) {
+      return date.toISOString().split("T")[0];
+    }
+    return "";
+  };
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -45,22 +63,89 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       priority: initialData?.priority || "Medium",
       client: initialData?.client || "",
       industry: initialData?.industry || "",
-      startDate: initialData?.startDate || "",
-      targetDate: initialData?.targetDate || "",
-      completedDate: initialData?.completedDate || "",
-      budget: initialData?.budget || 0,
+      startDate: formatDate(initialData?.startDate),
+      targetDate: formatDate(initialData?.targetDate),
+      completedDate: formatDate(initialData?.completedDate),
+      budget: Number(initialData?.budget) || 0,
       currency: initialData?.currency || "USD",
-      progress: initialData?.progress || 0,
+      progress: Number(initialData?.progress) || 0,
       teamMembers: initialData?.teamMembers || [],
       projectManager: initialData?.projectManager || "",
       technologies: initialData?.technologies || [],
       repository: initialData?.repository || "",
       website: initialData?.website || "",
+      demoUrl: initialData?.demoUrl || "",
       notes: initialData?.notes || "",
       tags: initialData?.tags || [],
       attachments: initialData?.attachments || [],
+      content: initialData?.content || "",
+      coverImage: initialData?.coverImage || "",
+      gallery: initialData?.gallery || [],
+      isFeatured: initialData?.isFeatured || false,
+      relatedProjects: initialData?.relatedProjects || [],
+      servicesProvided: Array.isArray(initialData?.servicesProvided) ? initialData.servicesProvided : [],
+      testimonials: initialData?.testimonials || [],
+      challenges: Array.isArray(initialData?.challenges) ? initialData.challenges : (initialData?.challenges ? [initialData.challenges as string] : []),
+      milestones: (initialData?.milestones || []).map((m: any) => ({
+        ...m,
+        dueDate: formatDate(m.dueDate)
+      })),
+      outcomes: Array.isArray(initialData?.outcomes) ? initialData.outcomes : (initialData?.outcomes ? [initialData.outcomes as string] : []),
+      solutions: initialData?.solutions || "",
     },
   });
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const galleryInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleCoverImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image too large", { description: "Please upload an image under 5MB." });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        if (base64) {
+          form.setValue("coverImage", base64);
+          toast.success("Cover image uploaded successfully.");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const validFiles = files.filter(f => f.size <= 5 * 1024 * 1024);
+      if (validFiles.length < files.length) {
+        toast.error("Some images skipped", { description: "Files over 5MB are ignored." });
+      }
+      
+      const currentGallery = form.getValues("gallery") || [];
+      const newImages: string[] = [];
+      let processed = 0;
+
+      validFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const base64 = event.target?.result as string;
+          if (base64) {
+            newImages.push(base64);
+          }
+          processed++;
+          if (processed === validFiles.length) {
+            form.setValue("gallery", [...currentGallery, ...newImages]);
+            toast.success("Gallery images uploaded successfully.");
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
 
   async function onSubmit(data: ProjectFormValues) {
     setIsSubmitting(true);
@@ -86,7 +171,10 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+          console.error("Form validation errors:", errors);
+          toast.error("Form validation failed", { description: JSON.stringify(errors) });
+        })} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -262,6 +350,277 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
             )}
           />
         </div>
+
+        {/* -------- RICH CONTENT -------- */}
+        <Separator />
+        
+        <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Project Overview</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Provide a comprehensive project overview..." 
+                    className="min-h-[150px] resize-y" 
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="challenges"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <ArrayInput 
+                    label="Key Challenges & Problems Faced" 
+                    values={field.value || []} 
+                    onChange={field.onChange} 
+                    placeholder="e.g. Scaling infrastructure to support 100k concurrent users"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="solutions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Solutions</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Explain how you solved the challenges..." 
+                    className="min-h-[150px] resize-y" 
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="outcomes"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <ArrayInput 
+                    label="Results / Key Outcomes" 
+                    values={field.value || []} 
+                    onChange={field.onChange} 
+                    placeholder="e.g. Increased conversion rate by 40%"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* -------- MEDIA -------- */}
+        <Separator />
+        
+        <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name="coverImage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cover Image</FormLabel>
+                <div className="space-y-2">
+                  <FormControl>
+                    <Input {...field} placeholder="https://... or upload local image" />
+                  </FormControl>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef}
+                    onChange={handleCoverImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload className="h-4 w-4" /> Upload Cover Image (Base64)
+                  </Button>
+                  {field.value && (
+                    <div className="mt-2 relative aspect-[16/9] w-full max-w-sm rounded-md overflow-hidden border">
+                      <img src={field.value} alt="Cover Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="gallery"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image Gallery</FormLabel>
+                <div className="space-y-2">
+                  <input 
+                    type="file" 
+                    ref={galleryInputRef}
+                    onChange={handleGalleryUpload}
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => galleryInputRef.current?.click()}
+                  >
+                    <Upload className="h-4 w-4" /> Upload Gallery Images (Base64)
+                  </Button>
+                  {field.value && field.value.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+                      {field.value.map((imgUrl, idx) => (
+                        <div key={idx} className="relative aspect-video rounded-md overflow-hidden border group">
+                          <img src={imgUrl} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => {
+                              const newGallery = [...field.value];
+                              newGallery.splice(idx, 1);
+                              form.setValue("gallery", newGallery);
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* -------- CATEGORIZATION & SERVICES -------- */}
+        <Separator />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="servicesProvided"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <ArrayInput 
+                    label="Services Provided" 
+                    values={field.value || []} 
+                    onChange={field.onChange} 
+                    placeholder="e.g. Full-Stack Development"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="technologies"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <ArrayInput 
+                    label="Technologies & Tech Stack" 
+                    values={field.value || []} 
+                    onChange={field.onChange} 
+                    placeholder="e.g. React, Node.js, Firebase"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* -------- URLS AND RELATIONS -------- */}
+        <Separator />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="demoUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Demo URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://demo.example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Website URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="repository"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>GitHub / Repository URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://github.com/..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="isFeatured"
+          render={({ field }) => (
+            <FormItem className="flex items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Featured Project</FormLabel>
+                <p className="text-sm text-muted-foreground">Highlight on main home page</p>
+              </div>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

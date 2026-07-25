@@ -40,7 +40,7 @@ export function JobForm({ initialData, id }: JobFormProps) {
     queryFn: () => departmentsService.getAll(),
   });
 
-  const departmentsList = dbDepts.length > 0 ? dbDepts.map((d) => d.name) : defaultDepartments;
+  const departmentsList = defaultDepartments;
 
   const createMutation = useCreateJob(user?.uid);
   const updateMutation = useUpdateJob(user?.uid);
@@ -79,7 +79,7 @@ export function JobForm({ initialData, id }: JobFormProps) {
         await createMutation.mutateAsync(values as any);
         toast({ title: "Job created successfully." });
       }
-      router.push("/dashboard/jobs");
+      router.push("/admin/dashboard/jobs");
       router.refresh();
     } catch (error: any) {
       toast({

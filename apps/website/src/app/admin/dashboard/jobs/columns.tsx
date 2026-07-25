@@ -82,7 +82,7 @@ export const getColumns = (userRole: string | null, onRefresh: () => void): Colu
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/jobs/${job.id}`}>
+            <Link href={`/admin/dashboard/jobs/${job.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Pencil className="mr-2 h-4 w-4" /> Edit Job
               </DropdownMenuItem>

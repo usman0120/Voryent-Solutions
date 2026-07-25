@@ -10,17 +10,18 @@ interface StringArrayInputProps {
 }
 
 export function StringArrayInput({ value, onChange, placeholder = "Add item..." }: StringArrayInputProps) {
+  const safeValue = Array.isArray(value) ? value : typeof value === "string" ? [value] : [];
   const [current, setCurrent] = useState("");
 
   const handleAdd = () => {
     if (current.trim()) {
-      onChange([...(value || []), current.trim()]);
+      onChange([...safeValue, current.trim()]);
       setCurrent("");
     }
   };
 
   const handleRemove = (index: number) => {
-    const newVal = [...(value || [])];
+    const newVal = [...safeValue];
     newVal.splice(index, 1);
     onChange(newVal);
   };
@@ -45,7 +46,7 @@ export function StringArrayInput({ value, onChange, placeholder = "Add item..." 
         </Button>
       </div>
       <div className="space-y-2">
-        {(value || []).map((item, index) => (
+        {safeValue.map((item, index) => (
           <div key={index} className="flex items-start justify-between rounded-md border p-3 bg-muted/50">
             <p className="text-sm text-foreground whitespace-pre-wrap flex-1 mr-4">{item}</p>
             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => handleRemove(index)}>

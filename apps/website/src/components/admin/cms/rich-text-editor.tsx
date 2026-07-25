@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -32,9 +32,8 @@ interface RichTextEditorProps {
 export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
+  const extensions = useMemo(
+    () => [
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3],
@@ -45,6 +44,12 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         allowBase64: true,
       }),
     ],
+    []
+  );
+
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions,
     content: value || "",
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());

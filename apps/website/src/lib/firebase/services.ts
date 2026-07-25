@@ -34,14 +34,26 @@ export async function getAboutData() {
   return data;
 }
 
+export async function getResourcesPageData() {
+  const key = "resourcesPage";
+  const cached = getCached<any>(key);
+  if (cached) return cached;
+
+  const docRef = doc(db(), "pages", "resources");
+  const docSnap = await getDoc(docRef);
+  const data = docSnap.exists() ? docSnap.data() : null;
+  if (data) setCacheWithPrune(key, data, LONG_TTL);
+  return data;
+}
+
 // --- Services ---
 export async function getServices() {
-  const key = "services";
+  const key = "services_v2";
   const cached = getCached<any[]>(key);
   if (cached) return cached;
 
   try {
-    const q = query(collection(db(), "services"), where("status", "==", "published"));
+    const q = query(collection(db(), "services"), where("status", "in", ["published", "Published"]));
     const snapshot = await getDocs(q);
     const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
     const data = docs.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -69,12 +81,12 @@ export async function getServiceBySlug(slug: string) {
 
 // --- Industries ---
 export async function getIndustries() {
-  const key = "industries";
+  const key = "industries_v2";
   const cached = getCached<any[]>(key);
   if (cached) return cached;
 
   try {
-    const q = query(collection(db(), "industries"), where("status", "==", "published"));
+    const q = query(collection(db(), "industries"), where("status", "in", ["published", "Published"]));
     const snapshot = await getDocs(q);
     const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
     const data = docs.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -265,12 +277,12 @@ export async function getContactSettings() {
 
 // --- Projects ---
 export async function getProjects(): Promise<any[]> {
-  const key = "projects";
+  const key = "projects_v2";
   const cached = getCached<any[]>(key);
   if (cached) return cached;
 
   try {
-    const q = query(collection(db(), "projects"), where("status", "==", "Completed"));
+    const q = query(collection(db(), "projects"), where("status", "in", ["Completed", "Active", "Planning", "Published", "published"]));
     const snapshot = await getDocs(q);
     const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
     const data = docs.sort((a, b) => {
@@ -282,6 +294,30 @@ export async function getProjects(): Promise<any[]> {
     return data;
   } catch (error) {
     console.error("Failed to fetch projects:", error);
+    return [];
+  }
+}
+
+export async function getFeaturedProjects(): Promise<any[]> {
+  const key = "featuredProjects_v2";
+  const cached = getCached<any[]>(key);
+  if (cached) return cached;
+
+  try {
+    const q = query(collection(db(), "projects"), where("status", "in", ["Completed", "Active", "Planning", "Published", "published"]));
+    const snapshot = await getDocs(q);
+    const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
+    // Filter locally for isFeatured to avoid needing a composite index
+    const featuredDocs = docs.filter(doc => doc.isFeatured === true);
+    const data = featuredDocs.sort((a, b) => {
+      const timeA = a.updatedAt?.toMillis?.() || 0;
+      const timeB = b.updatedAt?.toMillis?.() || 0;
+      return timeB - timeA;
+    });
+    setCacheWithPrune(key, data, SHORT_TTL);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch featured projects:", error);
     return [];
   }
 }
@@ -321,18 +357,38 @@ export async function submitJobApplication(data: any) {
 
 export async function submitContactMessage(data: any) {
   const { addDoc, serverTimestamp, collection } = await import("firebase/firestore");
-  const docRef = await addDoc(collection(db(), "messages"), {
+  const docRef = await addDoc(collection(db(), "contacts"), {
     ...data,
-    status: "Unread",
-    submittedAt: serverTimestamp(),
+    type: "message",
+    status: "New",
+    createdAt: serverTimestamp(),
   });
   await addDoc(collection(db(), "notifications"), {
     title: "New Contact Message",
-    message: `${data.name} from ${data.company || "a company"} sent a message.`,
+    message: `${data.firstName || data.name} sent a message.`,
     type: "contact",
     isRead: false,
     createdAt: serverTimestamp(),
-    link: `/admin/dashboard/inbox`,
+    link: `/admin/dashboard/contact-cms`,
+  });
+  return docRef;
+}
+
+export async function submitProjectRequest(data: any) {
+  const { addDoc, serverTimestamp, collection } = await import("firebase/firestore");
+  const docRef = await addDoc(collection(db(), "contacts"), {
+    ...data,
+    type: "project",
+    status: "New",
+    createdAt: serverTimestamp(),
+  });
+  await addDoc(collection(db(), "notifications"), {
+    title: "New Project Request",
+    message: `${data.firstName || data.name} from ${data.company || "a company"} requested a project.`,
+    type: "contact",
+    isRead: false,
+    createdAt: serverTimestamp(),
+    link: `/admin/dashboard/contact-cms`,
   });
   return docRef;
 }

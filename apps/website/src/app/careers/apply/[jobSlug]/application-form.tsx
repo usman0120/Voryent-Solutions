@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button, Input, Textarea, Label } from "@voryent/ui";
 import { toast } from "sonner";
-import { submitJobApplication, uploadResume } from "@/lib/firebase/services";
+import Link from "next/link";
+import { handleJobApplication } from "@/app/actions/form-actions";
 
 const applicationSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -23,6 +24,15 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
 
+  const [securityToken, setSecurityToken] = useState("");
+  
+  useEffect(() => {
+    const timestamp = Date.now();
+    const expectedHash = (timestamp * 7).toString(36);
+    setSecurityToken(`${timestamp.toString(36)}_${expectedHash}`);
+  }, []);
+
+
   const {
     register,
     handleSubmit,
@@ -32,6 +42,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
     resolver: zodResolver(applicationSchema),
   });
 
+
   const onSubmit = async (data: ApplicationFormData) => {
     if (!resumeFile) {
       toast.error("Please upload your resume");
@@ -40,16 +51,32 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
 
     setIsSubmitting(true);
     try {
-      // 1. Upload resume
-      const resumeUrl = await uploadResume(resumeFile);
+      const formData = new FormData();
+      formData.append("security_token", securityToken);
+      formData.append("jobSlug", jobSlug);
+      formData.append("jobTitle", jobTitle);
       
-      // 2. Submit application
-      await submitJobApplication({
-        ...data,
-        jobSlug,
-        jobTitle,
-        resumeUrl,
-      });
+      formData.append("fullName", data.fullName);
+      formData.append("email", data.email);
+      formData.append("phone", data.phone);
+      formData.append("linkedIn", data.linkedIn || "");
+      formData.append("portfolio", data.portfolio || "");
+      formData.append("coverLetter", data.coverLetter || "");
+      
+      // Append the honeypot field manually by getting it from the DOM
+      const honeypot = (document.getElementById("bot_field_website") as HTMLInputElement)?.value;
+      if (honeypot) {
+        formData.append("bot_field_website", honeypot);
+      }
+      
+      formData.append("resume", resumeFile);
+      
+      const result = await handleJobApplication(formData);
+      
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
 
       toast.success("Application submitted successfully! We will be in touch soon.");
       reset();
@@ -62,8 +89,16 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
     }
   };
 
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+      {/* Honeypot Field */}
+      <div style={{ display: 'none' }} aria-hidden="true">
+        <label htmlFor="bot_field_website">Website</label>
+        <input type="text" id="bot_field_website" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="fullName">Full Name *</Label>
@@ -116,6 +151,18 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
           {...register("coverLetter")} 
         />
       </div>
+
+      <p className="text-xs text-muted-foreground text-center pt-2">
+        By submitting this application, you agree to our{" "}
+        <Link href="/privacy" className="underline hover:text-foreground">
+          Privacy Policy
+        </Link>{" "}
+        and{" "}
+        <Link href="/terms" className="underline hover:text-foreground">
+          Terms & Conditions
+        </Link>
+        .
+      </p>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? "Submitting Application..." : "Submit Application"}

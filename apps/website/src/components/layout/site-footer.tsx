@@ -116,38 +116,27 @@ export async function SiteFooter() {
             Empowering digital products with next-generation design and engineering. We build
             scalable, resilient software that drives real business outcomes.
           </p>
-          {contact && (
+          {contact?.values && (
             <div className="text-muted-foreground mt-4 space-y-2 text-sm">
-              {contact.email && (
+              {contact.values.email && (
                 <p>
                   <strong>Email:</strong>{" "}
-                  <a href={`mailto:${contact.email}`} className="hover:text-foreground">
-                    {contact.email}
+                  <a href={`mailto:${contact.values.email}`} className="hover:text-foreground">
+                    {contact.values.email}
                   </a>
                 </p>
               )}
-              {contact.phone && (
+              {contact.values.phone && (
                 <p>
                   <strong>Phone:</strong>{" "}
-                  <a href={`tel:${contact.phone}`} className="hover:text-foreground">
-                    {contact.phone}
+                  <a href={`tel:${contact.values.phone}`} className="hover:text-foreground">
+                    {contact.values.phone}
                   </a>
                 </p>
               )}
-              {contact.whatsapp && (
+              {contact.values.address && (
                 <p>
-                  <strong>WhatsApp:</strong>{" "}
-                  <a
-                    href={`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, "")}`}
-                    className="hover:text-foreground"
-                  >
-                    {contact.whatsapp}
-                  </a>
-                </p>
-              )}
-              {contact.address && (
-                <p>
-                  <strong>Address:</strong> {contact.address}
+                  <strong>Address:</strong> {contact.values.address}
                 </p>
               )}
             </div>
@@ -159,7 +148,7 @@ export async function SiteFooter() {
         { title: "Company", links: companyLinks },
         { title: "Resources", links: resourcesLinks },
       ]}
-      socialLinks={<SocialIcons social={social} />}
+      socialLinks={<SocialIcons social={social?.values} />}
       legalLinks={legalLinks}
       copyright={`\u00A9 ${new Date().getFullYear()} Voryent Solutions. All rights reserved.`}
     />

@@ -38,7 +38,7 @@ export default function RolesPage() {
     setIsDialogOpen(true);
   };
 
-  const canManage = (user as any)?.role === "Super Admin" || (user as any)?.role === "Founder" || (user as any)?.role === "admin";
+  const canManage = (user as any)?.role === "admin";
 
   const columns = useMemo(
     () => getColumns(canManage, handleEdit, handleRefresh),

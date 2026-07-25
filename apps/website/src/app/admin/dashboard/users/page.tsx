@@ -21,7 +21,7 @@ export default function UsersPage() {
   };
 
   // Temp fallback before permission checker is fully wired
-  const canManage = (user as any)?.role === "Super Admin" || (user as any)?.role === "Founder" || (user as any)?.role === "admin" || (user as any)?.role === "HR";
+  const canManage = (user as any)?.role === "admin";
 
   const columns = getColumns(canManage, handleRefresh);
 

@@ -20,7 +20,7 @@ export default function UserProfilePage({ params }: UserProfilePageProps) {
   
   const { data: userProfile, isLoading } = useUser(resolvedParams.id);
   
-  const canManage = (currentUser as any)?.role === "Super Admin" || (currentUser as any)?.role === "Founder" || (currentUser as any)?.role === "admin" || (currentUser as any)?.role === "HR" || currentUser?.uid === userProfile?.uid;
+  const canManage = (currentUser as any)?.role === "admin" || currentUser?.uid === userProfile?.uid;
 
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center">Loading profile...</div>;

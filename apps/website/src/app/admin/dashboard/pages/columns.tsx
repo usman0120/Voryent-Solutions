@@ -57,7 +57,7 @@ export const columns: ColumnDef<Page>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/pages/${page.id}`}>
+            <Link href={`/admin/dashboard/pages/${page.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Pencil className="mr-2 h-4 w-4" /> Edit Page
               </DropdownMenuItem>

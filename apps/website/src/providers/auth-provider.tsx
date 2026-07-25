@@ -37,16 +37,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
           userDoc = await getDocument<{ role: UserRole }>("users", currentUser.uid);
           if (!userDoc) {
-            // Default to Founder role for full access during development/testing
-            userDoc = { role: "Founder" };
+            // Default to admin role for full access during development/testing
+            userDoc = { role: "admin" };
           }
         } catch (error) {
-          // Default to Founder role if we are in local dev or if the auth succeeded
-          userDoc = { role: "Founder" };
+          // Default to admin role if we are in local dev or if the auth succeeded
+          userDoc = { role: "admin" };
         }
         
-        setRole(userDoc.role || "Founder");
-        console.log("Auth Provider: Fetched Role:", userDoc.role, "Final Role State:", userDoc.role || "Founder");
+        setRole(userDoc.role || "admin");
+        console.log("Auth Provider: Fetched Role:", userDoc.role, "Final Role State:", userDoc.role || "admin");
       } else {
         setRole(null);
       }
@@ -66,8 +66,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (!user && !isPublicAdminRoute) {
         router.push("/admin/login");
-      } else if (user && !["admin", "super admin", "founder"].includes(role?.toLowerCase() || "") && !isPublicAdminRoute && pathname !== "/admin/unauthorized") {
-        // User is logged in but not an admin or founder, redirect to unauthorized
+      } else if (user && role?.toLowerCase() !== "admin" && !isPublicAdminRoute && pathname !== "/admin/unauthorized") {
+        // User is logged in but not an admin, redirect to unauthorized
         router.push("/admin/unauthorized");
       }
     }

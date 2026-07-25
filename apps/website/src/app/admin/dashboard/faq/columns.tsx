@@ -57,7 +57,7 @@ export const columns: ColumnDef<FaqItem>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/faq/${item.id}`}>
+            <Link href={`/admin/dashboard/faq/${item.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Pencil className="mr-2 h-4 w-4" /> Edit FaqItem
               </DropdownMenuItem>

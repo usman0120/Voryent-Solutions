@@ -79,16 +79,16 @@ export const getColumns = (userRole: string | null, onRefresh: () => void): Colu
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/dashboard/projects/${project.id}`}>
-              <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem asChild>
+              <Link href={`/admin/dashboard/projects/${project.id}`}>
                 <Eye className="mr-2 h-4 w-4" /> View Details
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/dashboard/projects/${project.id}/edit`}>
-              <DropdownMenuItem className="cursor-pointer">
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/admin/dashboard/projects/${project.id}/edit`}>
                 <Pencil className="mr-2 h-4 w-4" /> Edit Project
-              </DropdownMenuItem>
-            </Link>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer"

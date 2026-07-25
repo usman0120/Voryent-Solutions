@@ -57,7 +57,7 @@ export function FAQForm({ initialData, id }: FAQFormProps) {
         toast({ title: "FaqItem created successfully." });
       }
       queryClient.invalidateQueries({ queryKey: ["faq"] });
-      router.push("/dashboard/faq");
+      router.push("/admin/dashboard/faq");
       router.refresh();
     } catch (error: any) {
       toast({ title: "Error saving FaqItem", description: error.message, variant: "destructive" });

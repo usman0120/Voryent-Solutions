@@ -9,21 +9,19 @@
 export function can(user: any, module: string, action: string, roleString?: string | null): boolean {
   if (roleString) {
     const rs = roleString.toLowerCase();
-    if (rs === "admin" || rs === "super admin" || rs === "founder") return true;
+    if (rs === "admin") return true;
   }
 
   if (!user || !user.roleData) {
-    // If the user object doesn't have populated roleData, default to checking role name strings for super users, 
-    // but ideally roleData should be pre-populated by the AuthProvider.
     if (user?.role) {
       const ur = user.role.toLowerCase();
-      if (ur === "super admin" || ur === "founder" || ur === "admin") return true;
+      if (ur === "admin") return true;
     }
     return false;
   }
 
   const roleName = user.roleData.name;
-  if (roleName === "Super Admin") return true; // Super Admin has wildcard access intrinsically
+  if (roleName === "admin") return true; // admin has wildcard access intrinsically
 
   const permissions = user.roleData.permissions || {};
 

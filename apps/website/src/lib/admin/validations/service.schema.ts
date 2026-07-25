@@ -26,6 +26,8 @@ export const serviceSchema = baseEntitySchema.extend({
     question: z.string(),
     answer: z.string(),
   })).optional(),
+  order: z.number().optional(),
+  featured: z.boolean().optional(),
   seo: seoSchema.optional(),
 });
 

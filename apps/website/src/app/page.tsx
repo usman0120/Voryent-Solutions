@@ -1,6 +1,8 @@
+export const dynamic = "force-dynamic";
+
 import Image from "next/image";
 import Link from "next/link";
-import { getHomepageData, getServices, getIndustries } from "@/lib/firebase/services";
+import { getHomepageData, getServices, getIndustries, getFeaturedProjects } from "@/lib/firebase/services";
 import {
   Code2,
   Cloud,
@@ -25,46 +27,14 @@ import {
   Star,
 } from "lucide-react";
 import { FadeIn } from "@/components/animations/fade-in";
+import * as Icons from "lucide-react";
+
+const renderIcon = (iconName: string, className: string = "") => {
+  const Icon = (Icons as any)[iconName] || Icons.Code2;
+  return <Icon className={className} />;
+};
 
 /* ──────────────────────────── DATA ──────────────────────────── */
-
-const services = [
-  {
-    icon: Code2,
-    title: "Software Engineering",
-    description:
-      "Scalable, maintainable applications built with modern frameworks, clean architecture, and rigorous testing.",
-    href: "/services/custom-software",
-  },
-  {
-    icon: Cloud,
-    title: "Cloud Architecture",
-    description:
-      "Cloud-native infrastructure on AWS, Azure, and GCP — designed for resilience, security, and cost efficiency.",
-    href: "/services/cloud-engineering",
-  },
-  {
-    icon: Brain,
-    title: "Data & AI",
-    description:
-      "Machine learning pipelines, data engineering, and intelligent automation that turn raw data into business value.",
-    href: "/services/ai-solutions",
-  },
-  {
-    icon: Palette,
-    title: "UI/UX Design",
-    description:
-      "Research-driven interfaces that delight users and drive measurable conversion through pixel-perfect execution.",
-    href: "/services/ui-ux",
-  },
-  {
-    icon: Server,
-    title: "DevOps & SRE",
-    description:
-      "CI/CD pipelines, infrastructure as code, and site reliability engineering for zero-downtime deployments.",
-    href: "/services/cloud-engineering",
-  },
-];
 
 const whyVoryent = [
   {
@@ -89,13 +59,13 @@ const whyVoryent = [
   },
 ];
 
-const process = [
+const processSteps = [
   {
     step: "01",
     icon: Lightbulb,
     title: "Discover",
     description:
-      "We listen deeply, audit your existing systems, and map business objectives to technical requirements.",
+      "Deep-dive sessions to understand your business goals, target audience, and technical constraints before mapping out a strategy.",
   },
   {
     step: "02",
@@ -129,24 +99,24 @@ const industries = [
   { icon: Factory, name: "Manufacturing", href: "/industries" },
 ];
 
-const featuredProjects = [
+const fallbackFeaturedProjects = [
   {
     title: "Medicare Plus Management System",
-    category: "Custom Software & AI Solutions",
-    summary:
+    type: "Custom Software & AI Solutions",
+    description:
       "A comprehensive hospital management system integrating AI-powered intelligent medicine auto-suggestions and operational workflow optimizations.",
     technologies: ["React", "PostgreSQL", "Python (AI)", "Docker"],
-    imageSrc: "/Assets/Illustrations/Medicare Plus Illustration.png",
-    link: "/work",
+    coverImage: "/Assets/Illustrations/Medicare Plus Illustration.png",
+    slug: "medicare-plus",
   },
   {
     title: "Boss Restaurant POS",
-    category: "Custom Software & POS",
-    summary:
+    type: "Custom Software & POS",
+    description:
       "A robust Point of Sale and internal management system developed specifically for fast-paced hospitality workflows.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Supabase"],
-    imageSrc: "/Assets/Illustrations/Boss Restaurant Illustration.png",
-    link: "/work",
+    coverImage: "/Assets/Illustrations/Boss Restaurant Illustration.png",
+    slug: "boss-restaurant",
   },
 ];
 
@@ -170,22 +140,23 @@ const testimonials = [
 /* ──────────────────────────── PAGE ──────────────────────────── */
 
 export default async function HomePage() {
-  const [homepageData, dbServices, dbIndustries] = await Promise.all([
+  const [homepageData, dbServices, dbIndustries, dbFeaturedProjects] = await Promise.all([
     getHomepageData().catch(() => null),
     getServices().catch(() => []),
     getIndustries().catch(() => []),
+    getFeaturedProjects().catch(() => []),
   ]);
 
-  // Use dynamic data if available, otherwise fallback to static
-  const displayServices =
-    dbServices.length > 0
-      ? dbServices.map((s: any) => ({
-          title: s.title,
-          description: s.shortDescription || s.description,
-          href: `/services/${s.slug}`,
-          icon: Code2,
-        }))
-      : services;
+  // Only display featured services on the homepage
+  const displayServices = dbServices
+    .filter((s: any) => s.featured)
+    .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+    .map((s: any) => ({
+      title: s.title,
+      description: s.tagline || s.shortDescription || s.description,
+      href: `/services/${s.slug}`,
+      iconName: s.icon || "Code2",
+    }));
 
   const displayIndustries =
     dbIndustries.length > 0
@@ -288,7 +259,7 @@ export default async function HomePage() {
                     className="bg-card hover:border-primary/40 focus-visible:ring-ring group relative flex h-full flex-col rounded-2xl border p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2"
                   >
                     <div className="bg-primary/10 text-primary group-hover:bg-primary/20 mb-6 flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
-                      <service.icon className="h-6 w-6" />
+                      {renderIcon(service.iconName, "h-6 w-6")}
                     </div>
                     <h3 className="text-foreground mb-3 text-xl font-semibold">{service.title}</h3>
                     <p className="text-muted-foreground flex-grow leading-relaxed">
@@ -356,7 +327,7 @@ export default async function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {(blocks?.process?.items || process).map((item: any, index: number) => {
+              {(blocks?.process?.items || processSteps).map((item: any, index: number) => {
                 const IconComp =
                   item.icon === "Lightbulb"
                     ? Lightbulb
@@ -368,7 +339,7 @@ export default async function HomePage() {
                           ? Headphones
                           : Code2;
                 return (
-                  <FadeIn delay={0.1 * index} key={item.step} className="relative text-center">
+                  <FadeIn delay={0.1 * index} key={item.step || index} className="relative text-center">
                     <div className="flex flex-col items-center">
                       <span className="text-primary mb-3 text-xs font-bold uppercase tracking-widest">
                         Step {item.step}
@@ -438,43 +409,53 @@ export default async function HomePage() {
             </div>
 
             <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-              {(blocks?.featuredWork?.items || featuredProjects).map(
-                (project: any, index: number) => (
-                  <FadeIn delay={0.1 * index} key={index}>
-                    <div className="bg-card hover:border-primary/40 group relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+              {dbFeaturedProjects.length > 0 ? (
+                dbFeaturedProjects.map((project: any, index: number) => (
+                  <FadeIn delay={0.1 * index} key={project.id || index}>
+                    <div className="bg-card hover:border-primary/40 group relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
                       <div className="bg-muted relative aspect-[16/9] w-full overflow-hidden border-b">
                         <Image
-                          src={project.imageSrc || "https://placehold.co/800x450/EEE/31343C"}
-                          alt={project.title}
+                          src={project.coverImage || project.attachments?.[0]?.url || "https://placehold.co/800x450/EEE/31343C"}
+                          alt={project.title || project.name}
                           fill
                           className="object-cover transition-transform duration-700 group-hover:scale-110"
                           sizes="(max-width: 1024px) 100vw, 50vw"
                         />
                         <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
+                        <div className="absolute top-4 right-4">
+                          <span className="bg-gradient-to-r from-primary to-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                            ⭐ Featured
+                          </span>
+                        </div>
                       </div>
                       <div className="flex flex-grow flex-col p-8 md:p-10">
                         <div className="text-primary mb-3 text-sm font-semibold uppercase tracking-wider">
-                          {project.category}
+                          {project.type || project.category || "Project"}
                         </div>
-                        <h3 className="text-foreground mb-4 text-2xl font-bold leading-tight md:text-3xl">
-                          {project.title}
+                        <h3 className="text-foreground mb-4 text-2xl font-bold leading-tight md:text-3xl line-clamp-1">
+                          {project.title || project.name}
                         </h3>
-                        <p className="text-muted-foreground mb-8 flex-grow text-lg leading-relaxed">
-                          {project.summary}
+                        <p className="text-muted-foreground mb-8 flex-grow text-sm leading-relaxed line-clamp-3">
+                          {project.description || project.summary}
                         </p>
-                        <div className="mb-10 flex flex-wrap gap-2">
-                          {(project.technologies || []).map((tech: string) => (
+                        <div className="mb-8 flex flex-wrap gap-2">
+                          {(project.technologies || []).slice(0, 4).map((tech: string) => (
                             <span
                               key={tech}
-                              className="bg-secondary/50 text-secondary-foreground border-secondary inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium"
+                              className="px-3 py-1 bg-primary/5 border border-primary/20 rounded-full text-[10px] uppercase tracking-wider font-semibold text-primary"
                             >
                               {tech}
                             </span>
                           ))}
+                          {project.technologies && project.technologies.length > 4 && (
+                            <span className="px-3 py-1 bg-muted text-muted-foreground text-[10px] rounded-full">
+                              +{project.technologies.length - 4}
+                            </span>
+                          )}
                         </div>
                         <Link
-                          href={project.link || "/work"}
-                          aria-label={`View Project: ${project.title}`}
+                          href={`/work/${project.slug}`}
+                          aria-label={`View Project: ${project.title || project.name}`}
                           className="text-primary inline-flex items-center text-sm font-bold opacity-90 transition-all duration-300 group-hover:translate-x-2 group-hover:opacity-100"
                         >
                           View Project <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -482,7 +463,11 @@ export default async function HomePage() {
                       </div>
                     </div>
                   </FadeIn>
-                ),
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center border rounded-2xl bg-card">
+                  <p className="text-muted-foreground">More projects coming soon.</p>
+                </div>
               )}
             </div>
 

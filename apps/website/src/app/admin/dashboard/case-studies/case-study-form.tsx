@@ -1,11 +1,14 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@voryent/ui";
-import { Input } from "@voryent/ui";
+import { Input, Button } from "@voryent/ui";
 import { Textarea } from "@voryent/ui";
+import { Card, CardHeader, CardTitle, CardContent } from "@voryent/ui";
+import { Plus, Trash2 } from "lucide-react";
+import { IconPicker } from "@/components/admin/cms/icon-picker";
 import { Switch } from "@/components/admin/ui/switch";
 import { FormLayout } from "@/components/admin/cms/form-layout";
 import { SlugField } from "@/components/admin/cms/slug-field";
@@ -53,6 +56,15 @@ export function CaseStudyForm({ initialData, id }: CaseStudyFormProps) {
       featured: initialData?.featured || false,
       seo: initialData?.seo || {},
     },
+  });
+
+  const {
+    fields: processStepsFields,
+    append: appendProcessStep,
+    remove: removeProcessStep,
+  } = useFieldArray({
+    control: form.control,
+    name: "processSteps",
   });
 
   const onSubmit = async (values: CaseStudyFormValues) => {
@@ -219,6 +231,36 @@ export function CaseStudyForm({ initialData, id }: CaseStudyFormProps) {
                   </FormItem>
                 )}
               />
+
+              {/* PROCESS STEPS */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg">Development Process</CardTitle>
+                  <Button type="button" variant="outline" size="sm" onClick={() => appendProcessStep({ title: "", description: "", icon: "Box" })}>
+                    <Plus className="h-4 w-4 mr-2" /> Add Step
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {processStepsFields.map((field, index) => (
+                    <div key={field.id} className="relative p-4 border rounded-md">
+                      <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive h-8 w-8" onClick={() => removeProcessStep(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <div className="space-y-4 pr-8">
+                        <FormField control={form.control} name={`processSteps.${index}.icon`} render={({ field }) => (
+                          <FormItem><FormLabel>Icon</FormLabel><FormControl><IconPicker value={field.value || "Box"} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name={`processSteps.${index}.title`} render={({ field }) => (
+                          <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name={`processSteps.${index}.description`} render={({ field }) => (
+                          <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
               
               <FormField
                 control={form.control}
