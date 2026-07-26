@@ -17,6 +17,13 @@ export interface Contact extends BaseEntity {
   notes?: string;
   createdBy?: string | null;
   updatedBy?: string | null;
+  type?: "message" | "project";
+  name?: string;
+  projectType?: string;
+  budget?: string;
+  timeline?: string;
+  ndaRequired?: boolean;
+  description?: string;
 }
 
 export const contactsService = new CoreService<Contact>("contacts");

@@ -18,7 +18,7 @@ export const caseStudySchema = baseEntitySchema.extend({
   solution: z.array(z.string()).default([]),
   solutionList: z.array(z.string()).default([]),
   processSteps: z.array(
-    z.object({ title: z.string(), description: z.string() })
+    z.object({ title: z.string(), description: z.string(), icon: z.string().optional() })
   ).default([]),
   results: z.array(z.string()).default([]),
   imageSrc: z.string().optional(),

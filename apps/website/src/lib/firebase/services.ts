@@ -260,7 +260,7 @@ export async function getSocialSettings() {
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) return null;
   const raw = docSnap.data();
-  const data = raw.values ? raw.values : raw;
+  const data = raw["values"] ? raw["values"] : raw;
   setCacheWithPrune(key, data, LONG_TTL);
   return data;
 }
@@ -274,7 +274,7 @@ export async function getContactSettings() {
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) return null;
   const raw = docSnap.data();
-  const data = raw.values ? raw.values : raw;
+  const data = raw["values"] ? raw["values"] : raw;
   setCacheWithPrune(key, data, LONG_TTL);
   return data;
 }

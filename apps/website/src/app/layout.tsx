@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { siteConfig } from "@/config/site";
 import { Toaster } from "@voryent/ui";
+import { Toaster as SonnerToaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -109,6 +110,7 @@ export default function RootLayout({
             {children}
           </ConditionalWrapper>
           <Toaster />
+          <SonnerToaster position="top-right" richColors />
         </ThemeProvider>
       </body>
     </html>

@@ -11,7 +11,26 @@ export const industrySchema = baseEntitySchema.extend({
     description: z.string(),
     image: z.string().optional(),
   }).optional(),
+  description: z.string().optional(),
+  overview: z.string().optional(),
   challenges: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+  })).optional(),
+  expertise: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+  })).optional(),
+  howWeHelp: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+  })).optional(),
+  offerings: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+    icon: z.string().optional(),
+  })).optional(),
+  steps: z.array(z.object({
     title: z.string(),
     description: z.string(),
   })).optional(),

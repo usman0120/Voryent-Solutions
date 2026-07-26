@@ -14,6 +14,7 @@ import {
   AlertCircle,
   ChevronDown,
 } from "lucide-react"
+import { toast } from "sonner"
 import { SocialIcons } from "@/components/layout/site-footer"
 import { handleContactSubmission } from "@/app/actions/form-actions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@voryent/ui"
@@ -128,28 +129,16 @@ function QuickMessageForm() {
       if (result.error) {
         setErrors((prev) => ({ ...prev, _form: result.error } as any))
         setStatus("error")
+        toast.error("Submission failed", { description: result.error })
         return
       }
-      setStatus("success")
+      setStatus("idle")
       setFormData({ name: "", company: "", email: "", service: "", budget: "", message: "" })
+      toast.success("Thank you for reaching out!", { description: "We've received your message and will get back to you soon." })
     } catch {
       setStatus("error")
+      toast.error("Something went wrong. Please try again.")
     }
-  }
-
-  if (status === "success") {
-    return (
-      <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center" role="status" aria-live="polite">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-6">
-          <CheckCircle2 className="h-8 w-8" />
-        </div>
-        <h3 className="text-2xl font-bold text-foreground">Thank you for reaching out!</h3>
-        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed">We've received your message and will get back to you soon.</p>
-        <button onClick={() => setStatus("idle")} suppressHydrationWarning className="mt-8 inline-flex items-center text-sm font-medium text-primary hover:underline">
-          Send another message
-        </button>
-      </div>
-    )
   }
 
   return (

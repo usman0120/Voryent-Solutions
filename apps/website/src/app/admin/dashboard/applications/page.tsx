@@ -8,7 +8,7 @@ import { hasPermission } from "@/lib/admin/utils/permissions";
 export default function ApplicationsPage() {
   const { role } = useAuth();
   
-  if (!hasPermission(role, "manage_applications")) {
+  if (!hasPermission(role, "view_applications")) {
     return (
       <div className="flex h-[80vh] items-center justify-center p-8">
         <div className="rounded-xl border bg-card p-8 text-center shadow-sm">
