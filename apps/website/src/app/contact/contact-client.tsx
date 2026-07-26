@@ -15,6 +15,8 @@ import {
   ChevronDown,
 } from "lucide-react"
 import { SocialIcons } from "@/components/layout/site-footer"
+import { handleContactSubmission } from "@/app/actions/form-actions"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@voryent/ui"
 
 /* ──────────────────────────── DATA ──────────────────────────── */
 
@@ -65,7 +67,6 @@ interface FormData {
   name: string
   company: string
   email: string
-  phone: string
   service: string
   budget: string
   message: string
@@ -82,64 +83,34 @@ type FormStatus = "idle" | "submitting" | "success" | "error"
 
 /* ──────────────────────────── CONTACT FORM ──────────────────────────── */
 
-function ContactForm() {
-  const [formData, setFormData] = React.useState<FormData>({
-    name: "",
-    company: "",
-    email: "",
-    phone: "",
-    service: "",
-    budget: "",
-    message: "",
+function QuickMessageForm() {
+  const [formData, setFormData] = React.useState({
+    name: "", company: "", email: "", service: "", budget: "", message: ""
   })
-
   const [errors, setErrors] = React.useState<FormErrors>({})
   const [status, setStatus] = React.useState<FormStatus>("idle")
-
   const [securityToken, setSecurityToken] = React.useState("")
+
   React.useEffect(() => {
     const timestamp = Date.now()
     const expectedHash = (timestamp * 7).toString(36)
     setSecurityToken(`${timestamp.toString(36)}_${expectedHash}`)
   }, [])
 
-
   function validate(): boolean {
     const newErrors: FormErrors = {}
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required."
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required."
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address."
-    }
-
-    if (!formData.service) {
-      newErrors.service = "Please select a service."
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required."
-    } else if (formData.message.trim().length < 20) {
-      newErrors.message = "Please provide at least 20 characters."
-    }
-
+    if (!formData.name.trim()) newErrors.name = "Name is required."
+    if (!formData.email.trim()) newErrors.email = "Email is required."
+    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Please enter a valid email."
+    if (!formData.message.trim()) newErrors.message = "Message is required."
+    else if (formData.message.trim().length < 20) newErrors.message = "Please provide at least 20 characters."
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  function handleChange(
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // Clear the error for this field on change
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }))
     }
@@ -148,22 +119,19 @@ function ContactForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!validate()) return
-
     setStatus("submitting")
-
-    // Simulate API call — replace with Resend integration later
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const fData = new FormData(e.currentTarget)
+      fData.append("security_token", securityToken)
+      fData.append("formType", "contact")
+      const result = await handleContactSubmission(fData)
+      if (result.error) {
+        setErrors((prev) => ({ ...prev, _form: result.error } as any))
+        setStatus("error")
+        return
+      }
       setStatus("success")
-      setFormData({
-        name: "",
-        company: "",
-        email: "",
-        phone: "",
-        service: "",
-        budget: "",
-        message: "",
-      })
+      setFormData({ name: "", company: "", email: "", service: "", budget: "", message: "" })
     } catch {
       setStatus("error")
     }
@@ -171,25 +139,13 @@ function ContactForm() {
 
   if (status === "success") {
     return (
-      <div
-        className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center"
-        role="status"
-        aria-live="polite"
-      >
+      <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center" role="status" aria-live="polite">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-6">
           <CheckCircle2 className="h-8 w-8" />
         </div>
-        <h3 className="text-2xl font-bold text-foreground">
-          Thank you for reaching out!
-        </h3>
-        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed">
-          We&apos;ve received your message and will get back to you within 1–2
-          business days.
-        </p>
-        <button
-          onClick={() => setStatus("idle")}
-          className="mt-8 inline-flex items-center text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
-        >
+        <h3 className="text-2xl font-bold text-foreground">Thank you for reaching out!</h3>
+        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed">We've received your message and will get back to you soon.</p>
+        <button onClick={() => setStatus("idle")} suppressHydrationWarning className="mt-8 inline-flex items-center text-sm font-medium text-primary hover:underline">
           Send another message
         </button>
       </div>
@@ -197,267 +153,200 @@ function ContactForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      suppressHydrationWarning
-      className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm"
-    >
-
-
-      {/* Row: Name + Company */}
+    <form onSubmit={handleSubmit} noValidate suppressHydrationWarning className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+      <div style={{ display: 'none' }} aria-hidden="true">
+        <label htmlFor="bot_field_website">Website</label>
+        <input type="text" id="bot_field_website" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
+      </div>
+      {status === "error" && (
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          <AlertCircle className="h-5 w-5 flex-shrink-0" />
+          <p>{(errors as any)._form || "Something went wrong. Please try again."}</p>
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label
-            htmlFor="contact-name"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
-            Name <span className="text-destructive">*</span>
-          </label>
-          <input
-            id="contact-name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            required
-            suppressHydrationWarning
-            value={formData.name}
-            onChange={handleChange}
-            aria-invalid={!!errors.name}
-            aria-describedby={errors.name ? "name-error" : undefined}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="Your full name"
-          />
-          {errors.name && (
-            <p
-              id="name-error"
-              className="mt-1.5 text-xs text-destructive"
-              role="alert"
-            >
-              {errors.name}
-            </p>
-          )}
+          <label htmlFor="contact-name" className="block text-sm font-medium text-foreground mb-2">Name <span className="text-destructive">*</span></label>
+          <input id="contact-name" name="name" type="text" required suppressHydrationWarning value={formData.name} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="Your full name" />
+          {errors.name && <p className="mt-1.5 text-xs text-destructive">{errors.name}</p>}
         </div>
         <div>
-          <label
-            htmlFor="contact-company"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
-            Company{" "}
-            <span className="text-muted-foreground font-normal">
-              (optional)
-            </span>
-          </label>
-          <input
-            id="contact-company"
-            name="company"
-            type="text"
-            autoComplete="organization"
-            suppressHydrationWarning
-            value={formData.company}
-            onChange={handleChange}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="Your company name"
-          />
+          <label htmlFor="contact-email" className="block text-sm font-medium text-foreground mb-2">Email <span className="text-destructive">*</span></label>
+          <input id="contact-email" name="email" type="email" required suppressHydrationWarning value={formData.email} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="you@example.com" />
+          {errors.email && <p className="mt-1.5 text-xs text-destructive">{errors.email}</p>}
         </div>
       </div>
-
-      {/* Row: Email + Phone */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label
-            htmlFor="contact-email"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
-            Email <span className="text-destructive">*</span>
-          </label>
-          <input
-            id="contact-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            suppressHydrationWarning
-            value={formData.email}
-            onChange={handleChange}
-            aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? "email-error" : undefined}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="you@company.com"
-          />
-          {errors.email && (
-            <p
-              id="email-error"
-              className="mt-1.5 text-xs text-destructive"
-              role="alert"
-            >
-              {errors.email}
-            </p>
-          )}
-        </div>
-        <div>
-          <label
-            htmlFor="contact-phone"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
-            Phone{" "}
-            <span className="text-muted-foreground font-normal">
-              (optional)
-            </span>
-          </label>
-          <input
-            id="contact-phone"
-            name="phone"
-            type="tel"
-            autoComplete="tel"
-            suppressHydrationWarning
-            value={formData.phone}
-            onChange={handleChange}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="+1 (555) 000-0000"
-          />
-        </div>
-      </div>
-
-      {/* Row: Service + Budget */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label
-            htmlFor="contact-service"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
-            Service <span className="text-destructive">*</span>
-          </label>
-          <div className="relative">
-            <select
-              id="contact-service"
-              name="service"
-              required
-              suppressHydrationWarning
-              value={formData.service}
-              onChange={handleChange}
-              aria-invalid={!!errors.service}
-              aria-describedby={errors.service ? "service-error" : undefined}
-              className="flex h-10 w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <option value="" disabled>
-                Select a service
-              </option>
-              {serviceOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
-          {errors.service && (
-            <p
-              id="service-error"
-              className="mt-1.5 text-xs text-destructive"
-              role="alert"
-            >
-              {errors.service}
-            </p>
-          )}
-        </div>
-        <div>
-          <label
-            htmlFor="contact-budget"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
-            Budget{" "}
-            <span className="text-muted-foreground font-normal">
-              (optional)
-            </span>
-          </label>
-          <div className="relative">
-            <select
-              id="contact-budget"
-              name="budget"
-              suppressHydrationWarning
-              value={formData.budget}
-              onChange={handleChange}
-              className="flex h-10 w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <option value="" disabled>
-                Select a range
-              </option>
-              {budgetOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
-        </div>
-      </div>
-
-      {/* Message */}
       <div>
-        <label
-          htmlFor="contact-message"
-          className="block text-sm font-medium text-foreground mb-2"
-        >
-          Message <span className="text-destructive">*</span>
-        </label>
-        <textarea
-          id="contact-message"
-          name="message"
-          required
-          suppressHydrationWarning
-          rows={5}
-          value={formData.message}
-          onChange={handleChange}
-          aria-invalid={!!errors.message}
-          aria-describedby={errors.message ? "message-error" : undefined}
-          className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y"
-          placeholder="Tell us about your project, goals, and timeline..."
-        />
-        {errors.message && (
-          <p
-            id="message-error"
-            className="mt-1.5 text-xs text-destructive"
-            role="alert"
-          >
-            {errors.message}
-          </p>
-        )}
+        <label htmlFor="contact-message" className="block text-sm font-medium text-foreground mb-2">Message <span className="text-destructive">*</span></label>
+        <textarea id="contact-message" name="message" required suppressHydrationWarning rows={5} value={formData.message} onChange={handleChange} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y min-h-[120px]" placeholder="How can we help you?" />
+        {errors.message && <p className="mt-1.5 text-xs text-destructive">{errors.message}</p>}
       </div>
-
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={status === "submitting"}
-        suppressHydrationWarning
-        className="inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {status === "submitting" ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Sending…
-          </>
-        ) : (
-          <>
-            Send Message
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </>
-        )}
+      <button type="submit" disabled={status === "submitting"} suppressHydrationWarning className="inline-flex w-full items-center justify-center rounded-md bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+        {status === "submitting" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Mail className="mr-2 h-4 w-4" /> Send Message</>}
       </button>
-
-      <p className="text-xs text-muted-foreground text-center">
-        By submitting this form, you agree to our{" "}
-        <Link href="/privacy" className="underline hover:text-foreground">
-          Privacy Policy
-        </Link>
-        .
-      </p>
     </form>
   )
 }
 
-/* ──────────────────────────── FAQ ACCORDION ITEM ──────────────────────────── */
+function ProjectRequestForm() {
+  const [formData, setFormData] = React.useState({
+    name: "", company: "", email: "", service: "", budget: "", message: ""
+  })
+  const [errors, setErrors] = React.useState<FormErrors>({})
+  const [status, setStatus] = React.useState<FormStatus>("idle")
+  const [securityToken, setSecurityToken] = React.useState("")
+
+  React.useEffect(() => {
+    const timestamp = Date.now()
+    const expectedHash = (timestamp * 7).toString(36)
+    setSecurityToken(`${timestamp.toString(36)}_${expectedHash}`)
+  }, [])
+
+  function validate(): boolean {
+    const newErrors: FormErrors = {}
+    if (!formData.name.trim()) newErrors.name = "Name is required."
+    if (!formData.email.trim()) newErrors.email = "Email is required."
+    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Please enter a valid email."
+    if (!formData.service) newErrors.service = "Please select a service."
+    if (!formData.message.trim()) newErrors.message = "Project details are required."
+    else if (formData.message.trim().length < 20) newErrors.message = "Please provide at least 20 characters."
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (errors[name as keyof FormErrors]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }))
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!validate()) return
+    setStatus("submitting")
+    try {
+      const fData = new FormData(e.currentTarget)
+      fData.append("security_token", securityToken)
+      fData.append("formType", "project")
+      const result = await handleContactSubmission(fData)
+      if (result.error) {
+        setErrors((prev) => ({ ...prev, _form: result.error } as any))
+        setStatus("error")
+        return
+      }
+      setStatus("success")
+      setFormData({ name: "", company: "", email: "", service: "", budget: "", message: "" })
+    } catch {
+      setStatus("error")
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center" role="status" aria-live="polite">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-6">
+          <CheckCircle2 className="h-8 w-8" />
+        </div>
+        <h3 className="text-2xl font-bold text-foreground">Request Submitted!</h3>
+        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed">We will review your project details and get back to you shortly.</p>
+        <button onClick={() => setStatus("idle")} suppressHydrationWarning className="mt-8 inline-flex items-center text-sm font-medium text-primary hover:underline">
+          Submit another request
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} noValidate suppressHydrationWarning className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+      <div style={{ display: 'none' }} aria-hidden="true">
+        <label htmlFor="bot_field_website">Website</label>
+        <input type="text" id="bot_field_website" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
+      </div>
+      {status === "error" && (
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          <AlertCircle className="h-5 w-5 flex-shrink-0" />
+          <p>{(errors as any)._form || "Something went wrong. Please try again."}</p>
+        </div>
+      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="req-name" className="block text-sm font-medium text-foreground mb-2">Name <span className="text-destructive">*</span></label>
+          <input id="req-name" name="name" type="text" required suppressHydrationWarning value={formData.name} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="Your full name" />
+          {errors.name && <p className="mt-1.5 text-xs text-destructive">{errors.name}</p>}
+        </div>
+        <div>
+          <label htmlFor="req-company" className="block text-sm font-medium text-foreground mb-2">Company</label>
+          <input id="req-company" name="company" type="text" suppressHydrationWarning value={formData.company} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="Your company name" />
+        </div>
+        <div>
+          <label htmlFor="req-email" className="block text-sm font-medium text-foreground mb-2">Email <span className="text-destructive">*</span></label>
+          <input id="req-email" name="email" type="email" required suppressHydrationWarning value={formData.email} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="you@example.com" />
+          {errors.email && <p className="mt-1.5 text-xs text-destructive">{errors.email}</p>}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="req-service" className="block text-sm font-medium text-foreground mb-2">Service <span className="text-destructive">*</span></label>
+          <div className="relative">
+          <select id="req-service" name="service" required suppressHydrationWarning value={formData.service} onChange={handleChange} className="flex h-10 w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+            <option value="" disabled>Select a service</option>
+            <option value="Software Engineering">Software Engineering</option>
+            <option value="Cloud Architecture">Cloud Architecture</option>
+            <option value="Data & AI">Data & AI</option>
+            <option value="UI/UX Design">UI/UX Design</option>
+            <option value="DevOps & SRE">DevOps & SRE</option>
+            <option value="Other">Other</option>
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          </div>
+          {errors.service && <p className="mt-1.5 text-xs text-destructive">{errors.service}</p>}
+        </div>
+        <div>
+          <label htmlFor="req-budget" className="block text-sm font-medium text-foreground mb-2">Budget</label>
+          <div className="relative">
+          <select id="req-budget" name="budget" suppressHydrationWarning value={formData.budget} onChange={handleChange} className="flex h-10 w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+            <option value="" disabled>Select a range</option>
+            <option value="Under $10,000">Under $10,000</option>
+            <option value="$10,000 – $25,000">$10,000 – $25,000</option>
+            <option value="$25,000 – $50,000">$25,000 – $50,000</option>
+            <option value="$50,000 – $100,000">$50,000 – $100,000</option>
+            <option value="$100,000+">$100,000+</option>
+            <option value="Not sure yet">Not sure yet</option>
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          </div>
+        </div>
+      </div>
+      <div>
+        <label htmlFor="req-message" className="block text-sm font-medium text-foreground mb-2">Project Details <span className="text-destructive">*</span></label>
+        <textarea id="req-message" name="message" required suppressHydrationWarning rows={5} value={formData.message} onChange={handleChange} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y min-h-[120px]" placeholder="Describe your project requirements, goals, and timeline..." />
+        {errors.message && <p className="mt-1.5 text-xs text-destructive">{errors.message}</p>}
+      </div>
+      <button type="submit" disabled={status === "submitting"} suppressHydrationWarning className="inline-flex w-full items-center justify-center rounded-md bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+        {status === "submitting" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : <><ArrowRight className="mr-2 h-4 w-4" /> Submit Request</>}
+      </button>
+    </form>
+  )
+}
+
+export function ContactTabs() {
+  return (
+    <Tabs defaultValue="message" className="w-full">
+      <TabsList className="grid w-full grid-cols-2 mb-8">
+        <TabsTrigger value="message">Quick Message</TabsTrigger>
+        <TabsTrigger value="project">Project Request</TabsTrigger>
+      </TabsList>
+      <TabsContent value="message" className="animate-in fade-in-50 duration-500">
+        <QuickMessageForm />
+      </TabsContent>
+      <TabsContent value="project" className="animate-in fade-in-50 duration-500">
+        <ProjectRequestForm />
+      </TabsContent>
+    </Tabs>
+  )
+}
 
 function FaqItem({
   question,
@@ -532,7 +421,7 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
             {/* Contact form — 3 columns */}
             <div className="lg:col-span-3">
-              <ContactForm />
+              <ContactTabs />
             </div>
 
             {/* Sidebar info — 2 columns */}
@@ -554,20 +443,6 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         {contactSettings?.email || "hello@voryentsolutions.com"}
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        Phone
-                      </p>
-                      <a
-                        href={`tel:${contactSettings?.phone?.replace(/[^0-9+]/g, "") || "+15550000000"}`}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {contactSettings?.phone || "+1 (555) 000-0000"}
                       </a>
                     </div>
                   </div>

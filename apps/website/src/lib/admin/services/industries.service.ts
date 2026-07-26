@@ -1,15 +1,6 @@
 import { CoreService, BaseEntity } from "./core.service";
+import { type IndustryFormValues } from "../validations/industry.schema";
 
-export interface Industry extends BaseEntity {
-  title: string;
-  slug: string;
-  description?: string;
-  icon?: string;
-  hero?: any;
-  benefits?: any[];
-  featured?: boolean;
-  seo?: any;
-  order?: number;
-}
+export type Industry = IndustryFormValues & BaseEntity;
 
 export const industriesService = new CoreService<Industry>("industries");

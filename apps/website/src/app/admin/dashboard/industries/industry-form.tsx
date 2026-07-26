@@ -137,7 +137,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="title"
                     render={({ field }) => (
                       <FormItem>
@@ -150,7 +150,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="slug"
                     render={({ field }) => (
                       <FormItem>
@@ -167,7 +167,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="description"
                     render={({ field }) => (
                       <FormItem>
@@ -180,7 +180,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="overview"
                     render={({ field }) => (
                       <FormItem>
@@ -210,10 +210,10 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       <div className="space-y-4 pr-8">
-                        <FormField control={form.control} name={`challenges.${index}.title`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`challenges.${index}.title`} render={({ field }) => (
                           <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name={`challenges.${index}.description`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`challenges.${index}.description`} render={({ field }) => (
                           <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                       </div>
@@ -237,10 +237,10 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       <div className="space-y-4 pr-8">
-                        <FormField control={form.control} name={`expertise.${index}.title`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`expertise.${index}.title`} render={({ field }) => (
                           <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name={`expertise.${index}.description`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`expertise.${index}.description`} render={({ field }) => (
                           <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                       </div>
@@ -264,10 +264,10 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       <div className="space-y-4 pr-8">
-                        <FormField control={form.control} name={`howWeHelp.${index}.title`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`howWeHelp.${index}.title`} render={({ field }) => (
                           <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name={`howWeHelp.${index}.description`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`howWeHelp.${index}.description`} render={({ field }) => (
                           <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                       </div>
@@ -291,13 +291,13 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       <div className="space-y-4 pr-8">
-                        <FormField control={form.control} name={`offerings.${index}.icon`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`offerings.${index}.icon`} render={({ field }) => (
                           <FormItem><FormLabel>Icon</FormLabel><FormControl><IconPicker value={field.value || "Box"} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name={`offerings.${index}.title`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`offerings.${index}.title`} render={({ field }) => (
                           <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name={`offerings.${index}.description`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`offerings.${index}.description`} render={({ field }) => (
                           <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                       </div>
@@ -321,10 +321,10 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       <div className="space-y-4 pr-8">
-                        <FormField control={form.control} name={`steps.${index}.title`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`steps.${index}.title`} render={({ field }) => (
                           <FormItem><FormLabel>Step {index + 1} Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name={`steps.${index}.description`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`steps.${index}.description`} render={({ field }) => (
                           <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                       </div>
@@ -345,7 +345,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                   {(form.watch("relatedCaseStudies") || []).map((_, index) => (
                     <div key={index} className="flex items-end gap-2">
                       <div className="flex-1">
-                        <FormField control={form.control} name={`relatedCaseStudies.${index}`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`relatedCaseStudies.${index}`} render={({ field }) => (
                           <FormItem>
                             <FormLabel className={index !== 0 ? "sr-only" : ""}>URL</FormLabel>
                             <FormControl>
@@ -385,7 +385,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                   {(form.watch("technologies") || []).map((_, index) => (
                     <div key={index} className="flex items-end gap-2">
                       <div className="flex-1">
-                        <FormField control={form.control} name={`technologies.${index}`} render={({ field }) => (
+                        <FormField control={form.control as any} name={`technologies.${index}`} render={({ field }) => (
                           <FormItem>
                             <FormLabel className={index !== 0 ? "sr-only" : ""}>Technology Name</FormLabel>
                             <FormControl>
@@ -419,7 +419,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                 </CardHeader>
                 <CardContent>
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="seo"
                     render={({ field }) => (
                       <FormItem>
@@ -441,7 +441,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="status"
                     render={({ field }) => (
                       <FormItem>
@@ -454,7 +454,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="icon"
                     render={({ field }) => (
                       <FormItem>
@@ -467,7 +467,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="featured"
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-between rounded-lg border p-4">
@@ -490,7 +490,7 @@ export function IndustryForm({ initialData, id }: IndustryFormProps) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="coverImage"
                     render={({ field }) => (
                       <FormItem>

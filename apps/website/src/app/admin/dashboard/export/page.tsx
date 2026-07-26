@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { db } from "@/lib/admin/firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Checkbox, Label } from "@voryent/ui";
 import { useToast } from "@/hooks/use-toast";
-import { Download, FileJson, FileText, FileSpreadsheet } from "lucide-react";
+import { Download, FileJson, FileText, FileSpreadsheet, Upload } from "lucide-react";
+import { Input } from "@voryent/ui";
 
 const COLLECTIONS = [
   "users",
@@ -16,17 +17,26 @@ const COLLECTIONS = [
   "services",
   "industries",
   "blogPosts",
+  "blogSubscriptions",
+  "notifications",
   "faqItems",
   "resources",
   "employees",
   "investors",
-  "case-studies"
+  "case-studies",
+  "settings"
 ];
 
 export default function ExportPage() {
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
+    const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
+
+  // Import State
+  const [importData, setImportData] = useState<Record<string, any[]> | null>(null);
+  const [selectedImportCollections, setSelectedImportCollections] = useState<string[]>([]);
+  const [isImporting, setIsImporting] = useState(false);
+  const [isMerge, setIsMerge] = useState(false);
 
   const toggleCollection = (name: string) => {
     setSelectedCollections((prev) => 
@@ -45,6 +55,60 @@ export default function ExportPage() {
   const fetchCollectionData = async (collectionName: string) => {
     const querySnapshot = await getDocs(collection(db, collectionName));
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  };
+
+  
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        setImportData(json);
+        setSelectedImportCollections(Object.keys(json));
+        toast({ title: "Backup file loaded successfully" });
+      } catch (err) {
+        toast({ title: "Invalid JSON file", variant: "destructive" });
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const toggleImportCollection = (name: string) => {
+    setSelectedImportCollections((prev) => 
+      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
+    );
+  };
+
+  const handleImportSubmit = async () => {
+    if (!importData || selectedImportCollections.length === 0) return;
+
+    setIsImporting(true);
+    try {
+      for (const col of selectedImportCollections) {
+        const data = importData[col];
+        if (!Array.isArray(data)) continue;
+        
+        for (const item of data) {
+          if (!item.id) continue;
+          
+          const itemData = { ...item };
+          const docId = itemData.id;
+          delete itemData.id; // Don't write the 'id' field to document body
+
+          await setDoc(doc(db, col, docId), itemData, { merge: isMerge });
+        }
+      }
+      toast({ title: "Import successful!" });
+      setImportData(null);
+      setSelectedImportCollections([]);
+    } catch (err: any) {
+      toast({ title: "Import failed", description: err.message, variant: "destructive" });
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   const handleExportJSON = async () => {
@@ -183,6 +247,77 @@ export default function ExportPage() {
         <p className="text-muted-foreground mt-2">
           Select the collections you wish to export and choose your preferred format.
         </p>
+      </div>
+
+      
+      {/* Import Section */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold tracking-tight mb-4">Data Import</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>Restore from Backup</CardTitle>
+            <CardDescription>Upload a JSON backup file to restore or merge data.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <Label htmlFor="backup-upload">Backup JSON File</Label>
+              <Input 
+                id="backup-upload" 
+                type="file" 
+                accept=".json" 
+                onChange={handleFileUpload} 
+                className="mt-2"
+              />
+            </div>
+            
+            {importData && (
+              <div className="space-y-6 pt-4 border-t">
+                <div>
+                  <h3 className="text-sm font-medium mb-3">Found Collections in Backup:</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {Object.keys(importData).map((col) => (
+                      <div key={col} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`import-${col}`} 
+                          checked={selectedImportCollections.includes(col)}
+                          onCheckedChange={() => toggleImportCollection(col)}
+                        />
+                        <Label htmlFor={`import-${col}`} className="cursor-pointer capitalize font-medium">
+                          {col.replace("-", " ")} ({importData[col]?.length || 0} items)
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 bg-muted p-4 rounded-lg">
+                  <Checkbox 
+                    id="merge-toggle" 
+                    checked={isMerge}
+                    onCheckedChange={(checked) => setIsMerge(!!checked)}
+                  />
+                  <div className="space-y-1">
+                    <Label htmlFor="merge-toggle" className="cursor-pointer font-medium">Merge new fields</Label>
+                    <p className="text-xs text-muted-foreground">If checked, existing fields won't be overwritten if they are not in the backup. If unchecked, documents will be completely replaced.</p>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={handleImportSubmit} 
+                  disabled={isImporting || selectedImportCollections.length === 0}
+                  className="w-full sm:w-auto"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {isImporting ? "Importing..." : "Import Selected Collections"}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold tracking-tight mb-4">Data Export</h2>
       </div>
 
       <Card>

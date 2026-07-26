@@ -7,7 +7,7 @@ import { Container, Section, Button, Input, Badge, Card, CardContent, EmptyState
 
 export type SearchItem = {
   id: string
-  type: "Service" | "Blog" | "Resource" | "FAQ"
+  type: "Service" | "Blog" | "Resource" | "FAQ" | "Case Study"
   title: string
   description: string
   url: string
@@ -17,9 +17,7 @@ export type SearchItem = {
 export function SearchClient({ initialData }: { initialData: SearchItem[] }) {
   const [query, setQuery] = useState("")
   const [activeFilters, setActiveFilters] = useState<string[]>([])
-
-  const filters = ["Service", "Blog", "Resource", "FAQ"]
-
+  const filters = ["Service", "Blog", "Resource", "FAQ", "Case Study"]
   const toggleFilter = (filter: string) => {
     setActiveFilters((prev) => 
       prev.includes(filter)

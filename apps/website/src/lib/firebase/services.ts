@@ -258,8 +258,10 @@ export async function getSocialSettings() {
 
   const docRef = doc(db(), "settings", "social");
   const docSnap = await getDoc(docRef);
-  const data = docSnap.exists() ? docSnap.data() : null;
-  if (data) setCacheWithPrune(key, data, LONG_TTL);
+  if (!docSnap.exists()) return null;
+  const raw = docSnap.data();
+  const data = raw.values ? raw.values : raw;
+  setCacheWithPrune(key, data, LONG_TTL);
   return data;
 }
 
@@ -270,8 +272,10 @@ export async function getContactSettings() {
 
   const docRef = doc(db(), "settings", "contact");
   const docSnap = await getDoc(docRef);
-  const data = docSnap.exists() ? docSnap.data() : null;
-  if (data) setCacheWithPrune(key, data, LONG_TTL);
+  if (!docSnap.exists()) return null;
+  const raw = docSnap.data();
+  const data = raw.values ? raw.values : raw;
+  setCacheWithPrune(key, data, LONG_TTL);
   return data;
 }
 

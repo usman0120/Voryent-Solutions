@@ -1,19 +1,7 @@
 import { CoreService, BaseEntity } from "./core.service";
 
-export interface Service extends BaseEntity {
-  title: string;
-  slug: string;
-  excerpt?: string;
-  hero?: any;
-  overview?: string;
-  benefits?: any[];
-  process?: any[];
-  technologies?: any[];
-  faq?: any[];
-  seo?: any;
-  icon?: string;
-  featured?: boolean;
-  order?: number;
-}
+import { type ServiceFormValues } from "../validations/service.schema";
+
+export type Service = ServiceFormValues & BaseEntity;
 
 export const servicesService = new CoreService<Service>("services");

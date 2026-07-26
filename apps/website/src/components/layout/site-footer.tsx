@@ -116,27 +116,19 @@ export async function SiteFooter() {
             Empowering digital products with next-generation design and engineering. We build
             scalable, resilient software that drives real business outcomes.
           </p>
-          {contact?.values && (
+          {contact && (
             <div className="text-muted-foreground mt-4 space-y-2 text-sm">
-              {contact.values.email && (
+              {contact.email && (
                 <p>
                   <strong>Email:</strong>{" "}
-                  <a href={`mailto:${contact.values.email}`} className="hover:text-foreground">
-                    {contact.values.email}
+                  <a href={`mailto:${contact.email}`} className="hover:text-foreground">
+                    {contact.email}
                   </a>
                 </p>
               )}
-              {contact.values.phone && (
+              {contact.address && (
                 <p>
-                  <strong>Phone:</strong>{" "}
-                  <a href={`tel:${contact.values.phone}`} className="hover:text-foreground">
-                    {contact.values.phone}
-                  </a>
-                </p>
-              )}
-              {contact.values.address && (
-                <p>
-                  <strong>Address:</strong> {contact.values.address}
+                  <strong>Address:</strong> {contact.address}
                 </p>
               )}
             </div>
@@ -148,7 +140,7 @@ export async function SiteFooter() {
         { title: "Company", links: companyLinks },
         { title: "Resources", links: resourcesLinks },
       ]}
-      socialLinks={<SocialIcons social={social?.values} />}
+      socialLinks={<SocialIcons social={social} />}
       legalLinks={legalLinks}
       copyright={`\u00A9 ${new Date().getFullYear()} Voryent Solutions. All rights reserved.`}
     />

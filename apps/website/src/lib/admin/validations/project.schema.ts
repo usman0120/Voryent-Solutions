@@ -28,6 +28,21 @@ export const projectSchema = z.object({
   })).default([]),
   notes: z.string().optional(),
   tags: z.array(z.string()).default([]),
+  coverImage: z.string().optional(),
+  gallery: z.array(z.string()).default([]),
+  demoUrl: z.string().url().optional().or(z.literal("")),
+  content: z.string().optional(),
+  relatedProjects: z.array(z.string()).default([]),
+  servicesProvided: z.array(z.string()).default([]),
+  testimonials: z.array(z.object({
+    quote: z.string(),
+    author: z.string(),
+    role: z.string().optional()
+  })).default([]),
+  challenges: z.array(z.string()).default([]),
+  outcomes: z.array(z.string()).default([]),
+  solutions: z.string().optional(),
+  isFeatured: z.boolean().default(false).optional(),
   milestones: z.array(z.object({
     id: z.string().optional(),
     title: z.string(),

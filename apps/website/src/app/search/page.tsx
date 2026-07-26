@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { SearchClient } from "./search-client"
 import type { SearchItem } from "./search-client"
-import { getAllContent } from "@/lib/content"
+import { getServices, getBlogPosts, getFaqs, getResources, getCaseStudiesFromDb } from "@/lib/firebase/services"
 
 export const metadata: Metadata = {
   title: "Search | Voryent Solutions",
@@ -11,86 +11,82 @@ export const metadata: Metadata = {
   },
 }
 
-export default function SearchPage() {
-  // Fetch local content to pass to the client search component
+export default async function SearchPage() {
   const searchItems: SearchItem[] = []
 
-  // 1. Map FAQs
-  const faqs = getAllContent("faq")
-  faqs.forEach((faq) => {
-    searchItems.push({
-      id: `faq-${faq.slug}`,
-      type: "FAQ",
-      title: faq["question"] || faq["title"] || "FAQ",
-      description: faq["answer"] || faq["summary"] || "",
-      url: `/faq`,
-      tags: faq["category"] ? [faq["category"]] : [],
-    })
-  })
+  try {
+    // Fetch all required data in parallel
+    const [services, blogs, faqs, resources, caseStudies] = await Promise.all([
+      getServices().catch(() => []),
+      getBlogPosts().catch(() => []),
+      getFaqs().catch(() => []),
+      getResources().catch(() => []),
+      getCaseStudiesFromDb().catch(() => [])
+    ])
 
-  // 2. Map Blogs
-  const blogs = getAllContent("blog")
-  blogs.forEach((blog) => {
-    searchItems.push({
-      id: `blog-${blog.slug}`,
-      type: "Blog",
-      title: blog["title"] || blog.slug,
-      description: blog["summary"] || blog["excerpt"] || "",
-      url: `/blog/${blog.slug}`,
-      tags: blog["tags"] || [],
+    // 1. Map FAQs
+    faqs.forEach((faq: any) => {
+      searchItems.push({
+        id: `faq-${faq.id}`,
+        type: "FAQ",
+        title: faq.question || faq.title || "FAQ",
+        description: faq.answer || faq.summary || "",
+        url: `/about#faq`,
+        tags: faq.category ? [faq.category] : [],
+      })
     })
-  })
 
-  // 3. Map Resources
-  const resources = getAllContent("resources")
-  resources.forEach((res) => {
-    searchItems.push({
-      id: `res-${res.slug}`,
-      type: "Resource",
-      title: res["title"] || res.slug,
-      description: res["summary"] || res["description"] || "",
-      url: `/resources`,
-      tags: res["category"] ? [res["category"]] : [],
+    // 2. Map Blogs
+    blogs.forEach((blog: any) => {
+      searchItems.push({
+        id: `blog-${blog.id}`,
+        type: "Blog",
+        title: blog.title || blog.slug,
+        description: blog.summary || blog.excerpt || "",
+        url: `/blog/${blog.slug}`,
+        tags: blog.tags || [],
+      })
     })
-  })
 
-  // 4. Map Services (Static for now since they are part of the homepage/hardcoded)
-  const services: SearchItem[] = [
-    {
-      id: "srv-custom-software",
-      type: "Service",
-      title: "Custom Software Development",
-      description: "We build scalable, robust software solutions tailored to your unique business requirements.",
-      url: "/#services",
-      tags: ["development", "software", "engineering"],
-    },
-    {
-      id: "srv-cloud-architecture",
-      type: "Service",
-      title: "Cloud Architecture",
-      description: "Design and implement secure, high-performance cloud infrastructure.",
-      url: "/#services",
-      tags: ["cloud", "aws", "infrastructure", "devops"],
-    },
-    {
-      id: "srv-ui-ux",
-      type: "Service",
-      title: "UI/UX Design",
-      description: "Create intuitive, beautiful user interfaces that drive engagement.",
-      url: "/#services",
-      tags: ["design", "ui", "ux", "interface"],
-    },
-    {
-      id: "srv-ai-integration",
-      type: "Service",
-      title: "AI Integration",
-      description: "Leverage artificial intelligence and machine learning to automate and innovate.",
-      url: "/#services",
-      tags: ["ai", "machine learning", "automation"],
-    }
-  ]
-  
-  searchItems.push(...services)
+    // 3. Map Resources
+    resources.forEach((res: any) => {
+      searchItems.push({
+        id: `res-${res.id}`,
+        type: "Resource",
+        title: res.title || res.slug,
+        description: res.summary || res.description || "",
+        url: `/resources`,
+        tags: res.category ? [res.category] : [],
+      })
+    })
+
+    // 4. Map Services
+    services.forEach((srv: any) => {
+      searchItems.push({
+        id: `srv-${srv.id}`,
+        type: "Service",
+        title: srv.title || srv.slug,
+        description: srv.shortDescription || srv.description || "",
+        url: `/services/${srv.slug}`,
+        tags: srv.category ? [srv.category] : [],
+      })
+    })
+
+    // 5. Map Case Studies
+    caseStudies.forEach((cs: any) => {
+      searchItems.push({
+        id: `cs-${cs.id}`,
+        type: "Case Study" as any, 
+        title: cs.title || cs.slug,
+        description: cs.outcomeSummary || cs.heroHeadline || "",
+        url: `/case-studies/${cs.slug}`,
+        tags: cs.industry ? [cs.industry] : [],
+      })
+    })
+
+  } catch (error) {
+    console.error("Error fetching search data:", error)
+  }
 
   return <SearchClient initialData={searchItems} />
 }

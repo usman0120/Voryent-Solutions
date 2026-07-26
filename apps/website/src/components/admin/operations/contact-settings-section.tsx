@@ -24,7 +24,6 @@ export function ContactSettingsSection() {
     resolver: zodResolver(contactSettingsSchema),
     defaultValues: { 
       email: "",
-      phone: "",
       address: "",
       mapUrl: "",
       officeHours: ""
@@ -68,19 +67,6 @@ export function ContactSettingsSection() {
                     <FormLabel>Public Email</FormLabel>
                     <FormControl>
                       <Input placeholder="contact@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="+1 (555) 000-0000" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

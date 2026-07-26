@@ -5,7 +5,6 @@ export const contactSchema = z.object({
   lastName: z.string().min(2, "Last name is required"),
   company: z.string().optional(),
   email: z.string().email("Must be a valid email address"),
-  phone: z.string().optional(),
   website: z.string().optional(),
   subject: z.string().min(3, "Subject is required"),
   message: z.string().min(10, "Message must be at least 10 characters"),

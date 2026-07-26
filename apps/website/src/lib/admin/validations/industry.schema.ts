@@ -23,7 +23,11 @@ export const industrySchema = baseEntitySchema.extend({
     title: z.string(),
     description: z.string(),
   })).optional(),
-  relatedServices: z.array(z.string()).optional(), // Array of Service Slugs or IDs
+  relatedServices: z.array(z.string()).optional(),
+  technologies: z.array(z.string()).default([]).optional(),
+  relatedCaseStudies: z.array(z.string()).default([]).optional(),
+  featured: z.boolean().default(false).optional(),
+  coverImage: z.string().optional(),
   faq: z.array(z.object({
     question: z.string(),
     answer: z.string(),

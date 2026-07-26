@@ -33,6 +33,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
   }, []);
 
 
+
   const {
     register,
     handleSubmit,
@@ -41,6 +42,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
   } = useForm<ApplicationFormData>({
     resolver: zodResolver(applicationSchema),
   });
+
 
 
   const onSubmit = async (data: ApplicationFormData) => {
@@ -90,8 +92,16 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
   };
 
 
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+      {/* Honeypot Field */}
+      <div style={{ display: 'none' }} aria-hidden="true">
+        <label htmlFor="bot_field_website">Website</label>
+        <input type="text" id="bot_field_website" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
+      </div>
+
 
       {/* Honeypot Field */}
       <div style={{ display: 'none' }} aria-hidden="true">

@@ -18,7 +18,6 @@ export const generalSettingsSchema = z.object({
 
 export const contactSettingsSchema = z.object({
   email: z.string().email(),
-  phone: z.string(),
   address: z.string(),
   mapUrl: z.string().url().optional().or(z.literal("")),
   officeHours: z.string(),

@@ -177,7 +177,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         })} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -191,7 +191,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="slug"
             render={({ field }) => (
               <FormItem>
@@ -205,7 +205,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="type"
             render={({ field }) => (
               <FormItem>
@@ -220,7 +220,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
-              control={form.control}
+              control={form.control as any}
               name="status"
               render={({ field }) => (
                 <FormItem>
@@ -246,7 +246,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
             />
 
             <FormField
-              control={form.control}
+              control={form.control as any}
               name="priority"
               render={({ field }) => (
                 <FormItem>
@@ -272,7 +272,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         </div>
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="description"
           render={({ field }) => (
             <FormItem>
@@ -293,7 +293,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="client"
             render={({ field }) => (
               <FormItem>
@@ -307,7 +307,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="industry"
             render={({ field }) => (
               <FormItem>
@@ -323,7 +323,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="startDate"
             render={({ field }) => (
               <FormItem>
@@ -337,7 +337,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="targetDate"
             render={({ field }) => (
               <FormItem>
@@ -356,7 +356,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         
         <div className="space-y-6">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="content"
             render={({ field }) => (
               <FormItem>
@@ -374,7 +374,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="challenges"
             render={({ field }) => (
               <FormItem>
@@ -392,7 +392,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="solutions"
             render={({ field }) => (
               <FormItem>
@@ -410,7 +410,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="outcomes"
             render={({ field }) => (
               <FormItem>
@@ -433,7 +433,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         
         <div className="space-y-6">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="coverImage"
             render={({ field }) => (
               <FormItem>
@@ -470,7 +470,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="gallery"
             render={({ field }) => (
               <FormItem>
@@ -495,7 +495,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
                   </Button>
                   {field.value && field.value.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-                      {field.value.map((imgUrl, idx) => (
+                      {field.value.map((imgUrl: string, idx: number) => (
                         <div key={idx} className="relative aspect-video rounded-md overflow-hidden border group">
                           <img src={imgUrl} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
                           <button
@@ -525,7 +525,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="servicesProvided"
             render={({ field }) => (
               <FormItem>
@@ -543,7 +543,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="technologies"
             render={({ field }) => (
               <FormItem>
@@ -566,7 +566,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="demoUrl"
             render={({ field }) => (
               <FormItem>
@@ -579,7 +579,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="website"
             render={({ field }) => (
               <FormItem>
@@ -592,7 +592,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="repository"
             render={({ field }) => (
               <FormItem>
@@ -607,7 +607,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         </div>
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="isFeatured"
           render={({ field }) => (
             <FormItem className="flex items-center justify-between rounded-lg border p-4">
@@ -623,7 +623,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         />
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="progress"
           render={({ field }) => (
             <FormItem>

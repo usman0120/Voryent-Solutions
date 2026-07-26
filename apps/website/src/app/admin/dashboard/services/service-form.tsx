@@ -37,7 +37,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<ServiceFormValues>({
-    resolver: zodResolver(serviceSchema),
+    resolver: zodResolver(serviceSchema) as any,
     defaultValues: {
       title: initialData?.title || "",
       slug: initialData?.slug || "",
@@ -106,7 +106,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="title"
                     render={({ field }) => (
                       <FormItem>
@@ -119,7 +119,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="slug"
                     render={({ field }) => (
                       <FormItem>
@@ -136,7 +136,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="tagline"
                     render={({ field }) => (
                       <FormItem>
@@ -149,7 +149,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="description"
                     render={({ field }) => (
                       <FormItem>
@@ -162,7 +162,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="overview"
                     render={({ field }) => (
                       <FormItem>
@@ -201,7 +201,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
-                          control={form.control}
+                          control={form.control as any}
                           name={`features.${index}.title`}
                           render={({ field: inputField }) => (
                             <FormItem>
@@ -214,7 +214,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                           )}
                         />
                         <FormField
-                          control={form.control}
+                          control={form.control as any}
                           name={`features.${index}.icon`}
                           render={({ field: inputField }) => (
                             <FormItem>
@@ -231,7 +231,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                         />
                       </div>
                       <FormField
-                        control={form.control}
+                        control={form.control as any}
                         name={`features.${index}.description`}
                         render={({ field: inputField }) => (
                           <FormItem>
@@ -282,7 +282,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                           <div className="md:col-span-2">
                             <FormField
-                              control={form.control}
+                              control={form.control as any}
                               name={`process.${index}.step`}
                               render={({ field: inputField }) => (
                                 <FormItem>
@@ -297,7 +297,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                           </div>
                           <div className="md:col-span-5">
                             <FormField
-                              control={form.control}
+                              control={form.control as any}
                               name={`process.${index}.title`}
                               render={({ field: inputField }) => (
                                 <FormItem>
@@ -312,7 +312,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                           </div>
                           <div className="md:col-span-5">
                             <FormField
-                              control={form.control}
+                              control={form.control as any}
                               name={`process.${index}.icon`}
                               render={({ field: inputField }) => (
                                 <FormItem>
@@ -330,7 +330,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                           </div>
                         </div>
                         <FormField
-                          control={form.control}
+                          control={form.control as any}
                           name={`process.${index}.description`}
                           render={({ field: inputField }) => (
                             <FormItem>
@@ -349,7 +349,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => appendProcess({ step: processFields.length + 1, title: "", description: "", icon: "Search" })}
+                    onClick={() => appendProcess({ step: (processFields.length + 1).toString(), title: "", description: "", icon: "Search" })}
                     className="w-full border-dashed"
                   >
                     <Plus className="mr-2 h-4 w-4" /> Add Process Step
@@ -364,7 +364,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                 </CardHeader>
                 <CardContent>
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="technologies"
                     render={({ field }) => (
                       <FormItem>
@@ -389,7 +389,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                 </CardHeader>
                 <CardContent>
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="seo"
                     render={({ field }) => (
                       <FormItem>
@@ -412,7 +412,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="status"
                     render={({ field }) => (
                       <FormItem>
@@ -426,7 +426,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                   />
                   
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem>
@@ -440,7 +440,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                   />
 
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="icon"
                     render={({ field }) => (
                       <FormItem>
@@ -454,7 +454,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                   />
 
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="order"
                     render={({ field }) => (
                       <FormItem>
@@ -468,7 +468,7 @@ export function ServiceForm({ initialData, id }: ServiceFormProps) {
                   />
 
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="featured"
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-between rounded-lg border p-4 bg-muted/30">
