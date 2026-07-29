@@ -56,7 +56,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     match /contacts/{document=**} {
-      allow read, write: if isAdmin();
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    match /rate_limits/{document=**} {
+      allow read, write: if true;
     }
     match /companies/{document=**} {
       allow read, write: if isAdmin();

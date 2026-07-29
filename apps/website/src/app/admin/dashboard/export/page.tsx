@@ -24,7 +24,10 @@ const COLLECTIONS = [
   "employees",
   "investors",
   "case-studies",
-  "settings"
+  "settings",
+  "pages",
+  "seo",
+  "activityLogs"
 ];
 
 export default function ExportPage() {

@@ -142,7 +142,7 @@ function QuickMessageForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate suppressHydrationWarning className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
       <div style={{ display: 'none' }} aria-hidden="true">
         <label htmlFor="bot_field_website">Website</label>
         <input type="text" id="bot_field_website" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
@@ -248,10 +248,10 @@ function ProjectRequestForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate suppressHydrationWarning className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
       <div style={{ display: 'none' }} aria-hidden="true">
-        <label htmlFor="bot_field_website">Website</label>
-        <input type="text" id="bot_field_website" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
+        <label htmlFor="bot_field_website_project">Website</label>
+        <input type="text" id="bot_field_website_project" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
       </div>
       {status === "error" && (
         <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">

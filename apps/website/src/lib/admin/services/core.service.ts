@@ -83,11 +83,11 @@ export class CoreService<T extends BaseEntity> {
 
   async update(id: string, data: Partial<T>, userId?: string): Promise<void> {
     const docRef = doc(db, this.collectionName, id);
-    await updateDoc(docRef, {
+    await setDoc(docRef, {
       ...data,
       updatedAt: serverTimestamp(),
       lastEditedBy: userId || auth.currentUser?.uid || null,
-    });
+    }, { merge: true });
     
     await this._log(`${this.collectionName} Updated`, `Record ${id} was updated in ${this.collectionName}`);
   }

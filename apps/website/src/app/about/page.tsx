@@ -29,7 +29,15 @@ import { ArrowRight,
   Layers,
   Clock,
   Cpu,
-  Linkedin } from "lucide-react";
+  Linkedin,
+  Shield,
+  TrendingUp,
+  Handshake,
+  HeartHandshake,
+  RefreshCcw,
+  Globe,
+  Brain,
+  Users} from "lucide-react";
 
 import { getAboutData, getEmployees, getInvestors } from "@/lib/firebase/services";
 
@@ -55,12 +63,10 @@ export default async function AboutPage() {
                 About Voryent
               </Badge>
               <h1 className="text-foreground text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
-                {blocks?.hero?.title ||
-                  "Building modern digital products with engineering excellence and long-term partnerships."}
+                Engineering Intelligent Software That Drives Business Growth
               </h1>
               <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
-                {blocks?.hero?.description ||
-                  "We are a dedicated team of engineers, designers, and strategists. We build scalable, high-performance software solutions for ambitious organizations who demand robust architectures, intelligent AI workflows, and flawless user experiences."}
+                At Voryent Solutions, we transform ambitious ideas into intelligent digital products. We specialise in AI-powered applications, enterprise software, SaaS platforms, web solutions, mobile applications, cloud infrastructure, and business automation that help organisations innovate, scale, and succeed in an increasingly digital world.
               </p>
               <div className="mt-10 flex flex-wrap gap-4">
                 <Button asChild size="lg" className="h-12 px-8">
@@ -76,7 +82,7 @@ export default async function AboutPage() {
             </div>
             <div className="bg-muted relative aspect-square w-full overflow-hidden rounded-2xl shadow-xl md:aspect-[4/3] lg:ml-auto">
               <Image
-                src={blocks?.hero?.image || "/Assets/Illustrations/AI Illustration.webp"}
+                src="/Assets/Illustrations/AI Illustration.webp"
                 alt="AI and Data Architecture Illustration"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -94,45 +100,44 @@ export default async function AboutPage() {
           <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
             <div>
               <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-                {blocks?.whoWeAre?.title || "Who We Are"}
+                Who We Are
               </h2>
               <div className="text-muted-foreground mt-6 space-y-6 text-lg leading-relaxed">
-                {(
-                  blocks?.whoWeAre?.paragraphs || [
-                    "Voryent Solutions exists to bridge the gap between complex business challenges and elegant technical solutions. In a rapidly evolving digital landscape, organizations need more than just code—they need reliable architectures that can scale seamlessly from day one.",
-                    "We focus on modern engineering practices, clean architecture, and AI-first workflows. Our approach isn't just about delivering a project; it's about forming long-term partnerships where we deeply understand your business domain and continuously add value.",
-                    "We don't build black boxes. We prioritize transparency, rigorous testing, and maintainable codebases so that your team is always empowered and your infrastructure is always secure.",
-                  ]
-                ).map((p: string, i: number) => (
-                  <p key={i}>{p}</p>
-                ))}
+                <p>
+                  Voryent Solutions is a modern software engineering and artificial intelligence company dedicated to building innovative digital solutions for businesses worldwide. We combine technical excellence with strategic thinking to create software that not only solves today's challenges but also prepares organisations for tomorrow's opportunities.
+                </p>
+                <p>
+                  Our team specialises in designing and developing custom software, AI-powered systems, enterprise platforms, SaaS products, cloud-native applications, websites, mobile apps, and intelligent automation solutions. Every project is built with scalability, security, performance, and exceptional user experience at its core.
+                </p>
+                <p>
+                  We believe technology should simplify complexity, accelerate growth, and create lasting value. Whether partnering with startups, small businesses, or large enterprises, our goal remains the same: deliver reliable, future-ready software that empowers our clients to stay ahead in a rapidly evolving digital landscape.
+                </p>
               </div>
             </div>
             <div className="grid gap-6">
-              {(
-                blocks?.whoWeAre?.pillars || [
-                  {
-                    icon: "Code2",
-                    title: "Engineering First",
-                    description:
-                      "Rigorous code reviews, comprehensive testing, and scalable cloud-native architectures are our standard, not an afterthought.",
-                  },
-                  {
-                    icon: "Briefcase",
-                    title: "Business Focused",
-                    description:
-                      "We align technical decisions directly with your business KPIs to ensure measurable ROI and sustainable growth.",
-                  },
-                  {
-                    icon: "Bot",
-                    title: "AI Powered",
-                    description:
-                      "Integrating intelligent automation and data pipelines to give you a decisive competitive advantage in your market.",
-                  },
-                ]
-              ).map((pillar: any, i: number) => {
-                const IconComp =
-                  pillar.icon === "Briefcase" ? Briefcase : pillar.icon === "Bot" ? Bot : Code2;
+              {[
+                {
+                  icon: Code2,
+                  title: "Engineering Excellence",
+                  description: "We build reliable, secure, scalable software using modern technologies, clean architecture, and industry best practices."
+                },
+                {
+                  icon: Brain,
+                  title: "AI-Driven Innovation",
+                  description: "We integrate artificial intelligence into real business workflows to automate processes, improve decision-making, and unlock new opportunities."
+                },
+                {
+                  icon: ShieldCheck,
+                  title: "Quality & Security",
+                  description: "Every solution undergoes rigorous testing and follows strong security standards to ensure dependable long-term performance."
+                },
+                {
+                  icon: Users,
+                  title: "Client Partnership",
+                  description: "We work closely with every client, maintaining transparent communication and delivering solutions aligned with their business goals."
+                }
+              ].map((pillar: any, i: number) => {
+                const IconComp = pillar.icon;
                 return (
                   <Card key={i} className="shadow-sm transition-shadow hover:shadow-md">
                     <CardContent className="flex items-start gap-4 p-6">
@@ -154,8 +159,7 @@ export default async function AboutPage() {
         </Container>
       </Section>
 
-
-      {/* ─── COMPANY PROFILE ─── */}
+      {/* ─── COMPANY PROFILE (DYNAMIC) ─── */}
       {blocks?.companyProfile?.fields?.length > 0 && (
         <Section className="border-y border-border">
           <Container>
@@ -187,7 +191,7 @@ export default async function AboutPage() {
         </Section>
       )}
 
-      {/* ─── MISSION & VISION ─── */}
+      {/* ─── MISSION & VISION (DYNAMIC) ─── */}
       <Section>
         <Container>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
@@ -222,60 +226,46 @@ export default async function AboutPage() {
         <Container>
           <div className="mx-auto mb-16 max-w-2xl text-center">
             <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-              {blocks?.coreValues?.title || "Core Values"}
+              Our Core Values
             </h2>
             <p className="text-muted-foreground mt-4 text-lg">
-              {blocks?.coreValues?.description ||
-                "The fundamental principles that guide our decisions, shape our culture, and define how we build."}
+              These principles guide every decision we make, every product we build, and every partnership we create.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {(
-              blocks?.coreValues?.items || [
-                {
-                  icon: "Award",
-                  title: "Quality",
-                  desc: "We never compromise on the integrity of our code or the polish of our interfaces.",
-                },
-                {
-                  icon: "Eye",
-                  title: "Transparency",
-                  desc: "Honest communication, clear timelines, and open collaboration at every step.",
-                },
-                {
-                  icon: "Lightbulb",
-                  title: "Innovation",
-                  desc: "Continuously adopting proven modern paradigms to deliver better solutions, faster.",
-                },
-                {
-                  icon: "ShieldCheck",
-                  title: "Reliability",
-                  desc: "Building systems you can depend on, backed by responsive and accountable support.",
-                },
-                {
-                  icon: "Layers",
-                  title: "Scalability",
-                  desc: "Architecting for the future so you never have to throw away code as you grow.",
-                },
-                {
-                  icon: "Lock",
-                  title: "Security",
-                  desc: "Security-by-design principles baked into every component and deployment.",
-                },
-              ]
-            ).map((value: any, i: number) => {
-              const IconComp =
-                value.icon === "Eye"
-                  ? Eye
-                  : value.icon === "Lightbulb"
-                    ? Lightbulb
-                    : value.icon === "ShieldCheck"
-                      ? ShieldCheck
-                      : value.icon === "Layers"
-                        ? Layers
-                        : value.icon === "Lock"
-                          ? Lock
-                          : Award;
+            {[
+              {
+                icon: Lightbulb,
+                title: "Innovation",
+                desc: "We embrace emerging technologies and continuously seek smarter ways to solve complex business challenges.",
+              },
+              {
+                icon: Handshake,
+                title: "Integrity",
+                desc: "We build lasting relationships through honesty, transparency, accountability, and ethical business practices.",
+              },
+              {
+                icon: Award,
+                title: "Excellence",
+                desc: "We pursue the highest standards of quality in engineering, design, communication, and customer experience.",
+              },
+              {
+                icon: HeartHandshake,
+                title: "Customer Success",
+                desc: "Our clients' success is our greatest achievement, and every solution is designed to help them grow.",
+              },
+              {
+                icon: Rocket,
+                title: "Continuous Improvement",
+                desc: "We continuously learn, adapt, and evolve to stay at the forefront of technology and innovation.",
+              },
+              {
+                icon: Globe,
+                title: "Global Perspective",
+                desc: "We build technology that serves businesses across industries, cultures, and international markets.",
+              },
+            ].map((value: any, i: number) => {
+              const IconComp = value.icon;
               return (
                 <Card key={i} className="shadow-sm transition-shadow hover:shadow-md">
                   <CardHeader>
@@ -299,11 +289,10 @@ export default async function AboutPage() {
         <Container>
           <div className="mx-auto mb-16 max-w-2xl text-center">
             <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-              {blocks?.processSteps?.title || "Our Process"}
+              How We Deliver Success
             </h2>
             <p className="text-muted-foreground mt-4 text-lg">
-              {blocks?.processSteps?.description ||
-                "A systematic, transparent approach from the first conversation to continuous deployment."}
+              Our structured development process ensures every project is delivered efficiently, transparently, and with exceptional quality.
             </p>
           </div>
 
@@ -315,28 +304,15 @@ export default async function AboutPage() {
             />
 
             <div className="relative z-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-6">
-              {(
-                blocks?.processSteps?.items || [
-                  { icon: "Search", title: "Discover" },
-                  { icon: "PenTool", title: "Plan" },
-                  { icon: "Eye", title: "Design" },
-                  { icon: "Code2", title: "Develop" },
-                  { icon: "Rocket", title: "Deploy" },
-                  { icon: "LifeBuoy", title: "Support" },
-                ]
-              ).map((step: any, i: number) => {
-                const IconComp =
-                  step.icon === "PenTool"
-                    ? PenTool
-                    : step.icon === "Eye"
-                      ? Eye
-                      : step.icon === "Code2"
-                        ? Code2
-                        : step.icon === "Rocket"
-                          ? Rocket
-                          : step.icon === "LifeBuoy"
-                            ? LifeBuoy
-                            : Search;
+              {[
+                { icon: Search, title: "Discovery & Strategy" },
+                { icon: PenTool, title: "Planning & Design" },
+                { icon: Code2, title: "Development" },
+                { icon: ShieldCheck, title: "Testing & QA" },
+                { icon: Rocket, title: "Deployment" },
+                { icon: RefreshCcw, title: "Support & Growth" },
+              ].map((step: any, i: number) => {
+                const IconComp = step.icon;
                 return (
                   <div key={i} className="group flex flex-col items-center text-center">
                     <div className="bg-background border-primary/20 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 shadow-sm transition-colors">
@@ -359,61 +335,47 @@ export default async function AboutPage() {
         <Container>
           <div className="mx-auto mb-16 max-w-2xl text-center">
             <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-              {blocks?.whyChooseVoryent?.title || "Why Choose Voryent"}
+              Why Businesses Choose Voryent Solutions
             </h2>
             <p className="text-muted-foreground mt-4 text-lg">
-              {blocks?.whyChooseVoryent?.description ||
-                "What sets us apart in delivering exceptional digital products."}
+              We combine innovation, technical expertise, and a client-first approach to deliver software that creates long-term business value.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {(
-              blocks?.whyChooseVoryent?.items || [
-                {
-                  icon: "Layers",
-                  title: "Modern Stack",
-                  desc: "We use the latest tools that are proven in production to ensure high performance and maintainability.",
-                },
-                {
-                  icon: "Zap",
-                  title: "Fast Delivery",
-                  desc: "Agile methodologies and CI/CD pipelines enable rapid iterations and faster time-to-market.",
-                },
-                {
-                  icon: "Server",
-                  title: "Scalable Architecture",
-                  desc: "Systems designed to handle growing user bases and expanding data demands effortlessly.",
-                },
-                {
-                  icon: "Cpu",
-                  title: "AI-Enhanced Development",
-                  desc: "Leveraging AI internally to accelerate development and writing AI integrations for your products.",
-                },
-                {
-                  icon: "Code2",
-                  title: "Clean Code",
-                  desc: "Strict typing, modularity, and comprehensive documentation ensure code is easily understandable.",
-                },
-                {
-                  icon: "Clock",
-                  title: "Long-Term Support",
-                  desc: "We don't just build and leave; we provide ongoing maintenance, updates, and strategic guidance.",
-                },
-              ]
-            ).map((reason: any, i: number) => {
-              const IconComp =
-                reason.icon === "Zap"
-                  ? Zap
-                  : reason.icon === "Server"
-                    ? Server
-                    : reason.icon === "Cpu"
-                      ? Cpu
-                      : reason.icon === "Code2"
-                        ? Code2
-                        : reason.icon === "Clock"
-                          ? Clock
-                          : Layers;
+            {[
+              {
+                icon: Layers,
+                title: "Tailored Solutions",
+                desc: "Every product is designed specifically for your business goals rather than relying on one-size-fits-all software.",
+              },
+              {
+                icon: Brain,
+                title: "AI Expertise",
+                desc: "We integrate practical artificial intelligence that improves efficiency, productivity, and customer experiences.",
+              },
+              {
+                icon: Cpu,
+                title: "Modern Technology Stack",
+                desc: "We use the latest frameworks, cloud platforms, and development tools to ensure long-term scalability.",
+              },
+              {
+                icon: Clock,
+                title: "Reliable Delivery",
+                desc: "Clear communication, organised workflows, and realistic timelines keep every project moving forward.",
+              },
+              {
+                icon: Shield,
+                title: "Security First",
+                desc: "Security, privacy, and compliance are considered from the first line of code through deployment.",
+              },
+              {
+                icon: TrendingUp,
+                title: "Long-Term Partnership",
+                desc: "We support our clients beyond launch with maintenance, optimisation, and continuous innovation.",
+              },
+            ].map((reason: any, i: number) => {
+              const IconComp = reason.icon;
               return (
                 <Card key={i} className="border-border/50 shadow-sm transition-all hover:shadow-md">
                   <CardContent className="p-6">
@@ -428,8 +390,7 @@ export default async function AboutPage() {
         </Container>
       </Section>
 
-
-      {/* ─── OUR LEADERSHIP ─── */}
+      {/* ─── OUR LEADERSHIP (DYNAMIC) ─── */}
       {blocks?.leadership?.members?.length > 0 && (
         <Section className="bg-background pt-16">
           <Container>
@@ -472,7 +433,7 @@ export default async function AboutPage() {
         </Section>
       )}
 
-      {/* ─── OUR TEAM ─── */}
+      {/* ─── OUR TEAM (DYNAMIC) ─── */}
       {employees.length > 0 && (
         <Section className="bg-muted/10">
           <Container>
@@ -512,7 +473,7 @@ export default async function AboutPage() {
         </Section>
       )}
 
-      {/* ─── OUR INVESTORS ─── */}
+      {/* ─── OUR INVESTORS (DYNAMIC) ─── */}
       {investors.length > 0 && (
         <Section className="bg-muted/5">
           <Container>

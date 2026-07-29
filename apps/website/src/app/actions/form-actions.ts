@@ -44,36 +44,41 @@ async function getClientIp() {
 async function checkRateLimit(ip: string): Promise<{ allowed: boolean; reason?: string }> {
   if (ip === "unknown") return { allowed: true }; // Fallback
 
-  const docRef = doc(db, "rate_limits", ip.replace(/[^a-zA-Z0-9.:]/g, "_"));
-  const docSnap = await getDoc(docRef);
-  
-  const now = Date.now();
-  
-  if (docSnap.exists()) {
-    const data = docSnap.data() || {};
-    let timestamps: number[] = data["timestamps"] || [];
+  try {
+    const docRef = doc(db, "rate_limits", ip.replace(/[^a-zA-Z0-9.:]/g, "_"));
+    const docSnap = await getDoc(docRef);
     
-    // Clean up old timestamps (older than 24h)
-    timestamps = timestamps.filter(t => now - t < DAY_MS);
+    const now = Date.now();
     
-    // Check daily limit
-    if (timestamps.length >= RATE_LIMIT_MAX_PER_DAY) {
-      return { allowed: false, reason: "Daily submission limit reached. Try again tomorrow." };
+    if (docSnap.exists()) {
+      const data = docSnap.data() || {};
+      let timestamps: number[] = data["timestamps"] || [];
+      
+      // Clean up old timestamps (older than 24h)
+      timestamps = timestamps.filter(t => now - t < DAY_MS);
+      
+      // Check daily limit
+      if (timestamps.length >= RATE_LIMIT_MAX_PER_DAY) {
+        return { allowed: false, reason: "Daily submission limit reached. Try again tomorrow." };
+      }
+      
+      // Check minute limit
+      const lastMinute = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+      if (lastMinute.length >= RATE_LIMIT_MAX_PER_WINDOW) {
+        return { allowed: false, reason: "Too many requests. Please wait a minute." };
+      }
+      
+      timestamps.push(now);
+      await setDoc(docRef, { timestamps }, { merge: true });
+    } else {
+      await setDoc(docRef, { timestamps: [now] });
     }
     
-    // Check minute limit
-    const lastMinute = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
-    if (lastMinute.length >= RATE_LIMIT_MAX_PER_WINDOW) {
-      return { allowed: false, reason: "Too many requests. Please wait a minute." };
-    }
-    
-    timestamps.push(now);
-    await setDoc(docRef, { timestamps }, { merge: true });
-  } else {
-    await setDoc(docRef, { timestamps: [now] });
+    return { allowed: true };
+  } catch (error) {
+    console.error("Rate limit check failed (possibly due to permissions). Bypassing limit:", error);
+    return { allowed: true };
   }
-  
-  return { allowed: true };
 }
 
 // Verify Anti-Spam (Honeypot, Time, Token)
@@ -121,37 +126,37 @@ function verifyAntiSpam(formData: FormData): { valid: boolean; reason?: string }
 
 // Server Action: Submit Contact Form
 export async function handleContactSubmission(formData: FormData) {
-  const spamCheck = verifyAntiSpam(formData);
-  if (!spamCheck.valid) return { error: spamCheck.reason };
-
-  const ip = await getClientIp();
-  const limitCheck = await checkRateLimit(ip);
-  if (!limitCheck.allowed) return { error: limitCheck.reason };
-
-  const data = {
-    firstName: formData.get("name") as string || formData.get("firstName") as string || "",
-    lastName: formData.get("lastName") as string || "",
-    email: formData.get("email") as string || "",
-    phone: formData.get("phone") as string || "",
-    message: formData.get("message") as string || "",
-    company: formData.get("company") as string || "",
-    services: formData.getAll("services") as string[],
-    budget: formData.get("budget") as string || "",
-    formType: formData.get("formType") as string || "contact",
-  };
-
-  // Basic Server-side validation
-  if (!data.email || !data.email.includes("@")) {
-    return { error: "Invalid email address." };
-  }
-  if (!data.firstName) {
-    return { error: "Name is required." };
-  }
-  if (data.message && data.message.length > 5000) {
-    return { error: "Message is too long." };
-  }
-
   try {
+    const spamCheck = verifyAntiSpam(formData);
+    if (!spamCheck.valid) return { error: spamCheck.reason };
+
+    const ip = await getClientIp();
+    const limitCheck = await checkRateLimit(ip);
+    if (!limitCheck.allowed) return { error: limitCheck.reason };
+
+    const data = {
+      firstName: formData.get("name") as string || formData.get("firstName") as string || "",
+      lastName: formData.get("lastName") as string || "",
+      email: formData.get("email") as string || "",
+      phone: formData.get("phone") as string || "",
+      message: formData.get("message") as string || "",
+      company: formData.get("company") as string || "",
+      services: formData.getAll("services") as string[],
+      budget: formData.get("budget") as string || "",
+      formType: formData.get("formType") as string || "contact",
+    };
+
+    // Basic Server-side validation
+    if (!data.email || !data.email.includes("@")) {
+      return { error: "Invalid email address." };
+    }
+    if (!data.firstName) {
+      return { error: "Name is required." };
+    }
+    if (data.message && data.message.length > 5000) {
+      return { error: "Message is too long." };
+    }
+
     if (data.formType === "project") {
       await submitProjectRequest(data);
     } else {
@@ -164,60 +169,59 @@ export async function handleContactSubmission(formData: FormData) {
   }
 }
 
-// Server Action: Submit Job Application
 export async function handleJobApplication(formData: FormData) {
-  const spamCheck = verifyAntiSpam(formData);
-  if (!spamCheck.valid) return { error: spamCheck.reason };
-
-  const ip = await getClientIp();
-  const limitCheck = await checkRateLimit(ip);
-  if (!limitCheck.allowed) return { error: limitCheck.reason };
-
-  const email = formData.get("email") as string;
-  const jobSlug = formData.get("jobSlug") as string;
-  const jobTitle = formData.get("jobTitle") as string;
-  
-  if (!email || !jobSlug) return { error: "Missing required fields." };
-
-  // Check for duplicate application
-  const q = query(
-    collection(db, "applications"), 
-    where("email", "==", email), 
-    where("jobSlug", "==", jobSlug)
-  );
-  const existingDocs = await getDocs(q);
-  if (!existingDocs.empty) {
-    return { error: "You have already applied for this position." };
-  }
-
-  const file = formData.get("resume") as File;
-  if (!file || file.size === 0) {
-    return { error: "Resume is required." };
-  }
-
-  // File size validation (max 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    return { error: "Resume must be under 5MB." };
-  }
-
-  // File type validation (Magic Number check)
-  const isValid = await isValidFileType(file);
-  if (!isValid) {
-    return { error: "Invalid file type. Only PDF, DOC, and DOCX are allowed. We scan for fake extensions." };
-  }
-
-  const data = {
-    fullName: formData.get("fullName") as string,
-    email: email,
-    phone: formData.get("phone") as string,
-    linkedIn: formData.get("linkedIn") as string,
-    portfolio: formData.get("portfolio") as string,
-    coverLetter: formData.get("coverLetter") as string,
-    jobSlug: jobSlug,
-    jobTitle: jobTitle,
-  };
-
   try {
+    const spamCheck = verifyAntiSpam(formData);
+    if (!spamCheck.valid) return { error: spamCheck.reason };
+
+    const ip = await getClientIp();
+    const limitCheck = await checkRateLimit(ip);
+    if (!limitCheck.allowed) return { error: limitCheck.reason };
+
+    const email = formData.get("email") as string;
+    const jobSlug = formData.get("jobSlug") as string;
+    const jobTitle = formData.get("jobTitle") as string;
+    
+    if (!email || !jobSlug) return { error: "Missing required fields." };
+
+    // Check for duplicate application
+    const q = query(
+      collection(db, "applications"), 
+      where("email", "==", email), 
+      where("jobSlug", "==", jobSlug)
+    );
+    const existingDocs = await getDocs(q);
+    if (!existingDocs.empty) {
+      return { error: "You have already applied for this position." };
+    }
+
+    const file = formData.get("resume") as File;
+    if (!file || file.size === 0) {
+      return { error: "Resume is required." };
+    }
+
+    // File size validation (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return { error: "Resume must be under 5MB." };
+    }
+
+    // File type validation (Magic Number check)
+    const isValid = await isValidFileType(file);
+    if (!isValid) {
+      return { error: "Invalid file type. Only PDF, DOC, and DOCX are allowed. We scan for fake extensions." };
+    }
+
+    const data = {
+      fullName: formData.get("fullName") as string,
+      email: email,
+      phone: formData.get("phone") as string,
+      linkedIn: formData.get("linkedIn") as string,
+      portfolio: formData.get("portfolio") as string,
+      coverLetter: formData.get("coverLetter") as string,
+      jobSlug: jobSlug,
+      jobTitle: jobTitle,
+    };
+
     const resumeUrl = await uploadResume(file);
     await submitJobApplication({ ...data, resumeUrl });
     return { success: true };
