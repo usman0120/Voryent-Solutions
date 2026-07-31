@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Container, Section, Badge, FaqComponent } from "@voryent/ui";
 import { ChevronRight, MapPin, Clock, Calendar, Briefcase, Sparkles } from "lucide-react";
-import { getJobBySlug, getCareersData } from "@/lib/firebase/services";
-import { ApplicationForm } from "./application-form";
+import { getJobBySlug } from "@/lib/firebase/services";
+import { JobDetailClient } from "./job-detail-client";
 
 interface JobDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -31,19 +31,15 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const resolvedParams = await params;
-  const [jobRaw, careersRaw] = await Promise.all([
-    getJobBySlug(resolvedParams.slug).catch(() => null),
-    getCareersData().catch(() => null),
-  ]);
+  const jobRaw = await getJobBySlug(resolvedParams.slug).catch(() => null);
 
-  const job = jobRaw as any;
-  const careers = careersRaw as any;
+  const job = jobRaw ? JSON.parse(JSON.stringify(jobRaw)) : null;
 
   if (!job) {
     notFound();
   }
 
-  const faqItems = careers?.faq?.items || [
+  const faqItems = [
     {
       question: "Do you offer remote work?",
       answer: "Yes, we are a remote-first company. We hire talented engineers from all over the world and provide flexible working hours to accommodate different time zones."
@@ -108,70 +104,11 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         </Container>
       </Section>
 
-      {/* ─── DESCRIPTION & FORM ─── */}
-      <Section className="py-12 md:py-20">
+      {/* ─── TABS & DETAILS ─── */}
+      <Section className="py-12 md:py-16">
         <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-5xl mx-auto">
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-8">
-              {/* Overview */}
-              <div>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Job Description</h2>
-                <div 
-                  className="prose dark:prose-invert max-w-none text-muted-foreground text-sm leading-relaxed" 
-                  dangerouslySetInnerHTML={{ __html: job.description }} 
-                />
-              </div>
-
-              {/* Responsibilities */}
-              {job.responsibilities && (
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-4">Key Responsibilities</h2>
-                  <div 
-                    className="prose dark:prose-invert max-w-none text-muted-foreground text-sm leading-relaxed" 
-                    dangerouslySetInnerHTML={{ __html: job.responsibilities }} 
-                  />
-                </div>
-              )}
-
-              {/* Requirements */}
-              {job.requirements && (
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-4">Requirements</h2>
-                  <div 
-                    className="prose dark:prose-invert max-w-none text-muted-foreground text-sm leading-relaxed" 
-                    dangerouslySetInnerHTML={{ __html: job.requirements }} 
-                  />
-                </div>
-              )}
-
-              {/* Preferred Skills */}
-              {job.preferredSkills && (
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-4">Preferred Skills</h2>
-                  <div 
-                    className="prose dark:prose-invert max-w-none text-muted-foreground text-sm leading-relaxed" 
-                    dangerouslySetInnerHTML={{ __html: job.preferredSkills }} 
-                  />
-                </div>
-              )}
-
-              {/* Benefits */}
-              {job.benefits && (
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-4">Benefits & Perks</h2>
-                  <div 
-                    className="prose dark:prose-invert max-w-none text-muted-foreground text-sm leading-relaxed" 
-                    dangerouslySetInnerHTML={{ __html: job.benefits }} 
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Right Application Form Column */}
-            <div className="lg:col-span-5 sticky top-24 h-fit">
-              <ApplicationForm jobId={job.id} jobTitle={job.title} />
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <JobDetailClient job={job} />
           </div>
         </Container>
       </Section>

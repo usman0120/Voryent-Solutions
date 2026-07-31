@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronDown,
+  Paperclip,
+  X
 } from "lucide-react"
 import { toast } from "sonner"
 import { SocialIcons } from "@/components/layout/site-footer"
@@ -30,6 +32,17 @@ const serviceOptions = [
   "Other",
 ]
 
+const projectTypes = [
+  "AI Engineering & Automation (Primary Focus)",
+  "Custom Software Development",
+  "Web Development",
+  "Mobile App Development",
+  "UI/UX Design",
+  "Cloud & DevOps",
+  "Data & Analytics",
+  "Maintenance & Support"
+]
+
 const budgetOptions = [
   "Under $10,000",
   "$10,000 – $25,000",
@@ -37,6 +50,14 @@ const budgetOptions = [
   "$50,000 – $100,000",
   "$100,000+",
   "Not sure yet",
+]
+
+const timelineOptions = [
+  "Immediately",
+  "Within 1 Month",
+  "1-3 Months",
+  "3-6 Months",
+  "Flexible"
 ]
 
 const faqs = [
@@ -64,20 +85,12 @@ const faqs = [
 
 /* ──────────────────────────── FORM TYPES ──────────────────────────── */
 
-interface FormData {
-  name: string
-  company: string
-  email: string
-  service: string
-  budget: string
-  message: string
-}
-
 interface FormErrors {
   name?: string
   email?: string
-  service?: string
+  type?: string
   message?: string
+  terms?: string
 }
 
 type FormStatus = "idle" | "submitting" | "success" | "error"
@@ -132,7 +145,7 @@ function QuickMessageForm() {
         toast.error("Submission failed", { description: result.error })
         return
       }
-      setStatus("idle")
+      setStatus("success")
       setFormData({ name: "", company: "", email: "", service: "", budget: "", message: "" })
       toast.success("Thank you for reaching out!", { description: "We've received your message and will get back to you soon." })
     } catch {
@@ -141,36 +154,51 @@ function QuickMessageForm() {
     }
   }
 
+  if (status === "success") {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-border/40 bg-card/40 p-12 text-center backdrop-blur-sm" role="status" aria-live="polite">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 text-green-500 mb-6 shadow-sm ring-1 ring-green-500/20">
+          <CheckCircle2 className="h-10 w-10" />
+        </div>
+        <h3 className="text-2xl font-bold text-foreground">Message Sent!</h3>
+        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed text-sm">Thank you for contacting us. We have received your message and will respond as soon as possible.</p>
+        <button onClick={() => setStatus("idle")} suppressHydrationWarning className="mt-8 inline-flex items-center text-sm font-medium text-primary hover:opacity-80 transition-opacity">
+          Send another message
+        </button>
+      </div>
+    )
+  }
+
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-2xl border border-border/40 bg-card p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] transition-all">
       <div style={{ display: 'none' }} aria-hidden="true">
         <label htmlFor="bot_field_website">Website</label>
         <input type="text" id="bot_field_website" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
       </div>
       {status === "error" && (
-        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <p>{(errors as any)._form || "Something went wrong. Please try again."}</p>
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="contact-name" className="block text-sm font-medium text-foreground mb-2">Name <span className="text-destructive">*</span></label>
-          <input id="contact-name" name="name" type="text" required suppressHydrationWarning value={formData.name} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="Your full name" />
-          {errors.name && <p className="mt-1.5 text-xs text-destructive">{errors.name}</p>}
+        <div className="space-y-2">
+          <label htmlFor="contact-name" className="text-sm font-medium text-foreground">Full Name <span className="text-destructive">*</span></label>
+          <input id="contact-name" name="name" type="text" required suppressHydrationWarning value={formData.name} onChange={handleChange} className="flex h-11 w-full rounded-xl border border-input/60 bg-background/50 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input" placeholder="John Doe" />
+          {errors.name && <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">{errors.name}</p>}
         </div>
-        <div>
-          <label htmlFor="contact-email" className="block text-sm font-medium text-foreground mb-2">Email <span className="text-destructive">*</span></label>
-          <input id="contact-email" name="email" type="email" required suppressHydrationWarning value={formData.email} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="you@example.com" />
-          {errors.email && <p className="mt-1.5 text-xs text-destructive">{errors.email}</p>}
+        <div className="space-y-2">
+          <label htmlFor="contact-email" className="text-sm font-medium text-foreground">Email <span className="text-destructive">*</span></label>
+          <input id="contact-email" name="email" type="email" required suppressHydrationWarning value={formData.email} onChange={handleChange} className="flex h-11 w-full rounded-xl border border-input/60 bg-background/50 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input" placeholder="john@example.com" />
+          {errors.email && <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">{errors.email}</p>}
         </div>
       </div>
-      <div>
-        <label htmlFor="contact-message" className="block text-sm font-medium text-foreground mb-2">Message <span className="text-destructive">*</span></label>
-        <textarea id="contact-message" name="message" required suppressHydrationWarning rows={5} value={formData.message} onChange={handleChange} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y min-h-[120px]" placeholder="How can we help you?" />
-        {errors.message && <p className="mt-1.5 text-xs text-destructive">{errors.message}</p>}
+      <div className="space-y-2">
+        <label htmlFor="contact-message" className="text-sm font-medium text-foreground">Message <span className="text-destructive">*</span></label>
+        <textarea id="contact-message" name="message" required suppressHydrationWarning rows={5} value={formData.message} onChange={handleChange} className="flex w-full rounded-xl border border-input/60 bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 resize-y min-h-[140px] transition-all hover:border-input" placeholder="How can we help you?" />
+        {errors.message && <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">{errors.message}</p>}
       </div>
-      <button type="submit" disabled={status === "submitting"} suppressHydrationWarning className="inline-flex w-full items-center justify-center rounded-md bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+      <button type="submit" disabled={status === "submitting"} suppressHydrationWarning className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:opacity-90 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]">
         {status === "submitting" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Mail className="mr-2 h-4 w-4" /> Send Message</>}
       </button>
     </form>
@@ -179,8 +207,10 @@ function QuickMessageForm() {
 
 function ProjectRequestForm() {
   const [formData, setFormData] = React.useState({
-    name: "", company: "", email: "", service: "", budget: "", message: ""
+    name: "", email: "", company: "", phone: "", type: "", budget: "", timeline: "", message: "", nda: false, terms: false
   })
+  const [file, setFile] = React.useState<File | null>(null)
+  const [fileError, setFileError] = React.useState("")
   const [errors, setErrors] = React.useState<FormErrors>({})
   const [status, setStatus] = React.useState<FormStatus>("idle")
   const [securityToken, setSecurityToken] = React.useState("")
@@ -193,23 +223,53 @@ function ProjectRequestForm() {
 
   function validate(): boolean {
     const newErrors: FormErrors = {}
-    if (!formData.name.trim()) newErrors.name = "Name is required."
+    if (!formData.name.trim()) newErrors.name = "Full Name is required."
     if (!formData.email.trim()) newErrors.email = "Email is required."
     else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Please enter a valid email."
-    if (!formData.service) newErrors.service = "Please select a service."
-    if (!formData.message.trim()) newErrors.message = "Project details are required."
+    if (!formData.type) newErrors.type = "Please select a project type."
+    if (!formData.message.trim()) newErrors.message = "Project description is required."
     else if (formData.message.trim().length < 20) newErrors.message = "Please provide at least 20 characters."
+    if (!formData.terms) newErrors.terms = "You must agree to the Terms of Service and Privacy Policy."
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    if (type === "checkbox") {
+      const checked = (e.target as HTMLInputElement).checked
+      setFormData((prev) => ({ ...prev, [name]: checked }))
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }))
+    }
+    
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }))
     }
   }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+    
+    // Strict 700KB limit for base64 safety in Firestore (which has a 1MB doc limit)
+    if (selected.size > 700 * 1024) {
+      setFileError("File is too large. Maximum size is 700KB (to ensure database compatibility). Please upload a smaller file.");
+      setFile(null);
+    } else {
+      setFileError("");
+      setFile(selected);
+    }
+  };
+
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -219,6 +279,14 @@ function ProjectRequestForm() {
       const fData = new FormData(e.currentTarget)
       fData.append("security_token", securityToken)
       fData.append("formType", "project")
+      
+      if (file) {
+        const base64 = await convertFileToBase64(file);
+        fData.append("attachmentBase64", base64);
+        fData.append("attachmentName", file.name);
+        fData.append("attachmentMimeType", file.type);
+      }
+
       const result = await handleContactSubmission(fData)
       if (result.error) {
         setErrors((prev) => ({ ...prev, _form: result.error } as any))
@@ -226,7 +294,8 @@ function ProjectRequestForm() {
         return
       }
       setStatus("success")
-      setFormData({ name: "", company: "", email: "", service: "", budget: "", message: "" })
+      setFormData({ name: "", email: "", company: "", phone: "", type: "", budget: "", timeline: "", message: "", nda: false, terms: false })
+      setFile(null)
     } catch {
       setStatus("error")
     }
@@ -234,13 +303,13 @@ function ProjectRequestForm() {
 
   if (status === "success") {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center" role="status" aria-live="polite">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-6">
-          <CheckCircle2 className="h-8 w-8" />
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-border/40 bg-card/40 p-12 text-center backdrop-blur-sm" role="status" aria-live="polite">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 text-green-500 mb-6 shadow-sm ring-1 ring-green-500/20">
+          <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h3 className="text-2xl font-bold text-foreground">Request Submitted!</h3>
-        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed">We will review your project details and get back to you shortly.</p>
-        <button onClick={() => setStatus("idle")} suppressHydrationWarning className="mt-8 inline-flex items-center text-sm font-medium text-primary hover:underline">
+        <h3 className="text-2xl font-bold text-foreground">Partnership Request Submitted!</h3>
+        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed text-sm">Our enterprise team will review your requirements and get back to you shortly to discuss next steps.</p>
+        <button onClick={() => setStatus("idle")} suppressHydrationWarning className="mt-8 inline-flex items-center text-sm font-medium text-primary hover:opacity-80 transition-opacity">
           Submit another request
         </button>
       </div>
@@ -248,73 +317,173 @@ function ProjectRequestForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+    <form onSubmit={handleSubmit} noValidate className="space-y-8 rounded-2xl border border-border/40 bg-card p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] transition-all">
       <div style={{ display: 'none' }} aria-hidden="true">
         <label htmlFor="bot_field_website_project">Website</label>
         <input type="text" id="bot_field_website_project" name="bot_field_website" tabIndex={-1} autoComplete="off" suppressHydrationWarning />
       </div>
+      
       {status === "error" && (
-        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <p>{(errors as any)._form || "Something went wrong. Please try again."}</p>
         </div>
       )}
+
+      {/* Grid for basic details */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="req-name" className="block text-sm font-medium text-foreground mb-2">Name <span className="text-destructive">*</span></label>
-          <input id="req-name" name="name" type="text" required suppressHydrationWarning value={formData.name} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="Your full name" />
-          {errors.name && <p className="mt-1.5 text-xs text-destructive">{errors.name}</p>}
+        <div className="space-y-2">
+          <label htmlFor="req-name" className="text-sm font-medium text-foreground">Full Name <span className="text-destructive">*</span></label>
+          <input id="req-name" name="name" type="text" required suppressHydrationWarning value={formData.name} onChange={handleChange} className="flex h-11 w-full rounded-xl border border-input/60 bg-background/50 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input" placeholder="John Doe" />
+          {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
         </div>
-        <div>
-          <label htmlFor="req-company" className="block text-sm font-medium text-foreground mb-2">Company</label>
-          <input id="req-company" name="company" type="text" suppressHydrationWarning value={formData.company} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="Your company name" />
+        <div className="space-y-2">
+          <label htmlFor="req-email" className="text-sm font-medium text-foreground">Email <span className="text-destructive">*</span></label>
+          <input id="req-email" name="email" type="email" required suppressHydrationWarning value={formData.email} onChange={handleChange} className="flex h-11 w-full rounded-xl border border-input/60 bg-background/50 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input" placeholder="john@example.com" />
+          {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
         </div>
-        <div>
-          <label htmlFor="req-email" className="block text-sm font-medium text-foreground mb-2">Email <span className="text-destructive">*</span></label>
-          <input id="req-email" name="email" type="email" required suppressHydrationWarning value={formData.email} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" placeholder="you@example.com" />
-          {errors.email && <p className="mt-1.5 text-xs text-destructive">{errors.email}</p>}
+        <div className="space-y-2">
+          <label htmlFor="req-company" className="text-sm font-medium text-foreground">Company <span className="text-muted-foreground font-normal">(Optional)</span></label>
+          <input id="req-company" name="company" type="text" suppressHydrationWarning value={formData.company} onChange={handleChange} className="flex h-11 w-full rounded-xl border border-input/60 bg-background/50 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input" placeholder="Company Name" />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="req-phone" className="text-sm font-medium text-foreground">Phone <span className="text-muted-foreground font-normal">(Optional)</span></label>
+          <input id="req-phone" name="phone" type="tel" suppressHydrationWarning value={formData.phone} onChange={handleChange} className="flex h-11 w-full rounded-xl border border-input/60 bg-background/50 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input" placeholder="+1 234 567 890" />
         </div>
       </div>
+
+      <div className="border-t border-border/40 my-8"></div>
+
+      {/* Grid for project specifics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="req-service" className="block text-sm font-medium text-foreground mb-2">Service <span className="text-destructive">*</span></label>
+        <div className="space-y-2">
+          <label htmlFor="req-type" className="text-sm font-medium text-foreground">Type <span className="text-destructive">*</span></label>
           <div className="relative">
-          <select id="req-service" name="service" required suppressHydrationWarning value={formData.service} onChange={handleChange} className="flex h-10 w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-            <option value="" disabled>Select a service</option>
-            <option value="Software Engineering">Software Engineering</option>
-            <option value="Cloud Architecture">Cloud Architecture</option>
-            <option value="Data & AI">Data & AI</option>
-            <option value="UI/UX Design">UI/UX Design</option>
-            <option value="DevOps & SRE">DevOps & SRE</option>
-            <option value="Other">Other</option>
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <select id="req-type" name="type" required suppressHydrationWarning value={formData.type} onChange={handleChange} className="flex h-11 w-full appearance-none rounded-xl border border-input/60 bg-background/50 px-4 py-2 pr-10 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input cursor-pointer">
+              <option value="" disabled>Select Type</option>
+              {projectTypes.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
           </div>
-          {errors.service && <p className="mt-1.5 text-xs text-destructive">{errors.service}</p>}
+          {errors.type && <p className="text-xs text-destructive">{errors.type}</p>}
         </div>
-        <div>
-          <label htmlFor="req-budget" className="block text-sm font-medium text-foreground mb-2">Budget</label>
+        <div className="space-y-2">
+          <label htmlFor="req-budget" className="text-sm font-medium text-foreground">Budget Range</label>
           <div className="relative">
-          <select id="req-budget" name="budget" suppressHydrationWarning value={formData.budget} onChange={handleChange} className="flex h-10 w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-            <option value="" disabled>Select a range</option>
-            <option value="Under $10,000">Under $10,000</option>
-            <option value="$10,000 – $25,000">$10,000 – $25,000</option>
-            <option value="$25,000 – $50,000">$25,000 – $50,000</option>
-            <option value="$50,000 – $100,000">$50,000 – $100,000</option>
-            <option value="$100,000+">$100,000+</option>
-            <option value="Not sure yet">Not sure yet</option>
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <select id="req-budget" name="budget" suppressHydrationWarning value={formData.budget} onChange={handleChange} className="flex h-11 w-full appearance-none rounded-xl border border-input/60 bg-background/50 px-4 py-2 pr-10 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input cursor-pointer">
+              <option value="" disabled>Select Budget Range</option>
+              {budgetOptions.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="req-timeline" className="text-sm font-medium text-foreground">Timeline</label>
+          <div className="relative">
+            <select id="req-timeline" name="timeline" suppressHydrationWarning value={formData.timeline} onChange={handleChange} className="flex h-11 w-full appearance-none rounded-xl border border-input/60 bg-background/50 px-4 py-2 pr-10 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:border-input cursor-pointer">
+              <option value="" disabled>Select Timeline</option>
+              {timelineOptions.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
           </div>
         </div>
       </div>
-      <div>
-        <label htmlFor="req-message" className="block text-sm font-medium text-foreground mb-2">Project Details <span className="text-destructive">*</span></label>
-        <textarea id="req-message" name="message" required suppressHydrationWarning rows={5} value={formData.message} onChange={handleChange} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y min-h-[120px]" placeholder="Describe your project requirements, goals, and timeline..." />
-        {errors.message && <p className="mt-1.5 text-xs text-destructive">{errors.message}</p>}
+
+      <div className="space-y-2">
+        <label htmlFor="req-message" className="text-sm font-medium text-foreground">Description <span className="text-destructive">*</span></label>
+        <textarea id="req-message" name="message" required suppressHydrationWarning rows={5} value={formData.message} onChange={handleChange} className="flex w-full rounded-xl border border-input/60 bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 resize-y min-h-[160px] transition-all hover:border-input" placeholder="Describe your project, goals, and requirements..." />
+        {errors.message && <p className="text-xs text-destructive">{errors.message}</p>}
       </div>
-      <button type="submit" disabled={status === "submitting"} suppressHydrationWarning className="inline-flex w-full items-center justify-center rounded-md bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-        {status === "submitting" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : <><ArrowRight className="mr-2 h-4 w-4" /> Submit Request</>}
+
+      {/* Attachments */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-foreground">Attachments <span className="text-muted-foreground font-normal">(Optional)</span></label>
+        <div className="relative mt-2 flex justify-center rounded-xl border border-dashed border-input/60 bg-background/50 px-6 py-10 transition-all hover:border-primary/50 hover:bg-primary/5">
+          <div className="text-center">
+            {file ? (
+              <div className="flex flex-col items-center">
+                <Paperclip className="mx-auto h-10 w-10 text-primary mb-3" />
+                <p className="text-sm font-medium text-foreground">{file.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">{(file.size / 1024).toFixed(1)} KB</p>
+                <button 
+                  type="button" 
+                  onClick={() => setFile(null)}
+                  className="mt-4 text-xs font-medium text-destructive hover:underline flex items-center justify-center gap-1"
+                >
+                  <X className="h-3 w-3" /> Remove File
+                </button>
+              </div>
+            ) : (
+              <>
+                <Paperclip className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
+                <div className="mt-2 flex text-sm leading-6 text-muted-foreground justify-center">
+                  <label
+                    htmlFor="file-upload"
+                    className="relative cursor-pointer rounded-md font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/50 hover:text-primary/80"
+                  >
+                    <span>Click to browse</span>
+                    <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+                  </label>
+                  <p className="pl-1">or drag & drop files here</p>
+                </div>
+                <p className="text-xs leading-5 text-muted-foreground/70 mt-2">Max 700KB per file • PDF, DOC, Images</p>
+              </>
+            )}
+          </div>
+        </div>
+        {fileError && <p className="text-xs text-destructive mt-2">{fileError}</p>}
+      </div>
+
+      <div className="border-t border-border/40 my-8"></div>
+
+      {/* Checkboxes */}
+      <div className="space-y-4">
+        <div className="flex items-start">
+          <div className="flex h-6 items-center">
+            <input
+              id="nda"
+              name="nda"
+              type="checkbox"
+              checked={formData.nda}
+              onChange={handleChange}
+              className="h-4 w-4 rounded border-input text-primary focus:ring-primary/50 bg-background"
+            />
+          </div>
+          <div className="ml-3 text-sm leading-6">
+            <label htmlFor="nda" className="font-medium text-foreground cursor-pointer">
+              I require a Non-Disclosure Agreement (NDA) before discussing project details
+            </label>
+          </div>
+        </div>
+
+        <div className="flex items-start">
+          <div className="flex h-6 items-center">
+            <input
+              id="terms"
+              name="terms"
+              type="checkbox"
+              checked={formData.terms}
+              onChange={handleChange}
+              className="h-4 w-4 rounded border-input text-primary focus:ring-primary/50 bg-background"
+            />
+          </div>
+          <div className="ml-3 text-sm leading-6">
+            <label htmlFor="terms" className="font-medium text-foreground cursor-pointer">
+              I agree to the Terms of Service and Privacy Policy <span className="text-destructive">*</span>
+            </label>
+            {errors.terms && <p className="text-xs text-destructive mt-1">{errors.terms}</p>}
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" disabled={status === "submitting"} suppressHydrationWarning className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:opacity-90 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]">
+        {status === "submitting" ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Submitting Request...</> : <><ArrowRight className="mr-2 h-5 w-5" /> Submit Partnership Request</>}
       </button>
     </form>
   )
@@ -322,16 +491,16 @@ function ProjectRequestForm() {
 
 export function ContactTabs() {
   return (
-    <Tabs defaultValue="message" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-8">
-        <TabsTrigger value="message">Quick Message</TabsTrigger>
-        <TabsTrigger value="project">Project Request</TabsTrigger>
+    <Tabs defaultValue="project" className="w-full">
+      <TabsList className="grid w-full grid-cols-2 mb-10 h-14 p-1.5 rounded-2xl bg-muted/50">
+        <TabsTrigger value="project" className="rounded-xl font-medium text-sm data-[state=active]:shadow-sm data-[state=active]:bg-background transition-all">Project Partnership</TabsTrigger>
+        <TabsTrigger value="message" className="rounded-xl font-medium text-sm data-[state=active]:shadow-sm data-[state=active]:bg-background transition-all">Quick Message</TabsTrigger>
       </TabsList>
-      <TabsContent value="message" className="animate-in fade-in-50 duration-500">
-        <QuickMessageForm />
-      </TabsContent>
-      <TabsContent value="project" className="animate-in fade-in-50 duration-500">
+      <TabsContent value="project" className="animate-in fade-in-50 zoom-in-[0.98] duration-500 mt-2">
         <ProjectRequestForm />
+      </TabsContent>
+      <TabsContent value="message" className="animate-in fade-in-50 zoom-in-[0.98] duration-500 mt-2">
+        <QuickMessageForm />
       </TabsContent>
     </Tabs>
   )
@@ -348,18 +517,18 @@ function FaqItem({
   const answerId = React.useId()
 
   return (
-    <div className="border-b border-border">
+    <div className="border-b border-border/40 last:border-0 group">
       <button
         type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-controls={answerId}
         suppressHydrationWarning
-        className="flex w-full items-center justify-between py-4 text-left text-sm font-medium text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+        className="flex w-full items-center justify-between py-5 text-left text-[15px] font-semibold text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-lg px-2 -mx-2"
       >
         {question}
         <ChevronDown
-          className={`h-4 w-4 text-muted-foreground transition-transform duration-200 flex-shrink-0 ml-4 ${
+          className={`h-5 w-5 text-muted-foreground/70 transition-transform duration-300 flex-shrink-0 ml-4 group-hover:text-primary ${
             open ? "rotate-180" : ""
           }`}
         />
@@ -368,9 +537,9 @@ function FaqItem({
         id={answerId}
         role="region"
         hidden={!open}
-        className="overflow-hidden"
+        className={`overflow-hidden transition-all duration-300 ${open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <p className="pb-4 text-sm text-muted-foreground leading-relaxed">
+        <p className="pb-5 px-2 -mx-2 text-sm text-muted-foreground leading-relaxed">
           {answer}
         </p>
       </div>
@@ -389,60 +558,97 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
   return (
     <>
       {/* ─── HERO ─── */}
-      <section className="pt-16 pb-12 md:pb-16">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 pt-12 md:pt-20">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
-              Let&apos;s Build Something Great Together
+      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-background to-background pointer-events-none" aria-hidden="true" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-screen-xl h-[500px] bg-primary/5 rounded-full blur-3xl opacity-50 pointer-events-none" />
+        
+        <div className="container relative mx-auto px-4 md:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+              Let&apos;s Build Something <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">Great</span> Together
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              Have a project in mind? Tell us about it. We&apos;ll respond
-              within 1–2 business days with an initial assessment and next
-              steps.
+            <p className="mt-6 text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              Ready to transform your business with intelligent software? Tell us about your goals, and we&apos;ll respond within 1–2 business days.
             </p>
           </div>
         </div>
       </section>
 
       {/* ─── FORM + INFO ─── */}
-      <section className="pb-20 md:pb-28">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
+      <section className="pb-24 md:pb-32 relative z-10">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
+            
             {/* Contact form — 3 columns */}
             <div className="lg:col-span-3">
+              <div className="mb-8 rounded-2xl bg-primary/5 border border-primary/20 p-5 flex items-start gap-4 shadow-sm">
+                <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Have a quick question?</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    You might find an instant answer in our <Link href="/faq" className="font-medium text-primary underline underline-offset-4 hover:opacity-80 transition-opacity">FAQ section</Link>. 
+                    If you don't find what you're looking for, please feel free to fill out the form below!
+                  </p>
+                </div>
+              </div>
               <ContactTabs />
             </div>
 
             {/* Sidebar info — 2 columns */}
-            <aside className="lg:col-span-2 space-y-8">
+            <aside className="lg:col-span-2 space-y-8 lg:sticky lg:top-24">
+              
               {/* Contact Information */}
-              <div className="rounded-xl border bg-card p-6 md:p-8 shadow-sm space-y-6">
-                <h2 className="text-lg font-semibold text-foreground">
-                  Contact Information
+              <div className="rounded-2xl border border-border/40 bg-card p-6 md:p-8 shadow-sm transition-all hover:shadow-md">
+                <h2 className="text-xl font-bold text-foreground mb-6">
+                  Get in Touch
                 </h2>
-                <div className="space-y-5">
-                  <div className="flex items-start gap-3">
-                    <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Mail className="h-5 w-5" />
+                    </div>
                     <div>
-                      <p className="text-sm font-medium text-foreground">
-                        Email
+                      <p className="text-sm font-semibold text-foreground mb-1">
+                        Email Us
                       </p>
                       <a
                         href={`mailto:${contactSettings?.email || "hello@voryentsolutions.com"}`}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors block"
                       >
                         {contactSettings?.email || "hello@voryentsolutions.com"}
                       </a>
                     </div>
                   </div>
-                  {contactSettings?.address && (
-                    <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  
+                  {contactSettings?.phone && (
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Phone className="h-5 w-5" />
+                      </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">
-                          Address
+                        <p className="text-sm font-semibold text-foreground mb-1">
+                          Call Us
                         </p>
-                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                        <a
+                          href={`tel:${contactSettings?.phone}`}
+                          className="text-sm text-muted-foreground hover:text-primary transition-colors block"
+                        >
+                          {contactSettings?.phone}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {contactSettings?.address && (
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <MapPin className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground mb-1">
+                          Headquarters
+                        </p>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
                           {contactSettings.address}
                         </p>
                       </div>
@@ -453,8 +659,8 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
 
               {/* Social Media */}
               {socialSettings && (
-                <div className="rounded-xl border bg-card p-6 md:p-8 shadow-sm space-y-4">
-                  <h2 className="text-lg font-semibold text-foreground">
+                <div className="rounded-2xl border border-border/40 bg-card p-6 md:p-8 shadow-sm transition-all hover:shadow-md">
+                  <h2 className="text-xl font-bold text-foreground mb-6">
                     Connect With Us
                   </h2>
                   <div className="pt-2">
@@ -464,31 +670,21 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
               )}
 
               {/* Office Status */}
-              <div className="rounded-xl border bg-card p-6 md:p-8 shadow-sm space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">
-                  Office Status
+              <div className="rounded-2xl border border-border/40 bg-card p-6 md:p-8 shadow-sm transition-all hover:shadow-md bg-gradient-to-br from-card to-primary/5">
+                <h2 className="text-xl font-bold text-foreground mb-6">
+                  Global Operations
                 </h2>
-                <div className="flex items-start gap-3">
-                  <Globe className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      Remote-First, Global Team
-                    </p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      We work across time zones to provide responsive,
-                      round-the-clock collaboration with your team.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      Headquarters
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Pakistan &amp; worldwide
-                    </p>
+                <div className="space-y-5">
+                  <div className="flex items-start gap-4">
+                    <Globe className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground mb-1">
+                        Remote-First & Worldwide
+                      </p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Our distributed team works across time zones to provide responsive, seamless collaboration wherever you are.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -498,18 +694,18 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
       </section>
 
       {/* ─── FAQ PREVIEW ─── */}
-      <section className="py-20 md:py-28 bg-muted/30">
+      <section className="py-20 md:py-32 bg-muted/30 border-y border-border/40">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-12">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                 Frequently Asked Questions
               </h2>
               <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-                Quick answers to the questions we hear most often.
+                Quick answers to the questions we hear most often from new partners.
               </p>
             </div>
-            <div className="rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+            <div className="rounded-2xl border border-border/40 bg-card p-6 md:p-10 shadow-sm">
               {faqs.map((faq) => (
                 <FaqItem
                   key={faq.question}
@@ -518,42 +714,39 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
                 />
               ))}
             </div>
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              Have a different question?{" "}
+            <div className="mt-10 text-center">
               <Link
                 href="/faq"
-                className="font-medium text-primary hover:underline"
+                className="inline-flex items-center justify-center font-medium text-primary hover:text-primary/80 transition-colors"
               >
-                View all FAQs
+                View all FAQs <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="py-20 md:py-28">
+      <section className="py-20 md:py-32">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="relative rounded-2xl bg-primary px-8 py-16 md:px-16 md:py-20 text-center overflow-hidden">
+          <div className="relative rounded-3xl bg-primary px-8 py-16 md:px-16 md:py-24 text-center overflow-hidden shadow-2xl">
             <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/10"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-black/20"
               aria-hidden="true"
             />
             <div className="relative z-10 max-w-2xl mx-auto">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary-foreground">
-                Prefer a Conversation?
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground leading-tight">
+                Ready to accelerate your digital growth?
               </h2>
-              <p className="mt-4 text-lg text-primary-foreground/80 leading-relaxed">
-                Sometimes it&apos;s easier to talk it through. Schedule a
-                no-obligation discovery call and let&apos;s explore how we can
-                help.
+              <p className="mt-6 text-lg text-primary-foreground/90 leading-relaxed">
+                Sometimes it&apos;s easier to talk it through. Send us an email and let's schedule a discovery call.
               </p>
               <a
                 href="mailto:hello@voryentsolutions.com"
-                className="mt-8 inline-flex items-center justify-center rounded-md bg-background px-6 py-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-background/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="mt-10 inline-flex items-center justify-center rounded-xl bg-background px-8 py-4 text-sm font-bold text-foreground shadow-lg transition-all hover:bg-background/90 hover:scale-105 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Email Us Directly
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </a>
             </div>
           </div>
@@ -562,4 +755,3 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
     </>
   )
 }
-

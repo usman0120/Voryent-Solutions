@@ -9,6 +9,7 @@ import { FormLayout } from "@/components/admin/cms/form-layout";
 import { SlugField } from "@/components/admin/cms/slug-field";
 import { SeoEditor } from "@/components/admin/cms/seo-editor";
 import { RichTextEditor } from "@/components/admin/cms/rich-text-editor";
+import { DynamicListInput } from "@/components/admin/cms/dynamic-list-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@voryent/ui";
 import { jobSchema, type JobFormValues } from "@/lib/admin/validations/job.schema";
 import { type JobType } from "@/lib/admin/services/jobs.service";
@@ -59,10 +60,10 @@ export function JobForm({ initialData, id }: JobFormProps) {
       salary: initialData?.salary || "",
       currency: initialData?.currency || "USD",
       description: initialData?.description || "",
-      responsibilities: initialData?.responsibilities || "",
-      requirements: initialData?.requirements || "",
-      preferredSkills: initialData?.preferredSkills || "",
-      benefits: initialData?.benefits || "",
+      responsibilities: Array.isArray(initialData?.responsibilities) ? initialData?.responsibilities : [],
+      requirements: Array.isArray(initialData?.requirements) ? initialData?.requirements : [],
+      preferredSkills: Array.isArray(initialData?.preferredSkills) ? initialData?.preferredSkills : [],
+      benefits: Array.isArray(initialData?.benefits) ? initialData?.benefits : [],
       status: initialData?.status || "Draft",
       featured: initialData?.featured || false,
       closingDate: initialData?.closingDate || "",
@@ -274,7 +275,7 @@ export function JobForm({ initialData, id }: JobFormProps) {
                 </div>
               </div>
 
-              {/* Rich Text Areas */}
+              {/* Rich Text Areas & Dynamic Lists */}
               <div className="space-y-6 pt-4 border-t">
                 <FormField
                   control={form.control}
@@ -297,7 +298,11 @@ export function JobForm({ initialData, id }: JobFormProps) {
                     <FormItem>
                       <FormLabel>Responsibilities</FormLabel>
                       <FormControl>
-                        <RichTextEditor value={field.value || ""} onChange={field.onChange} />
+                        <DynamicListInput 
+                          value={field.value || []} 
+                          onChange={field.onChange} 
+                          placeholder="e.g. Design and build scalable APIs..." 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -311,7 +316,11 @@ export function JobForm({ initialData, id }: JobFormProps) {
                     <FormItem>
                       <FormLabel>Requirements</FormLabel>
                       <FormControl>
-                        <RichTextEditor value={field.value || ""} onChange={field.onChange} />
+                        <DynamicListInput 
+                          value={field.value || []} 
+                          onChange={field.onChange} 
+                          placeholder="e.g. 5+ years of experience with React..." 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -325,7 +334,11 @@ export function JobForm({ initialData, id }: JobFormProps) {
                     <FormItem>
                       <FormLabel>Preferred Skills (Nice to have)</FormLabel>
                       <FormControl>
-                        <RichTextEditor value={field.value || ""} onChange={field.onChange} />
+                        <DynamicListInput 
+                          value={field.value || []} 
+                          onChange={field.onChange} 
+                          placeholder="e.g. Experience with GraphQL..." 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -339,7 +352,11 @@ export function JobForm({ initialData, id }: JobFormProps) {
                     <FormItem>
                       <FormLabel>Benefits & Perks</FormLabel>
                       <FormControl>
-                        <RichTextEditor value={field.value || ""} onChange={field.onChange} />
+                        <DynamicListInput 
+                          value={field.value || []} 
+                          onChange={field.onChange} 
+                          placeholder="e.g. Health, Dental, and Vision insurance..." 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

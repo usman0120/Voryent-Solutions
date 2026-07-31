@@ -24,6 +24,9 @@ export interface Contact extends BaseEntity {
   timeline?: string;
   ndaRequired?: boolean;
   description?: string;
+  attachmentBase64?: string;
+  attachmentName?: string;
+  attachmentMimeType?: string;
 }
 
 export const contactsService = new CoreService<Contact>("contacts");

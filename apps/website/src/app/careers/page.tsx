@@ -16,17 +16,17 @@ import {
   CareerCard
 } from "@voryent/ui"
 import { ArrowRight, MapPin, Code2, BookOpen, Heart, Rocket, Briefcase, FileText, Search, Users, Settings, Award, ThumbsUp, Code, Laptop, ShieldCheck, Globe, Zap, Cpu, Layers } from "lucide-react"
+import { JobListClient } from "./job-list-client"
 
 const iconMap: Record<string, any> = {
   ArrowRight, MapPin, Code2, BookOpen, Heart, Rocket, Briefcase, FileText, Search, Users, Settings, Award, ThumbsUp, Code, Laptop, ShieldCheck, Globe, Zap, Cpu, Layers
 };
-import { getCareersData, getCareersJobs } from "@/lib/firebase/services"
+import { getCareersJobs } from "@/lib/firebase/services"
 
 export async function generateMetadata(): Promise<Metadata> {
-  const careersData: any = await getCareersData().catch(() => null);
   return {
-    title: careersData?.seo?.title || "Careers | Voryent Solutions",
-    description: careersData?.seo?.description || "Join Voryent Solutions. Build software that makes a difference. We value engineering excellence, learning, ownership, and collaboration.",
+    title: "Careers | Voryent Solutions",
+    description: "Join Voryent Solutions. Build software that makes a difference. We value engineering excellence, learning, ownership, and collaboration.",
     alternates: {
       canonical: "https://voryentsolutions.com/careers",
     },
@@ -71,39 +71,34 @@ const defaultProcess = [
 ];
 
 export default async function CareersPage() {
-  const [careersDataRaw, dbJobsRaw] = await Promise.all([
-    getCareersData().catch(() => null),
-    getCareersJobs().catch(() => []),
-  ]);
+  const dbJobsRaw = await getCareersJobs().catch(() => []);
+  const dbJobs = dbJobsRaw ? JSON.parse(JSON.stringify(dbJobsRaw)) : [];
 
-  const careersData = careersDataRaw as any;
-  const dbJobs = dbJobsRaw as any[];
-
-  const hero = careersData?.hero || {
+  const hero = {
     badge: "Join the Team",
     title: "Build software that makes a difference.",
     description: "At Voryent, we value engineering excellence, continuous learning, extreme ownership, and seamless collaboration. Join us to build robust architectures and intelligent workflows for ambitious organizations."
   };
 
-  const benefitsTitle = careersData?.benefits?.title || "Why Work With Voryent";
-  const benefitsDesc = careersData?.benefits?.description || "We provide the environment, tools, and culture you need to do your best work and grow your career.";
-  const benefitsItems = careersData?.benefits?.items || defaultBenefits;
+  const benefitsTitle = "Why Work With Voryent";
+  const benefitsDesc = "We provide the environment, tools, and culture you need to do your best work and grow your career.";
+  const benefitsItems = defaultBenefits;
 
-  const processTitle = careersData?.hiringProcess?.title || "Our Hiring Process";
-  const processDesc = careersData?.hiringProcess?.description || "A transparent, respectful, and efficient process designed to let you show your true capabilities.";
-  const processSteps = careersData?.hiringProcess?.steps || defaultProcess;
+  const processTitle = "Our Hiring Process";
+  const processDesc = "A transparent, respectful, and efficient process designed to let you show your true capabilities.";
+  const processSteps = defaultProcess;
 
-  const cta = careersData?.cta || {
+  const cta = {
     title: "Ready to make an impact?",
     description: "Join our team and help us build scalable, high-performance software solutions for ambitious organizations.",
     buttonText: "Apply Now"
   };
 
-  const faqItems = careersData?.faq?.items || defaultFaqItems;
-  const faqTitle = careersData?.faq?.title || "Frequently Asked Questions";
-  const faqDesc = careersData?.faq?.description || "Common questions about working at Voryent Solutions.";
+  const faqItems = defaultFaqItems;
+  const faqTitle = "Frequently Asked Questions";
+  const faqDesc = "Common questions about working at Voryent Solutions.";
 
-  const emptyState = careersData?.emptyState || {
+  const emptyState = {
     title: "No open positions at the moment.",
     description: "We don't have any specific roles open right now, but we are always looking for talented engineers and designers. We'd still love to hear from you."
   };
@@ -178,7 +173,7 @@ export default async function CareersPage() {
       </Section>
 
       {/* ─── OPEN POSITIONS ─── */}
-      <Section id="open-roles">
+      <Section id="open-roles" className="bg-muted/10">
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Open Positions</h2>
@@ -186,39 +181,7 @@ export default async function CareersPage() {
               Explore our current openings and find where you fit in.
             </p>
           </div>
-          
-          {dbJobs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {dbJobs.map((job: any) => (
-                <CareerCard
-                  key={job.id}
-                  title={job.title}
-                  department={job.department}
-                  location={job.location}
-                  type={job.employmentType}
-                  action={
-                    <Button asChild variant="outline" className="w-full">
-  <Link href={`/careers/${job.slug}`} className="w-full">
-                        View Details
-                      </Link>
-</Button>
-                  }
-                />
-              ))}
-            </div>
-          ) : (
-            <EmptyState 
-              title={emptyState.title}
-              description={emptyState.description}
-              action={
-                <Button asChild size="lg">
-                  <Link href="/careers/apply">
-                    Submit General Application
-                  </Link>
-                </Button>
-              }
-            />
-          )}
+          <JobListClient jobs={dbJobs} emptyState={emptyState} />
         </Container>
       </Section>
 

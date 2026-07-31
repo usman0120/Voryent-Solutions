@@ -15,6 +15,7 @@ export interface Application extends Omit<BaseEntity, "status"> {
   lastName: string;
   email: string;
   phone?: string;
+  address?: string;
   city?: string;
   country?: string;
   linkedin?: string;
@@ -29,7 +30,24 @@ export interface Application extends Omit<BaseEntity, "status"> {
   currency: string;
   experienceYears?: number;
   skills?: string;
-  education?: string;
+  
+  education?: Array<{
+    school: string;
+    fieldOfStudy?: string;
+    degree?: string;
+    startDate?: string;
+    endDate?: string;
+  }>;
+  
+  experience?: Array<{
+    title: string;
+    company?: string;
+    industry?: string;
+    summary?: string;
+    startDate?: string;
+    endDate?: string;
+    current?: boolean;
+  }>;
   status:
     | "Applied"
     | "Screening"

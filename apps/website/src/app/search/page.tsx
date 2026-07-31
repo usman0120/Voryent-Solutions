@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import { SearchClient } from "./search-client"
 import type { SearchItem } from "./search-client"
-import { getServices, getBlogPosts, getFaqs, getResources, getCaseStudiesFromDb } from "@/lib/firebase/services"
+import { getServices, getBlogPosts, getResources, getCaseStudiesFromDb } from "@/lib/firebase/services"
+import { defaultFaqs } from "@/lib/data/faqs"
 
 export const metadata: Metadata = {
   title: "Search | Voryent Solutions",
@@ -16,22 +17,21 @@ export default async function SearchPage() {
 
   try {
     // Fetch all required data in parallel
-    const [services, blogs, faqs, resources, caseStudies] = await Promise.all([
+    const [services, blogs, resources, caseStudies] = await Promise.all([
       getServices().catch(() => []),
       getBlogPosts().catch(() => []),
-      getFaqs().catch(() => []),
       getResources().catch(() => []),
       getCaseStudiesFromDb().catch(() => [])
     ])
 
     // 1. Map FAQs
-    faqs.forEach((faq: any) => {
+    defaultFaqs.forEach((faq, index) => {
       searchItems.push({
-        id: `faq-${faq.id}`,
+        id: `faq-${index}`,
         type: "FAQ",
-        title: faq.question || faq.title || "FAQ",
-        description: faq.answer || faq.summary || "",
-        url: `/about#faq`,
+        title: faq.question || "FAQ",
+        description: faq.answer || "",
+        url: `/faq`,
         tags: faq.category ? [faq.category] : [],
       })
     })

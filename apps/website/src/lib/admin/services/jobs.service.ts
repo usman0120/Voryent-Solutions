@@ -11,10 +11,10 @@ export interface Job extends BaseEntity {
   salary?: string;
   currency: string;
   description: string;
-  responsibilities?: string;
-  requirements?: string;
-  preferredSkills?: string;
-  benefits?: string;
+  responsibilities?: string[];
+  requirements?: string[];
+  preferredSkills?: string[];
+  benefits?: string[];
   featured?: boolean;
   closingDate?: string | null;
   seo?: {

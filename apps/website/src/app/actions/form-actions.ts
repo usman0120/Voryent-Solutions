@@ -134,7 +134,7 @@ export async function handleContactSubmission(formData: FormData) {
     const limitCheck = await checkRateLimit(ip);
     if (!limitCheck.allowed) return { error: limitCheck.reason };
 
-    const data = {
+    const data: any = {
       firstName: formData.get("name") as string || formData.get("firstName") as string || "",
       lastName: formData.get("lastName") as string || "",
       email: formData.get("email") as string || "",
@@ -142,9 +142,23 @@ export async function handleContactSubmission(formData: FormData) {
       message: formData.get("message") as string || "",
       company: formData.get("company") as string || "",
       services: formData.getAll("services") as string[],
+      projectType: formData.get("type") as string || formData.get("service") as string || "",
       budget: formData.get("budget") as string || "",
+      timeline: formData.get("timeline") as string || "",
+      ndaRequired: formData.get("nda") === "on" || formData.get("nda") === "true",
       formType: formData.get("formType") as string || "contact",
     };
+
+    // Extract Base64 Attachment Data
+    const attachmentBase64 = formData.get("attachmentBase64") as string;
+    const attachmentName = formData.get("attachmentName") as string;
+    const attachmentMimeType = formData.get("attachmentMimeType") as string;
+    
+    if (attachmentBase64) {
+      data.attachmentBase64 = attachmentBase64;
+      data.attachmentName = attachmentName;
+      data.attachmentMimeType = attachmentMimeType;
+    }
 
     // Basic Server-side validation
     if (!data.email || !data.email.includes("@")) {

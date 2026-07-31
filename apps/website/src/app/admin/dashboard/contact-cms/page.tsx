@@ -166,6 +166,23 @@ export default function ContactCMSPage() {
                           {req.description || req.message || "No description provided."}
                         </p>
                       </div>
+
+                      {req.attachmentBase64 && (
+                        <div className="bg-primary/5 p-4 rounded-md border border-primary/20 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <FileText className="h-5 w-5 text-primary" />
+                            <div>
+                              <p className="text-sm font-medium">{req.attachmentName || "Attached File"}</p>
+                              <p className="text-xs text-muted-foreground">Base64 Encoded Attachment</p>
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline" asChild>
+                            <a href={req.attachmentBase64} download={req.attachmentName || "attachment"}>
+                              Download File
+                            </a>
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
