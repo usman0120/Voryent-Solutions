@@ -3,13 +3,12 @@ import { Footer } from "@voryent/ui";
 import Image from "next/image";
 import { getSocialSettings, getContactSettings } from "@/lib/firebase/services";
 
-const servicesLinks = [
-  { label: "Software Engineering", href: "/services/custom-software" },
-  { label: "Cloud Architecture", href: "/services/cloud-engineering" },
-  { label: "Data & AI", href: "/services/ai-solutions" },
-  { label: "UI/UX Design", href: "/services/ui-ux" },
-  { label: "DevOps & SRE", href: "/services/cloud-engineering" },
-];
+import { hardcodedServices } from "@/lib/data/services";
+
+const servicesLinks = hardcodedServices.map((s) => ({
+  label: s.title,
+  href: `/services/${s.slug}`,
+}));
 
 const companyLinks = [
   { label: "About Us", href: "/about" },
@@ -32,19 +31,27 @@ const legalLinks = [
   { label: "Security", href: "/security" },
 ];
 
-import { Github, Twitter, Linkedin, Facebook, Youtube, Link as LinkIcon, Instagram } from "lucide-react";
+import {
+  Github,
+  Twitter,
+  Linkedin,
+  Facebook,
+  Youtube,
+  Link as LinkIcon,
+  Instagram,
+} from "lucide-react";
 
 export function SocialIcons({ social }: { social: any }) {
   if (!social) return null;
 
   // Support both new `platforms` array and old flat object structure
-  const platforms = Array.isArray(social.platforms) 
-    ? social.platforms 
+  const platforms = Array.isArray(social.platforms)
+    ? social.platforms
     : Object.keys(social)
-        .filter(key => key !== "id" && social[key])
-        .map(key => ({
+        .filter((key) => key !== "id" && social[key])
+        .map((key) => ({
           platform: key === "x" ? "Twitter" : key.charAt(0).toUpperCase() + key.slice(1),
-          url: social[key]
+          url: social[key],
         }));
 
   if (platforms.length === 0) return null;
@@ -62,7 +69,7 @@ export function SocialIcons({ social }: { social: any }) {
   };
 
   return (
-    <div className="flex items-center gap-4 flex-wrap">
+    <div className="flex flex-wrap items-center gap-4">
       {platforms.map((item: any, idx: number) => (
         <a
           key={idx}

@@ -3,10 +3,22 @@ import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { MegaMenu, type MegaMenuProps } from "./mega-menu"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
 
 export interface NavLink {
   label: string
   href: string
+  isMegaMenu?: boolean
+  megaMenuProps?: Omit<MegaMenuProps, "triggerLabel">
+  dropdownItems?: { label: string; href: string }[]
 }
 
 export interface NavbarProps extends React.HTMLAttributes<HTMLElement> {
@@ -55,13 +67,49 @@ export function Navbar({
           {links.length > 0 && (
             <nav className="hidden md:flex gap-6">
               {links.map((link, i) => (
-                <a
-                  key={i}
-                  href={link.href}
-                  className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md px-2 py-1 -mx-2"
-                >
-                  {link.label}
-                </a>
+                link.isMegaMenu && link.megaMenuProps ? (
+                  <MegaMenu
+                    key={i}
+                    triggerLabel={link.label}
+                    items={link.megaMenuProps.items}
+                    featuredItem={link.megaMenuProps.featuredItem}
+                    className="!bg-transparent"
+                  />
+                ) : link.dropdownItems ? (
+                  <NavigationMenu key={i} className="hidden md:flex">
+                    <NavigationMenuList>
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger className="h-8 px-2 py-1 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent focus:bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground">
+                          {link.label}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          <ul className="grid w-[200px] gap-2 p-4">
+                            {link.dropdownItems.map((item, idx) => (
+                              <li key={idx}>
+                                <NavigationMenuLink asChild>
+                                  <a
+                                    href={item.href}
+                                    className="block select-none space-y-1 rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground font-medium"
+                                  >
+                                    {item.label}
+                                  </a>
+                                </NavigationMenuLink>
+                              </li>
+                            ))}
+                          </ul>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                ) : (
+                  <a
+                    key={i}
+                    href={link.href}
+                    className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md px-2 py-1 -mx-2"
+                  >
+                    {link.label}
+                  </a>
+                )
               ))}
             </nav>
           )}
@@ -105,14 +153,32 @@ export function Navbar({
                   <div className="flex flex-col gap-6">
                     <nav className="flex flex-col gap-4">
                       {links.map((link, i) => (
-                        <a
-                          key={i}
-                          href={link.href}
-                          className="text-lg font-medium hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md p-2 -mx-2"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {link.label}
-                        </a>
+                        link.dropdownItems ? (
+                          <div key={i} className="flex flex-col gap-2 p-2 -mx-2">
+                            <span className="text-lg font-medium text-foreground">{link.label}</span>
+                            <div className="flex flex-col gap-2 pl-4 border-l ml-2">
+                              {link.dropdownItems.map((item, idx) => (
+                                <a
+                                  key={idx}
+                                  href={item.href}
+                                  className="text-base font-medium text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  {item.label}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <a
+                            key={i}
+                            href={link.href}
+                            className="text-lg font-medium hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md p-2 -mx-2"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {link.label}
+                          </a>
+                        )
                       ))}
                     </nav>
                     <div className="flex flex-col gap-2 pt-6 border-t">

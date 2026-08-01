@@ -104,9 +104,27 @@ export default async function ServiceDetail({ params }: { params: Promise<{ slug
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground leading-relaxed">
-                      {service.description}
-                    </p>
+                    <div className="space-y-4">
+                      {service.description?.split('\\n').filter((p: string) => p.trim() !== '').map((paragraph: string, i: number) => (
+                        <p key={i} className="text-muted-foreground leading-relaxed">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {service.highlights && service.highlights.length > 0 && (
+                    <div className="mt-8">
+                      <h3 className="text-xl font-bold text-foreground mb-4">Highlights</h3>
+                      <ul className="space-y-3">
+                        {service.highlights.map((highlight: string, i: number) => (
+                          <li key={i} className="flex items-start">
+                            <div className="mr-3 mt-1 shrink-0 h-1.5 w-1.5 rounded-full bg-primary" />
+                            <span className="text-muted-foreground">{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </div>
 

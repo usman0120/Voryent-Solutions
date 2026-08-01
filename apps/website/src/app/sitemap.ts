@@ -3,7 +3,6 @@ import {
   getServices, 
   getIndustries, 
   getBlogPosts, 
-  getResources,
   getCareersJobs
 } from "@/lib/firebase/services";
 
@@ -16,7 +15,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/services",
     "/industries",
     "/blog",
-    "/resources",
     "/faq",
     "/careers",
     "/contact",
@@ -32,11 +30,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   try {
-    const [services, industries, blogPosts, resources, jobs] = await Promise.all([
+    const [services, industries, blogPosts, jobs] = await Promise.all([
       getServices(),
       getIndustries(),
       getBlogPosts(),
-      getResources(),
       getCareersJobs()
     ]);
 
@@ -61,21 +58,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    const resourceUrls = resources.map((r: any) => ({
-      url: `${url}/resources/${r.slug || r.id}`,
-      lastModified: r.updatedAt || new Date().toISOString(),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    }));
-
     const jobUrls = jobs.map((j: any) => ({
       url: `${url}/careers/${j.slug || j.id}`,
       lastModified: j.updatedAt || new Date().toISOString(),
       changeFrequency: "weekly" as const,
-      priority: 0.6,
+      priority: 0.7,
     }));
 
-    return [...staticRoutes, ...serviceUrls, ...industryUrls, ...blogUrls, ...resourceUrls, ...jobUrls];
+    return [
+      ...staticRoutes,
+      ...serviceUrls,
+      ...industryUrls,
+      ...blogUrls,
+      ...jobUrls,
+    ];
   } catch (error) {
     console.error("Failed to generate sitemap from Firestore:", error);
     return staticRoutes;

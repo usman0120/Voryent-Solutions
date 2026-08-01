@@ -9,13 +9,46 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useScroll } from "@/hooks/use-scroll";
+import { hardcodedServices } from "@/lib/data/services";
+
+const serviceMenuItems = hardcodedServices.map((service) => ({
+  title: service.title,
+  href: `/services/${service.slug}`,
+  description: service.tagline,
+}));
 
 const navigationLinks = [
   { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
+  {
+    label: "Services",
+    href: "/services",
+    isMegaMenu: true,
+    megaMenuProps: {
+      items: serviceMenuItems,
+      featuredItem: (
+        <a
+          href="/services"
+          className="from-muted/50 to-muted flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none transition-opacity hover:opacity-90 focus:shadow-md"
+        >
+          <div className="text-primary mb-2 mt-4 text-lg font-medium">All Services</div>
+          <p className="text-muted-foreground text-sm leading-tight">
+            Explore our complete portfolio of enterprise-grade, AI-first technology solutions.
+          </p>
+        </a>
+      ),
+    },
+  },
   { label: "Industries", href: "/industries" },
   { label: "Work", href: "/work" },
-  { label: "Resources", href: "/resources" },
+  {
+    label: "Insights",
+    href: "#",
+    dropdownItems: [
+      { label: "Case Studies", href: "/case-studies" },
+      { label: "Newsroom", href: "/blog" },
+      { label: "Blogs", href: "/blog" },
+    ],
+  },
   { label: "About", href: "/about" },
   { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },

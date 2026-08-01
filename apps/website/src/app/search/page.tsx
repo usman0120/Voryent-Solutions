@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { SearchClient } from "./search-client"
 import type { SearchItem } from "./search-client"
-import { getServices, getBlogPosts, getResources, getCaseStudiesFromDb } from "@/lib/firebase/services"
+import { getServices, getBlogPosts, getCaseStudiesFromDb } from "@/lib/firebase/services"
 import { defaultFaqs } from "@/lib/data/faqs"
 
 export const metadata: Metadata = {
@@ -17,10 +17,9 @@ export default async function SearchPage() {
 
   try {
     // Fetch all required data in parallel
-    const [services, blogs, resources, caseStudies] = await Promise.all([
+    const [services, blogs, caseStudies] = await Promise.all([
       getServices().catch(() => []),
       getBlogPosts().catch(() => []),
-      getResources().catch(() => []),
       getCaseStudiesFromDb().catch(() => [])
     ])
 
@@ -48,17 +47,6 @@ export default async function SearchPage() {
       })
     })
 
-    // 3. Map Resources
-    resources.forEach((res: any) => {
-      searchItems.push({
-        id: `res-${res.id}`,
-        type: "Resource",
-        title: res.title || res.slug,
-        description: res.summary || res.description || "",
-        url: `/resources`,
-        tags: res.category ? [res.category] : [],
-      })
-    })
 
     // 4. Map Services
     services.forEach((srv: any) => {

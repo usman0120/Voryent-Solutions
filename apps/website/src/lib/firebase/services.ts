@@ -1,6 +1,7 @@
 import { collection, doc, getDoc, getDocs, query, where, orderBy, limit } from "firebase/firestore";
 import { db as firestoreDb } from "./config";
 import { getCached, setCacheWithPrune } from "../cache";
+import { hardcodedServices } from "../data/services";
 
 // Helper: get db lazily - call as db() to get the Firestore instance
 const db = () => firestoreDb;
@@ -34,17 +35,6 @@ export async function getAboutData() {
   return data;
 }
 
-export async function getResourcesPageData() {
-  const key = "resourcesPage";
-  const cached = getCached<any>(key);
-  if (cached) return cached;
-
-  const docRef = doc(db(), "pages", "resources");
-  const docSnap = await getDoc(docRef);
-  const data = docSnap.exists() ? docSnap.data() : null;
-  if (data) setCacheWithPrune(key, data, LONG_TTL);
-  return data;
-}
 
 // --- Services ---
 export async function getServices() {
@@ -53,15 +43,27 @@ export async function getServices() {
   if (cached) return cached;
 
   try {
-    const q = query(collection(db(), "services"), where("status", "in", ["published", "Published"]));
-    const snapshot = await getDocs(q);
-    const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
-    const data = docs.sort((a, b) => (a.order || 0) - (b.order || 0));
+    const snapshot = await getDocs(collection(db(), "services"));
+    const overrides = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
+    
+    // Merge hardcoded services with any overrides
+    const merged = hardcodedServices.map(service => {
+      const override = overrides.find(o => o.id === service.slug || o.slug === service.slug);
+      return {
+        ...service,
+        ...override,
+        id: service.slug
+      };
+    });
+    
+    // Only include Published services on the frontend
+    const publishedServices = merged.filter(s => String(s.status).toLowerCase() === 'published');
+    const data = publishedServices.sort((a, b) => (a.order || 0) - (b.order || 0));
     setCacheWithPrune(key, data, LONG_TTL);
     return data;
   } catch (error) {
     console.error("Failed to fetch services:", error);
-    return [];
+    return hardcodedServices.filter(s => String(s.status).toLowerCase() === 'published').sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 }
 
@@ -70,13 +72,20 @@ export async function getServiceBySlug(slug: string) {
   const cached = getCached<any>(key);
   if (cached) return cached;
 
-  const q = query(collection(db(), "services"), where("slug", "==", slug), limit(1));
-  const snapshot = await getDocs(q);
-  const firstDoc = snapshot.docs[0];
-  if (!firstDoc) return null;
-  const data = { id: firstDoc.id, ...firstDoc.data() };
-  setCacheWithPrune(key, data, LONG_TTL);
-  return data;
+  const hardcoded = hardcodedServices.find(s => s.slug === slug);
+  if (!hardcoded) return null; // No dynamic creation allowed anymore
+
+  try {
+    const docRef = doc(db(), "services", slug);
+    const docSnap = await getDoc(docRef);
+    const data = docSnap.exists() ? { ...hardcoded, ...docSnap.data(), id: slug } : { ...hardcoded, id: slug };
+    
+    setCacheWithPrune(key, data, LONG_TTL);
+    return data;
+  } catch (error) {
+    console.error(`Failed to fetch service (${slug}):`, error);
+    return { ...hardcoded, id: slug };
+  }
 }
 
 // --- Industries ---
@@ -173,23 +182,6 @@ export async function getFaqs() {
   const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   setCacheWithPrune(key, data, LONG_TTL);
   return data;
-}
-
-// --- Resources ---
-export async function getResources() {
-  const key = "resources";
-  const cached = getCached<any[]>(key);
-  if (cached) return cached;
-
-  try {
-    const snapshot = await getDocs(collection(db(), "resources"));
-    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    setCacheWithPrune(key, data, LONG_TTL);
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch resources:", error);
-    return [];
-  }
 }
 
 // --- SEO ---

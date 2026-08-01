@@ -4,8 +4,7 @@ import React, { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { servicesService } from "@/lib/admin/services/services.service";
 import { Button } from "@voryent/ui";
-import { Plus, Trash2, Edit, Star } from "lucide-react";
-import Link from "next/link";
+import { Star, Archive, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from "lucide-react";
 
@@ -36,18 +35,13 @@ export default function ServicesPage() {
     queryFn: () => servicesService.getAll(),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => servicesService.delete(id),
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string, data: { status?: string, featured?: boolean } }) => 
+      servicesService.updateStatus(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["services"] });
     },
   });
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this service?")) {
-      await deleteMutation.mutateAsync(id);
-    }
-  };
 
   const sortedServices = useMemo(() => {
     return [...services].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -66,13 +60,8 @@ export default function ServicesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Services</h1>
-          <p className="text-muted-foreground">Manage your service offerings.</p>
+          <p className="text-muted-foreground">Manage visibility of your hardcoded services.</p>
         </div>
-        <Button asChild>
-          <Link href="/admin/dashboard/services/create">
-            <Plus className="mr-2 h-4 w-4" /> Add Service
-          </Link>
-        </Button>
       </div>
 
       <motion.div
@@ -142,22 +131,30 @@ export default function ServicesPage() {
 
                   <div className="flex gap-2 mt-auto">
                     <Button
-                      variant="outline"
+                      variant={service.status === 'Archived' ? 'default' : 'outline'}
                       size="sm"
                       className="flex-1"
-                      asChild
+                      onClick={() => updateMutation.mutate({ 
+                        id: service.id, 
+                        data: { status: service.status === 'Archived' ? 'Published' : 'Archived' }
+                      })}
+                      disabled={updateMutation.isPending}
                     >
-                      <Link href={`/admin/dashboard/services/${service.id}`}>
-                        <Edit className="w-4 h-4 mr-2" /> Edit
-                      </Link>
+                      {service.status === 'Archived' ? <CheckCircle className="w-4 h-4 mr-2" /> : <Archive className="w-4 h-4 mr-2" />}
+                      {service.status === 'Archived' ? 'Publish' : 'Archive'}
                     </Button>
                     <Button
-                      variant="destructive"
+                      variant={service.featured ? 'default' : 'outline'}
                       size="sm"
                       className="flex-1"
-                      onClick={() => handleDelete(service.id!)}
+                      onClick={() => updateMutation.mutate({ 
+                        id: service.id, 
+                        data: { featured: !service.featured }
+                      })}
+                      disabled={updateMutation.isPending}
                     >
-                      <Trash2 className="w-4 h-4 mr-2" /> Delete
+                      <Star className="w-4 h-4 mr-2" /> 
+                      {service.featured ? 'Unfeature' : 'Feature'}
                     </Button>
                   </div>
                 </div>
@@ -178,13 +175,8 @@ export default function ServicesPage() {
             No Services Yet
           </h3>
           <p className="text-muted-foreground mb-6">
-            Start by adding your first service offering.
+            Services will appear here automatically from the codebase.
           </p>
-          <Button asChild>
-            <Link href="/admin/dashboard/services/create">
-              <Plus className="mr-2 w-4 h-4" /> Add Your First Service
-            </Link>
-          </Button>
         </motion.div>
       )}
     </div>

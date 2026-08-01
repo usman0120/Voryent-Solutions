@@ -18,6 +18,8 @@ const applicationFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required"),
   address: z.string().min(1, "Address is required"),
+  linkedIn: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  github: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   
   education: z.array(z.object({
     school: z.string().min(1, "School is required"),
@@ -74,6 +76,8 @@ export function ApplicationForm({ jobId, jobTitle }: ApplicationFormProps) {
       email: "",
       phone: "",
       address: "",
+      linkedIn: "",
+      github: "",
       education: [],
       experience: [],
       coverLetter: "",
@@ -248,6 +252,33 @@ export function ApplicationForm({ jobId, jobTitle }: ApplicationFormProps) {
           />
           {errors.address && <p className="text-xs text-destructive">{errors.address.message}</p>}
           <p className="text-xs text-muted-foreground">Include your city, region, and country.</p>
+        </div>
+      </section>
+
+      {/* ─── LINKS ─── */}
+      <section className="space-y-6">
+        <h3 className="text-xl font-bold border-b pb-2">Links (Optional)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">LinkedIn Profile</label>
+            <input
+              type="url"
+              placeholder="https://linkedin.com/in/yourprofile"
+              className="w-full h-11 px-3 rounded-md border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+              {...register("linkedIn")}
+            />
+            {errors.linkedIn && <p className="text-xs text-destructive">{errors.linkedIn.message}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">GitHub Profile</label>
+            <input
+              type="url"
+              placeholder="https://github.com/yourusername"
+              className="w-full h-11 px-3 rounded-md border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+              {...register("github")}
+            />
+            {errors.github && <p className="text-xs text-destructive">{errors.github.message}</p>}
+          </div>
         </div>
       </section>
 

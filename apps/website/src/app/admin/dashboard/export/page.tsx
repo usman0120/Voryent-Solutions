@@ -14,7 +14,6 @@ const COLLECTIONS = [
   "contacts",
   "jobs",
   "applications",
-  "services",
   "industries",
   "blogPosts",
   "blogSubscriptions",

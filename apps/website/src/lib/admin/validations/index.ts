@@ -31,7 +31,6 @@ export * from "./page.schema";
 export * from "./service.schema";
 export * from "./industry.schema";
 export * from "./faq.schema";
-export * from "./resource.schema";
 export * from "./blog.schema";
 export * from "./contact.schema";
 export * from "./company.schema";
