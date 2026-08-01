@@ -53,19 +53,19 @@ export default async function IndustriesPage() {
                 const IconComponent = (LucideIcons as any)[industry.icon || "Building2"] || Building2;
                 return (
                   <Card key={industry.slug} className="flex flex-col h-full border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 transition-all group overflow-hidden">
-                    {industry.coverImage && (
+                    { (industry.coverImage || industry.imageUrl) && (
                       <div className="h-32 w-full overflow-hidden bg-muted/50 border-b border-border/30 relative">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={industry.coverImage} alt={industry.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={industry.coverImage || industry.imageUrl} alt={industry.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
                     )}
-                    <CardContent className={`p-6 flex flex-col flex-grow ${industry.coverImage ? 'pt-6' : ''}`}>
-                      {!industry.coverImage && (
+                    <CardContent className={`p-6 flex flex-col flex-grow ${(industry.coverImage || industry.imageUrl) ? 'pt-6' : ''}`}>
+                      {!(industry.coverImage || industry.imageUrl) && (
                         <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 transition-colors group-hover:bg-primary/20">
                           <IconComponent className="h-6 w-6" />
                         </div>
                       )}
-                      {industry.coverImage && (
+                      {(industry.coverImage || industry.imageUrl) && (
                         <div className="flex items-center gap-3 mb-4">
                           <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
                             <IconComponent className="h-4 w-4" />
@@ -74,7 +74,7 @@ export default async function IndustriesPage() {
                         </div>
                       )}
                       
-                      {!industry.coverImage && (
+                      {!(industry.coverImage || industry.imageUrl) && (
                         <h2 className="text-xl font-semibold text-foreground mb-3" id={industry.slug}>{industry.title}</h2>
                       )}
                       

@@ -88,6 +88,8 @@ export async function getServiceBySlug(slug: string) {
   }
 }
 
+import { hardcodedIndustries } from "../data/industries";
+
 // --- Industries ---
 export async function getIndustries() {
   const key = "industries_v2";
@@ -95,15 +97,39 @@ export async function getIndustries() {
   if (cached) return cached;
 
   try {
-    const q = query(collection(db(), "industries"), where("status", "in", ["published", "Published"]));
-    const snapshot = await getDocs(q);
-    const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
-    const data = docs.sort((a, b) => (a.order || 0) - (b.order || 0));
+    // Fetch only the overrides (status, featured, order) from Firestore
+    const snapshot = await getDocs(collection(db(), "industries"));
+    const firestoreOverrides = snapshot.docs.reduce((acc, doc) => {
+      acc[doc.id] = { id: doc.id, ...(doc.data() as any) };
+      return acc;
+    }, {} as Record<string, any>);
+
+    // Merge hardcoded industries with Firestore overrides
+    let data = hardcodedIndustries.map(industry => {
+      const override = firestoreOverrides[industry.id];
+      if (override) {
+        return {
+          ...industry,
+          status: override.status !== undefined ? override.status : industry.status,
+          featured: override.featured !== undefined ? override.featured : industry.featured,
+          order: override.order !== undefined ? override.order : industry.order,
+        };
+      }
+      return industry;
+    });
+
+    // Filter by published status
+    data = data.filter((d) => !d.status || String(d.status).toLowerCase() === "published");
+
+    // Sort by order
+    data.sort((a, b) => (a.order || 0) - (b.order || 0));
+
     setCacheWithPrune(key, data, LONG_TTL);
     return data;
   } catch (error) {
     console.error("Failed to fetch industries:", error);
-    return [];
+    // Fallback to hardcoded published industries
+    return hardcodedIndustries.filter(d => !d.status || String(d.status).toLowerCase() === "published").sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 }
 

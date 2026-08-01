@@ -7,7 +7,7 @@ import { Container, Section, Button, Input, Badge, Card, CardContent, EmptyState
 
 export type SearchItem = {
   id: string
-  type: "Service" | "Blog" | "Resource" | "FAQ" | "Case Study"
+  type: "Service" | "Blog" | "FAQ" | "Case Study"
   title: string
   description: string
   url: string
@@ -17,7 +17,7 @@ export type SearchItem = {
 export function SearchClient({ initialData }: { initialData: SearchItem[] }) {
   const [query, setQuery] = useState("")
   const [activeFilters, setActiveFilters] = useState<string[]>([])
-  const filters = ["Service", "Blog", "Resource", "FAQ", "Case Study"]
+  const filters = ["Service", "Blog", "FAQ", "Case Study"]
   const toggleFilter = (filter: string) => {
     setActiveFilters((prev) => 
       prev.includes(filter)
@@ -68,7 +68,7 @@ export function SearchClient({ initialData }: { initialData: SearchItem[] }) {
               <Search className="absolute left-4 w-5 h-5 text-muted-foreground pointer-events-none" />
               <Input 
                 type="search"
-                placeholder="Search services, articles, resources, and FAQs..."
+                placeholder="Search services, articles, case studies, and FAQs..."
                 className="w-full h-14 pl-12 pr-4 rounded-2xl border-border/50 bg-background shadow-sm text-base"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}

@@ -24,7 +24,7 @@ export async function generateMetadata(
 
   return {
     title: `${industry.title} | Voryent Solutions`,
-    description: industry.description,
+    description: industry.shortDescription,
   };
 }
 
@@ -63,7 +63,7 @@ export default async function IndustryPage({ params }: Props) {
               {industry.title}
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl mb-10">
-              {industry.description}
+              {industry.shortDescription}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="h-12 px-8">
@@ -78,13 +78,13 @@ export default async function IndustryPage({ params }: Props) {
       </Section>
 
       {/* ─── OVERVIEW ─── */}
-      {industry.overview && (
+      {industry.fullOverview && (
         <Section id="overview" className="border-t border-border/50">
           <Container>
             <div className="max-w-3xl mx-auto prose prose-lg dark:prose-invert">
               <h2 className="text-3xl font-bold mb-6">Industry Overview</h2>
               <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                {industry.overview}
+                {industry.fullOverview}
               </div>
             </div>
           </Container>
@@ -99,7 +99,7 @@ export default async function IndustryPage({ params }: Props) {
               {industry.challenges && industry.challenges.length > 0 && (
                 <div>
                   <h2 className="text-3xl font-bold mb-8">Key Challenges</h2>
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     {industry.challenges.map((challenge: any, idx: number) => (
                       <div key={idx} className="flex gap-4">
                         <div className="flex-shrink-0 mt-1">
@@ -107,9 +107,10 @@ export default async function IndustryPage({ params }: Props) {
                             <span className="font-bold text-sm">{idx + 1}</span>
                           </div>
                         </div>
-                        <div>
-                          <h3 className="text-xl font-semibold mb-2">{challenge.title}</h3>
-                          <p className="text-muted-foreground leading-relaxed">{challenge.description}</p>
+                        <div className="flex items-center">
+                          <p className="text-muted-foreground leading-relaxed font-medium">
+                            {typeof challenge === 'string' ? challenge : challenge.title || challenge.description}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -120,7 +121,7 @@ export default async function IndustryPage({ params }: Props) {
               {industry.expertise && industry.expertise.length > 0 && (
                 <div>
                   <h2 className="text-3xl font-bold mb-8">Our Expertise</h2>
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     {industry.expertise.map((exp: any, idx: number) => (
                       <div key={idx} className="flex gap-4">
                         <div className="flex-shrink-0 mt-1">
@@ -128,9 +129,10 @@ export default async function IndustryPage({ params }: Props) {
                             <CheckCircle2 className="h-5 w-5" />
                           </div>
                         </div>
-                        <div>
-                          <h3 className="text-xl font-semibold mb-2">{exp.title}</h3>
-                          <p className="text-muted-foreground leading-relaxed">{exp.description}</p>
+                        <div className="flex items-center">
+                          <p className="text-muted-foreground leading-relaxed font-medium">
+                            {typeof exp === 'string' ? exp : exp.title || exp.description}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -162,10 +164,14 @@ export default async function IndustryPage({ params }: Props) {
                       <div className="w-12 h-12 rounded-lg bg-background border border-primary/20 flex items-center justify-center text-primary mb-6">
                         <OfferingIcon className="h-6 w-6" />
                       </div>
-                      <h3 className="text-xl font-bold text-foreground mb-3">{offering.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {offering.description}
-                      </p>
+                      <h3 className="text-xl font-bold text-foreground">
+                        {typeof offering === 'string' ? offering : offering.title}
+                      </h3>
+                      {typeof offering !== 'string' && offering.description && (
+                        <p className="text-muted-foreground leading-relaxed mt-3">
+                          {offering.description}
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 );
@@ -191,9 +197,15 @@ export default async function IndustryPage({ params }: Props) {
                       <div className="flex-shrink-0 mt-1">
                         <LucideIcons.ArrowRight className="h-5 w-5 text-primary-foreground/60" />
                       </div>
-                      <div>
-                        <h3 className="text-xl font-semibold mb-2">{help.title}</h3>
-                        <p className="text-primary-foreground/80">{help.description}</p>
+                      <div className="flex items-center">
+                        {typeof help === 'string' ? (
+                          <p className="text-primary-foreground/90 font-medium">{help}</p>
+                        ) : (
+                          <div>
+                            <h3 className="text-xl font-semibold mb-2">{help.title}</h3>
+                            <p className="text-primary-foreground/80">{help.description}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

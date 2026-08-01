@@ -10,11 +10,18 @@ import Link from "next/link";
 
 import { useScroll } from "@/hooks/use-scroll";
 import { hardcodedServices } from "@/lib/data/services";
+import { hardcodedIndustries } from "@/lib/data/industries";
 
 const serviceMenuItems = hardcodedServices.map((service) => ({
   title: service.title,
   href: `/services/${service.slug}`,
   description: service.tagline,
+}));
+
+const industryMenuItems = hardcodedIndustries.map((industry) => ({
+  title: industry.title,
+  href: `/industries/${industry.slug}`,
+  description: industry.shortDescription,
 }));
 
 const navigationLinks = [
@@ -26,19 +33,55 @@ const navigationLinks = [
     megaMenuProps: {
       items: serviceMenuItems,
       featuredItem: (
-        <a
+        <Link
           href="/services"
-          className="from-muted/50 to-muted flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none transition-opacity hover:opacity-90 focus:shadow-md"
+          className="relative group flex h-full w-full select-none flex-col justify-end overflow-hidden rounded-md p-6 no-underline outline-none transition-all focus:shadow-md"
         >
-          <div className="text-primary mb-2 mt-4 text-lg font-medium">All Services</div>
-          <p className="text-muted-foreground text-sm leading-tight">
-            Explore our complete portfolio of enterprise-grade, AI-first technology solutions.
-          </p>
-        </a>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
+            alt="All Services"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 transition-colors group-hover:from-black/90" />
+          <div className="relative z-10">
+            <div className="text-white mb-2 mt-4 text-lg font-bold">All Services</div>
+            <p className="text-white/90 text-sm leading-tight">
+              Explore our complete portfolio of enterprise-grade, AI-first technology solutions.
+            </p>
+          </div>
+        </Link>
       ),
     },
   },
-  { label: "Industries", href: "/industries" },
+  { 
+    label: "Industries", 
+    href: "/industries",
+    isMegaMenu: true,
+    megaMenuProps: {
+      items: industryMenuItems,
+      featuredItem: (
+        <Link
+          href="/industries"
+          className="relative group flex h-full w-full select-none flex-col justify-end overflow-hidden rounded-md p-6 no-underline outline-none transition-all focus:shadow-md"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80"
+            alt="All Industries"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 transition-colors group-hover:from-black/90" />
+          <div className="relative z-10">
+            <div className="text-white mb-2 mt-4 text-lg font-bold">All Industries</div>
+            <p className="text-white/90 text-sm leading-tight">
+              Discover how our digital solutions empower businesses across various domains.
+            </p>
+          </div>
+        </Link>
+      ),
+    },
+  },
   { label: "Work", href: "/work" },
   {
     label: "Insights",

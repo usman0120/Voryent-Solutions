@@ -160,12 +160,15 @@ export default async function HomePage() {
 
   const displayIndustries =
     dbIndustries.length > 0
-      ? dbIndustries.map((i: any) => ({
-          name: i.name,
-          href: `/industries#${i.slug}`,
-          icon: Building2,
-        }))
-      : industries;
+      ? dbIndustries
+          .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+          .map((i: any) => ({
+            name: i.title || i.name,
+            href: `/industries/${i.slug}`,
+            iconName: i.primaryIcon || i.icon || "Building2",
+            imageUrl: i.imageUrl
+          }))
+      : [];
 
   const sections = homepageData?.["sections"] || [];
   const blocks = homepageData?.["contentBlocks"] || {};
@@ -256,19 +259,31 @@ export default async function HomePage() {
                   <Link
                     href={service.href}
                     aria-label={`Learn more about ${service.title}`}
-                    className="bg-card hover:border-primary/40 focus-visible:ring-ring group relative flex h-full flex-col rounded-2xl border p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2"
+                    className="bg-card hover:border-primary/40 focus-visible:ring-ring group relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2"
                   >
-                    <div className="bg-primary/10 text-primary group-hover:bg-primary/20 mb-6 flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
-                      {renderIcon(service.iconName, "h-6 w-6")}
+                    {service.imageUrl && (
+                      <div className="relative h-48 w-full overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={service.imageUrl}
+                          alt={service.title}
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <div className="flex flex-grow flex-col p-8">
+                      <div className="bg-primary/10 text-primary group-hover:bg-primary/20 mb-6 flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
+                        {renderIcon(service.iconName, "h-6 w-6")}
+                      </div>
+                      <h3 className="text-foreground mb-3 text-xl font-semibold">{service.title}</h3>
+                      <p className="text-muted-foreground flex-grow leading-relaxed line-clamp-3">
+                        {service.description}
+                      </p>
+                      <span className="text-primary mt-6 inline-flex translate-y-1 items-center font-medium opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                        Learn more
+                        <ArrowRight className="ml-1 h-4 w-4" />
+                      </span>
                     </div>
-                    <h3 className="text-foreground mb-3 text-xl font-semibold">{service.title}</h3>
-                    <p className="text-muted-foreground flex-grow leading-relaxed">
-                      {service.description}
-                    </p>
-                    <span className="text-primary mt-6 inline-flex translate-y-1 items-center font-medium opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                      Learn more
-                      <ArrowRight className="ml-1 h-4 w-4" />
-                    </span>
                   </Link>
                 </FadeIn>
               ))}
@@ -374,15 +389,35 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {displayIndustries.map((industry: any, index: number) => (
                 <FadeIn delay={0.05 * index} key={industry.name}>
                   <Link
                     href={industry.href}
-                    className="bg-card hover:border-primary/40 focus-visible:ring-ring group flex flex-col items-center gap-4 rounded-2xl border p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2"
+                    className="bg-card hover:border-primary/40 focus-visible:ring-ring group relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2"
                   >
-                    <industry.icon className="text-muted-foreground group-hover:text-primary h-10 w-10 transition-colors" />
-                    <span className="text-foreground text-sm font-medium">{industry.name}</span>
+                    {industry.imageUrl ? (
+                      <div className="relative h-48 w-full overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={industry.imageUrl}
+                          alt={industry.name}
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/40 transition-colors group-hover:bg-black/50" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center text-white">
+                          <div className="bg-white/20 mb-4 flex h-12 w-12 items-center justify-center rounded-xl backdrop-blur-md">
+                            {renderIcon(industry.iconName, "h-6 w-6 text-white")}
+                          </div>
+                          <span className="text-lg font-bold">{industry.name}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-4 p-8 text-center">
+                        {renderIcon(industry.iconName, "h-10 w-10 text-muted-foreground group-hover:text-primary transition-colors")}
+                        <span className="text-foreground text-lg font-medium">{industry.name}</span>
+                      </div>
+                    )}
                   </Link>
                 </FadeIn>
               ))}
@@ -414,12 +449,11 @@ export default async function HomePage() {
                   <FadeIn delay={0.1 * index} key={project.id || index}>
                     <div className="bg-card hover:border-primary/40 group relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
                       <div className="bg-muted relative aspect-[16/9] w-full overflow-hidden border-b">
-                        <Image
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                           src={project.coverImage || project.attachments?.[0]?.url || "https://placehold.co/800x450/EEE/31343C"}
                           alt={project.title || project.name}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-110"
-                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
                         <div className="absolute top-4 right-4">
