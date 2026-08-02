@@ -22,6 +22,13 @@ import {
   PenTool,
   Code,
   LifeBuoy,
+  Database,
+  Cloud,
+  Cpu,
+  Layout,
+  GitBranch,
+  Lock,
+  Workflow
 } from "lucide-react";
 import { FadeIn } from "@/components/animations/fade-in";
 import * as Icons from "lucide-react";
@@ -116,6 +123,37 @@ const howWeWork = [
   },
 ];
 
+const engineeringStandards = [
+  {
+    title: "Agile Methodologies",
+    description: "Iterative, sprint-based delivery ensuring constant alignment with business goals and rapid adaptation to change.",
+    icon: Workflow
+  },
+  {
+    title: "CI/CD Pipelines",
+    description: "Automated testing and deployment pipelines that guarantee zero-downtime releases and high code quality.",
+    icon: GitBranch
+  },
+  {
+    title: "Enterprise Security",
+    description: "SOC2 compliance practices, data encryption at rest/transit, and regular vulnerability scanning.",
+    icon: Lock
+  },
+  {
+    title: "Cloud-Native Architecture",
+    description: "Microservices and serverless paradigms designed for infinite horizontal scalability and resilience.",
+    icon: Cloud
+  }
+];
+
+const techStack = [
+  { name: "React / Next.js", icon: Layout },
+  { name: "Node.js / Python", icon: Code2 },
+  { name: "AWS / Google Cloud", icon: Cloud },
+  { name: "PostgreSQL / MongoDB", icon: Database },
+  { name: "AI / LLMs", icon: Cpu },
+];
+
 const fallbackServiceImages = [
   "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop",
@@ -181,41 +219,43 @@ export default async function HomePage() {
     <>
       {/* ─── HERO ─── */}
       {isEnabled("hero") && (
-        <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden pt-16">
+        <section className="relative flex min-h-[95vh] items-center overflow-hidden">
           {/* Background Image */}
-          <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 z-0 bg-black">
             <Image
               src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2070&auto=format&fit=crop"
               alt="Enterprise Tech Office"
               fill
-              className="object-cover"
+              className="object-cover opacity-40 grayscale"
               priority
             />
-            {/* Dark gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
+            {/* Grid overlay for tech feel */}
+            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
           </div>
 
-          <div className="container relative z-10 mx-auto px-4 py-20 md:px-6 md:py-28 lg:px-8 lg:py-36">
-            <FadeIn className="max-w-3xl">
-              <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          <div className="container relative z-10 mx-auto px-4 py-20 md:px-6 lg:px-8 mt-16">
+            <FadeIn className="max-w-4xl border-l-4 border-primary pl-6 md:pl-10 py-4">
+              <span className="text-primary mb-6 block text-xs font-bold uppercase tracking-[0.2em]">
+                Empowering the Future
+              </span>
+              <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl mb-8">
                 {getSection("hero").title || blocks?.hero?.title || "Building at the Speed of AI"}
               </h1>
-              <p className="mt-6 max-w-2xl text-xl font-light leading-relaxed text-zinc-300">
+              <p className="max-w-2xl text-lg font-medium leading-relaxed text-zinc-400 mb-12">
                 {getSection("hero").description ||
                   blocks?.hero?.description ||
                   "Voryent Solutions partners with ambitious enterprises to architect, build, and scale software that drives real business outcomes — from cloud infrastructure to intelligent interfaces."}
               </p>
-              <div className="mt-10 flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4">
                 <Link
                   href="/contact"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-lg px-8 py-4 text-base font-bold shadow-lg transition-all hover:scale-105"
+                  className="bg-white text-black hover:bg-white/90 inline-flex h-14 items-center justify-center rounded-none px-8 text-sm font-bold uppercase tracking-widest transition-colors"
                 >
                   Get in Touch
-                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
                   href="/services"
-                  className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-black/20 px-8 py-4 text-base font-medium text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/10"
+                  className="inline-flex h-14 items-center justify-center rounded-none border border-white/20 bg-transparent px-8 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-white/10"
                 >
                   Explore Services
                 </Link>
@@ -226,22 +266,18 @@ export default async function HomePage() {
       )}
 
       {/* ─── COMPANY STATS ─── */}
-      <section className="bg-muted/30 border-border/40 border-y py-12">
-        <div className="container mx-auto px-4">
-          <div className="divide-border/40 grid grid-cols-2 gap-8 divide-x md:grid-cols-4">
+      <section className="bg-background border-border/40 border-b relative z-20">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border/40 border-x border-border/40">
             {companyStats.map((stat, idx) => {
-              const Icon = stat.icon;
               return (
                 <FadeIn
                   key={idx}
                   delay={0.1 * idx}
-                  className="flex flex-col items-center justify-center px-4 text-center"
+                  className="flex flex-col items-center justify-center py-16 px-4 text-center group"
                 >
-                  <div className="bg-primary/10 text-primary mb-3 flex h-12 w-12 items-center justify-center rounded-full">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-foreground mb-1 text-3xl font-bold">{stat.value}</h3>
-                  <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">
+                  <h3 className="text-foreground mb-2 text-4xl lg:text-5xl font-light tracking-tight group-hover:text-primary transition-colors">{stat.value}</h3>
+                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em]">
                     {stat.label}
                   </p>
                 </FadeIn>
@@ -251,12 +287,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── SERVICES (Transform Your Business) ─── */}
+      {/* ─── SERVICES (Transform Your Business) - Keeping Original Layout but Sharp ─── */}
       {isEnabled("services-preview") && (
-        <section className="py-20 md:py-32">
+        <section className="py-24 md:py-32 bg-muted/10 border-b border-border/40">
           <div className="container mx-auto px-4 md:px-6 lg:px-8">
             <FadeIn className="mx-auto mb-16 max-w-3xl text-center">
-              <h2 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+              <span className="text-muted-foreground mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+                Our Capabilities
+              </span>
+              <h2 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
                 Transform Your Business
               </h2>
               <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
@@ -270,27 +309,27 @@ export default async function HomePage() {
                 <FadeIn delay={0.1 * index} key={service.title} className="h-full">
                   <Link
                     href={service.href}
-                    className="group relative flex h-[420px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
+                    className="group relative flex h-[420px] w-full flex-col overflow-hidden rounded-none border border-border/60 transition-all duration-500 hover:-translate-y-2 bg-black"
                   >
-                    <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 z-0 opacity-60 group-hover:opacity-100 transition-opacity duration-500">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={service.imageUrl}
                         alt={service.title}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
                     </div>
 
                     <div className="relative z-10 flex h-full flex-col justify-end p-8 text-white">
-                      <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
-                        {renderIcon(service.iconName, "h-6 w-6 text-white")}
+                      <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-none bg-white/10 backdrop-blur-sm border border-white/20">
+                        {renderIcon(service.iconName, "h-5 w-5 text-white")}
                       </div>
                       <h3 className="mb-3 text-2xl font-bold">{service.title}</h3>
                       <p className="mb-6 line-clamp-3 text-sm text-zinc-300">
                         {service.description}
                       </p>
-                      <div className="text-primary-foreground inline-flex items-center text-sm font-semibold group-hover:text-white">
+                      <div className="text-primary inline-flex items-center text-xs font-bold tracking-widest uppercase">
                         Learn more{" "}
                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </div>
@@ -300,10 +339,10 @@ export default async function HomePage() {
               ))}
             </div>
 
-            <div className="mt-12 text-center">
+            <div className="mt-16 text-center">
               <Link
                 href="/services"
-                className="text-primary hover:text-primary/80 inline-flex items-center font-semibold transition-colors"
+                className="inline-flex h-12 items-center justify-center rounded-none border-b-2 border-foreground px-4 text-xs font-bold uppercase tracking-widest text-foreground transition-colors hover:border-primary hover:text-primary"
               >
                 View all our services <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -312,30 +351,32 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ─── WHY VORYENT ─── */}
-      <section className="bg-muted/30 py-20 md:py-32">
+      {/* ─── WHY VORYENT (Staggered Typography Design) ─── */}
+      <section className="bg-foreground text-background py-24 md:py-32">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <FadeIn className="mx-auto mb-16 max-w-3xl text-center">
-            <h2 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <FadeIn className="mb-20">
+            <span className="text-background/60 mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+              The Difference
+            </span>
+            <h2 className="text-background text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl max-w-2xl">
               Why Voryent Solutions?
             </h2>
-            <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
+            <p className="text-background/80 mt-6 text-lg leading-relaxed max-w-xl">
               We combine deep engineering discipline with genuine partnership to deliver outcomes
               that matter — not just features.
             </p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-background/20 border border-background/20">
             {whyVoryent.map((feature, idx) => {
-              const Icon = feature.icon;
               return (
                 <FadeIn key={idx} delay={0.1 * idx}>
-                  <div className="bg-card border-border/40 group flex h-full flex-col rounded-3xl border p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
-                    <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-6 flex h-14 w-14 items-center justify-center rounded-2xl transition-colors">
-                      <Icon className="h-7 w-7" />
+                  <div className="bg-foreground group flex h-full flex-col p-10 lg:p-14 relative overflow-hidden transition-colors hover:bg-background hover:text-foreground border-border/40">
+                    <div className="absolute -right-4 -bottom-4 text-[120px] font-bold text-background/5 group-hover:text-foreground/5 leading-none select-none transition-colors">
+                      0{idx + 1}
                     </div>
-                    <h3 className="text-foreground mb-3 text-xl font-bold">{feature.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                    <h3 className="text-background group-hover:text-foreground mb-4 text-2xl lg:text-3xl font-bold relative z-10 transition-colors">{feature.title}</h3>
+                    <p className="text-background/70 group-hover:text-muted-foreground leading-relaxed max-w-sm relative z-10 transition-colors">{feature.description}</p>
                   </div>
                 </FadeIn>
               );
@@ -344,36 +385,62 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── HOW WE WORK ─── */}
-      <section className="border-border/40 bg-background relative overflow-hidden border-y py-20 md:py-32">
+      {/* ─── TECH STACK & INTEGRATIONS (NEW SECTION) ─── */}
+      <section className="py-20 md:py-32 bg-background border-b border-border/40">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <FadeIn className="text-center mb-16">
+            <h2 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
+              Built on Enterprise Technologies
+            </h2>
+          </FadeIn>
+          
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+            {techStack.map((tech, idx) => {
+              const Icon = tech.icon;
+              return (
+                <FadeIn key={idx} delay={0.1 * idx} className="flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-default">
+                  <Icon className="h-10 w-10 text-foreground" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{tech.name}</span>
+                </FadeIn>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── HOW WE WORK (Timeline Design) ─── */}
+      <section className="bg-background border-b border-border/40 py-24 md:py-32 relative overflow-hidden">
+        <div className="absolute -left-[10%] top-[10%] text-[400px] font-bold text-muted/30 leading-none select-none pointer-events-none z-0">
+          W
+        </div>
         <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-8">
-          <FadeIn className="mx-auto mb-20 max-w-3xl text-center">
-            <h2 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <FadeIn className="mb-20 max-w-3xl">
+            <span className="text-muted-foreground mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+              Methodology
+            </span>
+            <h2 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               How We Work
             </h2>
-            <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
+            <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-xl">
               A proven, repeatable process that minimises risk and maximises velocity at every
               stage.
             </p>
           </FadeIn>
 
-          <div className="relative grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
-            {/* Connecting Line for Desktop */}
-            <div className="bg-border/50 absolute left-[12%] right-[12%] top-[45px] -z-10 hidden h-[2px] lg:block" />
-
+          <div className="flex flex-col gap-12">
             {howWeWork.map((step, idx) => {
-              const Icon = step.icon;
               return (
-                <FadeIn key={idx} delay={0.1 * idx} className="relative">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="bg-background border-border/40 relative mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 shadow-sm">
-                      <span className="text-primary/10 absolute -right-4 -top-4 text-6xl font-black">
+                <FadeIn key={idx} delay={0.1 * idx} className="border-t border-border/60 pt-12 group">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                    <div className="md:col-span-2">
+                      <span className="text-muted-foreground/30 text-5xl font-light group-hover:text-primary transition-colors">
                         {step.step}
                       </span>
-                      <Icon className="text-primary relative z-10 h-10 w-10" />
                     </div>
-                    <h3 className="text-foreground mb-4 text-xl font-bold">{step.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                    <div className="md:col-span-10 lg:col-span-8">
+                      <h3 className="text-foreground mb-4 text-3xl font-bold">{step.title}</h3>
+                      <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl">{step.description}</p>
+                    </div>
                   </div>
                 </FadeIn>
               );
@@ -382,63 +449,43 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── FEATURED INSIGHTS ─── */}
-      {displayBlogs.length > 0 && (
-        <section className="bg-muted/30 py-20 md:py-32">
-          <div className="container mx-auto px-4 md:px-6 lg:px-8">
-            <FadeIn className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-              <div className="max-w-2xl">
-                <h2 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
-                  Featured Insights
-                </h2>
-                <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-                  Latest thoughts, case studies, and engineering practices from our team.
-                </p>
-              </div>
-              <Link
-                href="/insights"
-                className="text-primary hover:text-primary/80 inline-flex items-center font-semibold transition-colors"
-              >
-                View all articles <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </FadeIn>
+      {/* ─── ENGINEERING STANDARDS (NEW SECTION) ─── */}
+      <section className="bg-muted/10 py-24 md:py-32 border-b border-border/40">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <FadeIn className="mb-16">
+            <span className="text-muted-foreground mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+              The Core
+            </span>
+            <h2 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              Engineering Standards
+            </h2>
+          </FadeIn>
 
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              {displayBlogs.map((blog: any, index: number) => (
-                <FadeIn delay={0.1 * index} key={blog.title}>
-                  <Link href={blog.href} className="group block">
-                    <div className="relative mb-6 aspect-[16/10] w-full overflow-hidden rounded-2xl shadow-sm">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={blog.imageUrl}
-                        alt={blog.title}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <p className="text-primary mb-3 text-xs font-bold uppercase tracking-wider">
-                      {blog.date}
-                    </p>
-                    <h3 className="text-foreground group-hover:text-primary mb-3 text-2xl font-bold leading-snug transition-colors">
-                      {blog.title}
-                    </h3>
-                    <p className="text-muted-foreground line-clamp-2 text-base leading-relaxed">
-                      {blog.excerpt}
-                    </p>
-                  </Link>
+          <div className="grid grid-cols-1 gap-px bg-border/40 border border-border/40 sm:grid-cols-2 lg:grid-cols-4">
+            {engineeringStandards.map((std, idx) => {
+              const Icon = std.icon;
+              return (
+                <FadeIn key={idx} delay={0.1 * idx} className="bg-background p-10 hover:bg-muted/20 transition-colors flex flex-col h-full">
+                  <Icon className="h-8 w-8 text-primary mb-8" />
+                  <h3 className="text-xl font-bold text-foreground mb-4">{std.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed flex-1">{std.description}</p>
                 </FadeIn>
-              ))}
-            </div>
+              )
+            })}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* ─── INDUSTRIES ─── */}
+      {/* ─── INDUSTRIES (Keeping Original Layout but Sharp) ─── */}
       {isEnabled("industries") && (
-        <section className="py-20 md:py-32">
+        <section className="py-24 md:py-32 bg-background border-b border-border/40">
           <div className="container mx-auto px-4 md:px-6 lg:px-8">
             <FadeIn className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
               <div className="lg:col-span-5">
-                <h2 className="text-foreground mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl">
+                <span className="text-muted-foreground mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+                  Verticals
+                </span>
+                <h2 className="text-foreground mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
                   {getSection("industries").title || "Industries We Serve"}
                 </h2>
                 <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
@@ -448,15 +495,15 @@ export default async function HomePage() {
                 <div className="space-y-4">
                   {displayIndustries.slice(0, 4).map((ind: any) => (
                     <div key={ind.name} className="flex items-center gap-4">
-                      <CheckCircle2 className="text-primary h-6 w-6 flex-shrink-0" />
-                      <span className="text-foreground text-lg font-semibold">{ind.name}</span>
+                      <CheckCircle2 className="text-primary h-5 w-5 flex-shrink-0" />
+                      <span className="text-foreground text-lg font-bold tracking-tight">{ind.name}</span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-10">
+                <div className="mt-12">
                   <Link
                     href="/industries"
-                    className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center rounded-lg border px-8 py-3 text-sm font-semibold shadow-sm transition-all"
+                    className="bg-foreground text-background hover:bg-foreground/90 inline-flex h-14 items-center justify-center rounded-none px-8 text-xs font-bold uppercase tracking-widest transition-colors"
                   >
                     Explore Industries
                   </Link>
@@ -464,32 +511,33 @@ export default async function HomePage() {
               </div>
 
               <div className="lg:col-span-7">
-                <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 gap-px bg-border/40 border border-border/40">
                   {displayIndustries.slice(0, 4).map((industry: any, index: number) => (
                     <Link
                       key={industry.name}
                       href={industry.href}
-                      className={`group relative overflow-hidden rounded-2xl shadow-sm ${
-                        index === 1 || index === 2 ? "mt-0 sm:mt-12" : ""
-                      }`}
+                      className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden bg-background p-8"
                     >
-                      <div className="aspect-[4/5] w-full">
+                      <div className="absolute inset-0 z-0">
                         {industry.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={industry.imageUrl}
                             alt={industry.name}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            className="h-full w-full object-cover grayscale opacity-40 transition-all duration-700 group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100"
                           />
                         ) : (
-                          <div className="bg-muted h-full w-full" />
+                          <div className="bg-muted h-full w-full opacity-20 transition-opacity group-hover:opacity-100" />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                        <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-md">
-                            {renderIcon(industry.iconName, "h-5 w-5 text-white")}
-                          </div>
-                          <span className="block text-xl font-bold">{industry.name}</span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-colors duration-500" />
+                      </div>
+                      <div className="relative z-10 text-white transition-colors duration-500">
+                        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-none border border-white/20 bg-white/10 backdrop-blur-sm">
+                          {renderIcon(industry.iconName, "h-5 w-5 text-white")}
+                        </div>
+                        <span className="block text-2xl font-bold">{industry.name}</span>
+                        <div className="mt-4 opacity-0 -translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0 text-xs font-bold uppercase tracking-widest text-primary">
+                          Explore Sector <ArrowRight className="inline-block ml-1 h-3 w-3" />
                         </div>
                       </div>
                     </Link>
@@ -501,40 +549,89 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ─── TESTIMONIALS ─── */}
-      <section className="bg-muted/30 py-20 md:py-32">
+      {/* ─── FEATURED INSIGHTS ─── */}
+      {displayBlogs.length > 0 && (
+        <section className="bg-muted/10 border-b border-border/40 py-24 md:py-32">
+          <div className="container mx-auto px-4 md:px-6 lg:px-8">
+            <FadeIn className="mb-20 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+              <div className="max-w-2xl">
+                <span className="text-muted-foreground mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+                  Knowledge Base
+                </span>
+                <h2 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                  Featured Insights
+                </h2>
+              </div>
+              <Link
+                href="/insights"
+                className="text-foreground hover:text-primary inline-flex items-center text-xs font-bold uppercase tracking-widest transition-colors border-b-2 border-foreground pb-1 hover:border-primary"
+              >
+                View all articles
+              </Link>
+            </FadeIn>
+
+            <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+              {displayBlogs.map((blog: any, index: number) => (
+                <FadeIn delay={0.1 * index} key={blog.title}>
+                  <Link href={blog.href} className="group flex flex-col h-full border border-transparent hover:border-border/60 transition-colors p-4 -m-4 rounded-none">
+                    <div className="relative mb-6 aspect-[4/3] w-full overflow-hidden bg-muted rounded-none">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={blog.imageUrl}
+                        alt={blog.title}
+                        className="absolute inset-0 h-full w-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                      />
+                    </div>
+                    <p className="text-primary mb-3 text-[10px] font-bold uppercase tracking-[0.2em]">
+                      {blog.date}
+                    </p>
+                    <h3 className="text-foreground mb-4 text-2xl font-bold leading-snug">
+                      {blog.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-1">
+                      {blog.excerpt}
+                    </p>
+                    <div className="text-foreground inline-flex items-center text-xs font-bold uppercase tracking-widest mt-auto">
+                      Read Article <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </Link>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── TESTIMONIALS (Typography Split Layout) ─── */}
+      <section className="bg-background border-b border-border/40 py-24 md:py-32">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <FadeIn className="mx-auto mb-16 max-w-3xl text-center">
-            <h2 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <FadeIn className="mb-20 max-w-2xl">
+            <span className="text-muted-foreground mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+              Client Success
+            </span>
+            <h2 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Trusted by Industry Leaders
             </h2>
-            <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
-              Don&apos;t just take our word for it. Here is what our partners have to say about
-              working with Voryent Solutions.
-            </p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-px bg-border/40 border border-border/40">
             {testimonials.map((testimonial, idx) => (
-              <FadeIn key={idx} delay={0.1 * idx} className="h-full">
-                <div className="bg-card border-border/40 relative flex h-full flex-col rounded-3xl border p-8 shadow-sm md:p-10">
-                  <Quote className="text-primary/20 absolute right-8 top-8 h-16 w-16" />
-                  <div className="mb-6 flex gap-1">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="text-primary h-5 w-5 fill-current" />
-                    ))}
+              <FadeIn key={idx} delay={0.1 * idx} className="bg-background flex flex-col md:flex-row">
+                <div className="p-10 md:p-16 flex-1 flex flex-col justify-center">
+                  <div className="mb-8 flex gap-2 text-primary">
+                    <Quote className="h-10 w-10 opacity-30" />
                   </div>
-                  <blockquote className="text-foreground mb-8 flex-1 text-lg leading-relaxed md:text-xl">
+                  <blockquote className="text-foreground text-xl md:text-2xl font-medium leading-relaxed max-w-3xl">
                     &quot;{testimonial.quote}&quot;
                   </blockquote>
-                  <div className="flex items-center gap-4">
-                    <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-full font-bold">
-                      {testimonial.author.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="text-foreground font-bold">{testimonial.author}</div>
-                      <div className="text-muted-foreground text-sm">{testimonial.title}</div>
-                    </div>
+                </div>
+                <div className="bg-muted/20 border-t md:border-t-0 md:border-l border-border/40 p-10 md:p-16 flex flex-col justify-center md:w-80 shrink-0">
+                  <div className="text-foreground text-xl font-bold mb-2">{testimonial.author}</div>
+                  <div className="text-muted-foreground text-xs font-bold uppercase tracking-widest leading-snug">{testimonial.title}</div>
+                  <div className="mt-8 flex gap-1">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="text-primary h-4 w-4 fill-current" />
+                    ))}
                   </div>
                 </div>
               </FadeIn>
@@ -543,54 +640,61 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── CAREERS ─── */}
-      <section className="relative overflow-hidden py-24 md:py-32">
+      {/* ─── CAREERS CTA ─── */}
+      <section className="relative overflow-hidden py-32 md:py-48">
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
             alt="Team collaborating in office"
             fill
-            className="object-cover"
+            className="object-cover grayscale"
           />
-          <div className="bg-primary/90 absolute inset-0 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="bg-foreground absolute inset-0 mix-blend-multiply opacity-90" />
         </div>
         <div className="container relative z-10 mx-auto px-4 text-center">
-          <FadeIn className="mx-auto max-w-3xl">
-            <h2 className="mb-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+          <FadeIn className="mx-auto max-w-4xl border border-white/20 bg-black/40 backdrop-blur-md p-12 md:p-20">
+            <span className="text-primary mb-6 block text-xs font-bold uppercase tracking-[0.2em]">
+              Join The Team
+            </span>
+            <h2 className="mb-8 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
               Where careers take shape
             </h2>
-            <p className="mb-10 text-lg leading-relaxed text-white/90">
+            <p className="mb-12 text-lg md:text-xl leading-relaxed text-white/80 max-w-2xl mx-auto">
               Join a team of passionate engineers, designers, and strategists. We are always looking
               for exceptional talent to help us build the future of enterprise software.
             </p>
             <Link
               href="/careers"
-              className="text-primary inline-flex items-center justify-center rounded-lg bg-white px-8 py-4 font-bold shadow-lg transition-transform hover:scale-105"
+              className="bg-white text-black hover:bg-white/90 inline-flex h-14 items-center justify-center rounded-none px-10 text-xs font-bold uppercase tracking-widest transition-colors"
             >
               View Open Roles
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-3 h-4 w-4" />
             </Link>
           </FadeIn>
         </div>
       </section>
 
       {/* ─── CONTACT FORM / CTA ─── */}
-      <section className="bg-background relative py-20 md:py-32" id="contact-section">
+      <section className="bg-background py-24 md:py-32 border-t border-border/40" id="contact-section">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <FadeIn className="mx-auto max-w-4xl">
-            <div className="mb-12 text-center">
-              <h2 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <FadeIn className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+            <div className="lg:col-span-5 lg:sticky lg:top-32">
+              <span className="text-muted-foreground mb-4 block text-xs font-bold uppercase tracking-[0.2em]">
+                Let's Talk
+              </span>
+              <h2 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
                 Let&apos;s build what&apos;s next, together.
               </h2>
-              <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+              <p className="text-muted-foreground text-lg leading-relaxed">
                 Whether you need a full enterprise system or a dedicated engineering team, drop us a
-                line.
+                line and our team will get back to you within 24 hours.
               </p>
             </div>
 
-            <div className="bg-card border-border/40 rounded-3xl border p-4 shadow-xl md:p-8">
-              <QuickMessageForm />
+            <div className="lg:col-span-7">
+              <div className="border border-border/60 p-2">
+                <QuickMessageForm />
+              </div>
             </div>
           </FadeIn>
         </div>

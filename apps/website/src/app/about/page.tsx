@@ -219,7 +219,7 @@ export default async function AboutPage() {
               {
                 year: "2023",
                 title: "The Beginning",
-                desc: "Voryent Solutions was founded in Sialkot, Pakistan with a mission to deliver world-class software engineering services.",
+                desc: "Voryent Solutions was founded in Lahore, Pakistan with a mission to deliver world-class software engineering services.",
               },
               {
                 year: "2024",
@@ -381,7 +381,7 @@ export default async function AboutPage() {
                 Building for the world.
               </h2>
               <p className="text-background/80 mb-10 max-w-lg text-lg leading-relaxed">
-                Our headquarters and primary engineering hub are based in Sialkot, Pakistan. From
+                Our headquarters and primary engineering hub are based in Lahore, Pakistan. From
                 here, we collaborate with partners globally, delivering world-class software
                 solutions. As we look to the future, we are poised to expand our physical presence
                 to better serve our international clients.
@@ -390,7 +390,7 @@ export default async function AboutPage() {
                 <h3 className="text-primary mb-2 text-xs font-bold uppercase tracking-widest">
                   Headquarters
                 </h3>
-                <p className="text-background text-xl font-medium">Sialkot, Pakistan</p>
+                <p className="text-background text-xl font-medium">Lahore, Pakistan</p>
               </div>
             </div>
             <div className="relative aspect-square w-full opacity-60">

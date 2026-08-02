@@ -139,14 +139,14 @@ export function QuickMessageForm() {
   if (status === "success") {
     return (
       <div
-        className="bg-card border-border/40 flex flex-col items-center justify-center rounded-3xl border p-12 text-center shadow-lg"
+        className="bg-card border-border/60 flex flex-col items-center justify-center rounded-none border p-12 text-center"
         role="status"
         aria-live="polite"
       >
-        <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 shadow-sm ring-4 ring-green-500/20">
-          <CheckCircle2 className="h-12 w-12" />
+        <div className="mb-6 flex h-20 w-20 items-center justify-center bg-primary/10 text-primary">
+          <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h3 className="text-foreground text-3xl font-extrabold tracking-tight">Message Sent!</h3>
+        <h3 className="text-foreground text-3xl font-bold tracking-tight">Message Sent</h3>
         <p className="text-muted-foreground mt-4 max-w-md text-base leading-relaxed">
           Thank you for contacting us. We have received your message and will respond as soon as
           possible.
@@ -154,7 +154,7 @@ export function QuickMessageForm() {
         <button
           onClick={() => setStatus("idle")}
           suppressHydrationWarning
-          className="text-primary mt-8 inline-flex items-center text-sm font-bold underline underline-offset-4 transition-opacity hover:opacity-80"
+          className="text-primary mt-8 inline-flex items-center text-xs font-bold tracking-widest uppercase hover:text-primary/80 transition-colors"
         >
           Send another message
         </button>
@@ -163,14 +163,14 @@ export function QuickMessageForm() {
   }
 
   const inputClasses =
-    "bg-muted/40 border-transparent hover:bg-muted/60 hover:border-primary/30 focus-visible:bg-background focus-visible:border-primary flex w-full rounded-2xl border-2 px-5 py-4 text-sm transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-muted-foreground/50";
-  const labelClasses = "text-foreground text-sm font-bold ml-1 mb-2 block";
+    "bg-background border-border/60 hover:border-primary/50 focus-visible:border-primary flex w-full rounded-none border px-5 py-4 text-sm transition-colors focus-visible:outline-none placeholder:text-muted-foreground/50";
+  const labelClasses = "text-muted-foreground text-xs font-bold uppercase tracking-widest mb-2 block";
 
   return (
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="bg-card border-border/40 space-y-8 rounded-3xl border p-8 shadow-xl md:p-12"
+      className="bg-card border-border/60 space-y-8 rounded-none border p-8 md:p-12"
     >
       <div style={{ display: "none" }} aria-hidden="true">
         <label htmlFor="bot_field_website">Website</label>
@@ -184,7 +184,7 @@ export function QuickMessageForm() {
         />
       </div>
       {status === "error" && (
-        <div className="border-destructive/20 bg-destructive/10 text-destructive flex items-center gap-3 rounded-2xl border p-5 text-sm font-medium">
+        <div className="border-destructive/20 bg-destructive/10 text-destructive flex items-center gap-3 rounded-none border p-5 text-sm font-medium">
           <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <p>{(errors as any)._form || "Something went wrong. Please try again."}</p>
         </div>
@@ -206,7 +206,7 @@ export function QuickMessageForm() {
             placeholder="John Doe"
           />
           {errors.name && (
-            <p className="text-destructive mt-2 text-xs font-semibold">{errors.name}</p>
+            <p className="text-destructive mt-2 text-xs font-bold">{errors.name}</p>
           )}
         </div>
         <div>
@@ -225,7 +225,7 @@ export function QuickMessageForm() {
             placeholder="john@example.com"
           />
           {errors.email && (
-            <p className="text-destructive mt-2 text-xs font-semibold">{errors.email}</p>
+            <p className="text-destructive mt-2 text-xs font-bold">{errors.email}</p>
           )}
         </div>
       </div>
@@ -245,23 +245,21 @@ export function QuickMessageForm() {
           placeholder="How can we help you?"
         />
         {errors.message && (
-          <p className="text-destructive mt-2 text-xs font-semibold">{errors.message}</p>
+          <p className="text-destructive mt-2 text-xs font-bold">{errors.message}</p>
         )}
       </div>
       <button
         type="submit"
         disabled={status === "submitting"}
         suppressHydrationWarning
-        className="bg-primary text-primary-foreground focus-visible:ring-primary/50 inline-flex w-full items-center justify-center rounded-2xl px-8 py-5 text-base font-extrabold shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-4 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
+        className="bg-primary text-primary-foreground focus-visible:ring-primary/50 inline-flex w-full items-center justify-center rounded-none px-8 py-5 text-sm uppercase tracking-widest font-bold transition-colors hover:bg-primary/90 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
       >
         {status === "submitting" ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Sending...
           </>
         ) : (
-          <>
-            <Mail className="mr-2 h-5 w-5" /> Send Message
-          </>
+          "SEND MESSAGE"
         )}
       </button>
     </form>
@@ -391,21 +389,21 @@ export function ProjectRequestForm() {
   }
 
   const inputClasses =
-    "bg-muted/40 border-transparent hover:bg-muted/60 hover:border-primary/30 focus-visible:bg-background focus-visible:border-primary flex w-full appearance-none rounded-2xl border-2 px-5 py-4 text-sm transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-muted-foreground/50";
-  const labelClasses = "text-foreground text-sm font-bold ml-1 mb-2 block";
+    "bg-background border-border/60 hover:border-primary/50 focus-visible:border-primary flex w-full appearance-none rounded-none border px-5 py-4 text-sm transition-colors focus-visible:outline-none placeholder:text-muted-foreground/50";
+  const labelClasses = "text-muted-foreground text-xs font-bold uppercase tracking-widest mb-2 block";
 
   if (status === "success") {
     return (
       <div
-        className="bg-card border-border/40 flex flex-col items-center justify-center rounded-3xl border p-12 text-center shadow-lg"
+        className="bg-card border-border/60 flex flex-col items-center justify-center rounded-none border p-12 text-center"
         role="status"
         aria-live="polite"
       >
-        <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 shadow-sm ring-4 ring-green-500/20">
-          <CheckCircle2 className="h-12 w-12" />
+        <div className="mb-6 flex h-20 w-20 items-center justify-center bg-green-500/10 text-green-500">
+          <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h3 className="text-foreground text-3xl font-extrabold tracking-tight">
-          Partnership Request Submitted!
+        <h3 className="text-foreground text-3xl font-bold tracking-tight">
+          Partnership Request Submitted
         </h3>
         <p className="text-muted-foreground mt-4 max-w-md text-base leading-relaxed">
           Our enterprise team will review your requirements and get back to you shortly to discuss
@@ -414,7 +412,7 @@ export function ProjectRequestForm() {
         <button
           onClick={() => setStatus("idle")}
           suppressHydrationWarning
-          className="text-primary mt-8 inline-flex items-center text-sm font-bold underline underline-offset-4 transition-opacity hover:opacity-80"
+          className="text-primary mt-8 inline-flex items-center text-xs font-bold uppercase tracking-widest hover:text-primary/80 transition-colors"
         >
           Submit another request
         </button>
@@ -426,7 +424,7 @@ export function ProjectRequestForm() {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="bg-card border-border/40 space-y-10 rounded-3xl border p-8 shadow-xl md:p-12"
+      className="bg-card border-border/60 space-y-10 rounded-none border p-8 md:p-12"
     >
       <div style={{ display: "none" }} aria-hidden="true">
         <label htmlFor="bot_field_website_project">Website</label>
@@ -441,7 +439,7 @@ export function ProjectRequestForm() {
       </div>
 
       {status === "error" && (
-        <div className="border-destructive/20 bg-destructive/10 text-destructive flex items-center gap-3 rounded-2xl border p-5 text-sm font-medium">
+        <div className="border-destructive/20 bg-destructive/10 text-destructive flex items-center gap-3 rounded-none border p-5 text-sm font-medium">
           <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <p>{(errors as any)._form || "Something went wrong. Please try again."}</p>
         </div>
@@ -465,7 +463,7 @@ export function ProjectRequestForm() {
             placeholder="John Doe"
           />
           {errors.name && (
-            <p className="text-destructive mt-2 text-xs font-semibold">{errors.name}</p>
+            <p className="text-destructive mt-2 text-xs font-bold">{errors.name}</p>
           )}
         </div>
         <div>
@@ -484,12 +482,12 @@ export function ProjectRequestForm() {
             placeholder="john@example.com"
           />
           {errors.email && (
-            <p className="text-destructive mt-2 text-xs font-semibold">{errors.email}</p>
+            <p className="text-destructive mt-2 text-xs font-bold">{errors.email}</p>
           )}
         </div>
         <div>
           <label htmlFor="req-company" className={labelClasses}>
-            Company <span className="text-muted-foreground font-normal">(Optional)</span>
+            Company <span className="text-muted-foreground/60 font-medium normal-case tracking-normal text-[10px] ml-1">(Optional)</span>
           </label>
           <input
             id="req-company"
@@ -504,7 +502,7 @@ export function ProjectRequestForm() {
         </div>
         <div>
           <label htmlFor="req-phone" className={labelClasses}>
-            Phone <span className="text-muted-foreground font-normal">(Optional)</span>
+            Phone <span className="text-muted-foreground/60 font-medium normal-case tracking-normal text-[10px] ml-1">(Optional)</span>
           </label>
           <input
             id="req-phone"
@@ -549,7 +547,7 @@ export function ProjectRequestForm() {
             <ChevronDown className="text-muted-foreground/70 pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2" />
           </div>
           {errors.type && (
-            <p className="text-destructive mt-2 text-xs font-semibold">{errors.type}</p>
+            <p className="text-destructive mt-2 text-xs font-bold">{errors.type}</p>
           )}
         </div>
         <div>
@@ -620,39 +618,39 @@ export function ProjectRequestForm() {
           placeholder="Describe your project, goals, and requirements..."
         />
         {errors.message && (
-          <p className="text-destructive mt-2 text-xs font-semibold">{errors.message}</p>
+          <p className="text-destructive mt-2 text-xs font-bold">{errors.message}</p>
         )}
       </div>
 
       {/* Attachments */}
       <div>
         <label className={labelClasses}>
-          Attachments <span className="text-muted-foreground font-normal">(Optional)</span>
+          Attachments <span className="text-muted-foreground/60 font-medium normal-case tracking-normal text-[10px] ml-1">(Optional)</span>
         </label>
-        <div className="bg-muted/30 hover:border-primary/50 hover:bg-primary/5 border-border/60 relative mt-2 flex justify-center rounded-2xl border-2 border-dashed px-6 py-12 transition-all">
+        <div className="bg-background hover:border-primary/50 border-border/60 relative mt-2 flex justify-center rounded-none border border-dashed px-6 py-12 transition-colors">
           <div className="text-center">
             {file ? (
               <div className="flex flex-col items-center">
-                <Paperclip className="text-primary mx-auto mb-4 h-12 w-12" />
-                <p className="text-foreground text-base font-bold">{file.name}</p>
-                <p className="text-muted-foreground mt-1 text-sm font-semibold">
+                <Paperclip className="text-primary mx-auto mb-4 h-8 w-8" />
+                <p className="text-foreground text-sm font-bold">{file.name}</p>
+                <p className="text-muted-foreground mt-1 text-xs font-medium">
                   {(file.size / 1024).toFixed(1)} KB
                 </p>
                 <button
                   type="button"
                   onClick={() => setFile(null)}
-                  className="text-destructive mt-5 flex items-center justify-center gap-2 text-sm font-bold hover:underline"
+                  className="text-destructive mt-4 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-destructive/80 transition-colors"
                 >
                   <X className="h-4 w-4" /> Remove File
                 </button>
               </div>
             ) : (
               <>
-                <Paperclip className="text-muted-foreground/40 mx-auto mb-4 h-12 w-12" />
-                <div className="text-muted-foreground flex justify-center text-base leading-6">
+                <Paperclip className="text-muted-foreground/40 mx-auto mb-4 h-8 w-8" />
+                <div className="text-muted-foreground flex justify-center text-sm">
                   <label
                     htmlFor="file-upload"
-                    className="text-primary focus-within:ring-primary/50 hover:text-primary/80 relative cursor-pointer rounded-md font-bold focus-within:outline-none focus-within:ring-2"
+                    className="text-primary focus-within:border-primary hover:text-primary/80 relative cursor-pointer font-bold transition-colors"
                   >
                     <span>Click to browse</span>
                     <input
@@ -664,34 +662,34 @@ export function ProjectRequestForm() {
                       accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
                     />
                   </label>
-                  <p className="pl-1">or drag & drop files here</p>
+                  <p className="pl-1">or drag & drop here</p>
                 </div>
-                <p className="text-muted-foreground/60 mt-3 text-sm font-medium">
+                <p className="text-muted-foreground/60 mt-2 text-xs font-medium">
                   Max 700KB per file • PDF, DOC, Images
                 </p>
               </>
             )}
           </div>
         </div>
-        {fileError && <p className="text-destructive mt-3 text-sm font-semibold">{fileError}</p>}
+        {fileError && <p className="text-destructive mt-3 text-xs font-bold">{fileError}</p>}
       </div>
 
       <div className="border-border/40 border-t" />
 
       {/* Checkboxes */}
-      <div className="space-y-5">
+      <div className="space-y-6">
         <div className="flex items-start">
-          <div className="flex h-6 items-center">
+          <div className="flex h-5 items-center">
             <input
               id="nda"
               name="nda"
               type="checkbox"
               checked={formData.nda}
               onChange={handleChange}
-              className="border-input text-primary focus:ring-primary/50 bg-background h-5 w-5 rounded"
+              className="border-border bg-background text-primary focus:ring-primary/50 h-5 w-5 rounded-none"
             />
           </div>
-          <div className="ml-3 text-base leading-6">
+          <div className="ml-3 text-sm">
             <label htmlFor="nda" className="text-foreground cursor-pointer font-medium">
               I require a Non-Disclosure Agreement (NDA) before discussing project details
             </label>
@@ -699,23 +697,23 @@ export function ProjectRequestForm() {
         </div>
 
         <div className="flex items-start">
-          <div className="flex h-6 items-center">
+          <div className="flex h-5 items-center">
             <input
               id="terms"
               name="terms"
               type="checkbox"
               checked={formData.terms}
               onChange={handleChange}
-              className="border-input text-primary focus:ring-primary/50 bg-background h-5 w-5 rounded"
+              className="border-border bg-background text-primary focus:ring-primary/50 h-5 w-5 rounded-none"
             />
           </div>
-          <div className="ml-3 text-base leading-6">
+          <div className="ml-3 text-sm">
             <label htmlFor="terms" className="text-foreground cursor-pointer font-medium">
               I agree to the Terms of Service and Privacy Policy{" "}
               <span className="text-destructive">*</span>
             </label>
             {errors.terms && (
-              <p className="text-destructive mt-1 text-sm font-semibold">{errors.terms}</p>
+              <p className="text-destructive mt-2 text-xs font-bold">{errors.terms}</p>
             )}
           </div>
         </div>
@@ -725,16 +723,14 @@ export function ProjectRequestForm() {
         type="submit"
         disabled={status === "submitting"}
         suppressHydrationWarning
-        className="bg-primary text-primary-foreground focus-visible:ring-primary/50 inline-flex w-full items-center justify-center rounded-2xl px-8 py-5 text-base font-extrabold shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-4 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
+        className="bg-primary text-primary-foreground focus-visible:ring-primary/50 inline-flex w-full items-center justify-center rounded-none px-8 py-5 text-sm uppercase tracking-widest font-bold transition-colors hover:bg-primary/90 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
       >
         {status === "submitting" ? (
           <>
-            <Loader2 className="mr-2 h-6 w-6 animate-spin" /> Submitting Request...
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> SUBMITTING...
           </>
         ) : (
-          <>
-            <ArrowRight className="mr-2 h-6 w-6" /> Submit Partnership Request
-          </>
+          "SUBMIT PARTNERSHIP REQUEST"
         )}
       </button>
     </form>
@@ -744,29 +740,29 @@ export function ProjectRequestForm() {
 export function ContactTabs() {
   return (
     <Tabs defaultValue="project" className="w-full">
-      <TabsList className="bg-muted/40 border-border/40 mb-12 grid h-16 w-full grid-cols-2 rounded-2xl border p-2">
+      <TabsList className="bg-transparent border-b border-border/60 mb-12 grid h-14 w-full grid-cols-2 rounded-none p-0">
         <TabsTrigger
           value="project"
-          className="data-[state=active]:bg-background rounded-xl text-base font-bold transition-all data-[state=active]:shadow-sm"
+          className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none text-sm font-bold uppercase tracking-widest transition-colors h-full"
         >
           Discuss Project
         </TabsTrigger>
         <TabsTrigger
           value="message"
-          className="data-[state=active]:bg-background rounded-xl text-base font-bold transition-all data-[state=active]:shadow-sm"
+          className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none text-sm font-bold uppercase tracking-widest transition-colors h-full"
         >
           Quick Message
         </TabsTrigger>
       </TabsList>
       <TabsContent
         value="project"
-        className="animate-in fade-in-50 zoom-in-[0.98] mt-2 duration-500"
+        className="animate-in fade-in-50 duration-500 mt-0"
       >
         <ProjectRequestForm />
       </TabsContent>
       <TabsContent
         value="message"
-        className="animate-in fade-in-50 zoom-in-[0.98] mt-2 duration-500"
+        className="animate-in fade-in-50 duration-500 mt-0"
       >
         <QuickMessageForm />
       </TabsContent>
@@ -785,24 +781,25 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
   return (
     <>
       {/* ─── HERO ─── */}
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden pt-16">
+      <section className="relative flex min-h-[70vh] items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=2069&auto=format&fit=crop"
+            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop"
             alt="Customer Support / Contact"
             fill
-            className="object-cover"
+            className="object-cover object-center"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/30" />
+          <div className="absolute inset-0 bg-black/70" />
         </div>
 
-        <div className="container relative z-10 mx-auto px-4 py-20 md:px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-black/40 p-8 text-center shadow-2xl backdrop-blur-md md:p-12">
-            <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl">
+        <div className="container relative z-10 mx-auto px-4 py-20 md:px-6 lg:px-8 mt-16">
+          <div className="max-w-4xl text-white">
+            <span className="text-xs tracking-[0.2em] uppercase mb-4 block text-white/80">Contact Us</span>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
               Let&apos;s Build Something Great Together
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-300 sm:text-xl">
+            <p className="max-w-2xl text-lg leading-relaxed text-white/80 md:text-xl">
               Ready to transform your business with intelligent software? Tell us about your goals,
               and we&apos;ll respond within 1–2 business days.
             </p>
@@ -811,9 +808,9 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
       </section>
 
       {/* ─── FORM + INFO ─── */}
-      <section className="bg-background relative z-10 py-24 md:py-32">
-        <div className="container mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
+      <section className="bg-background relative z-10 py-24 md:py-32 border-b border-border/40">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-start gap-16 lg:grid-cols-12 lg:gap-24">
             {/* Contact form — 7 columns */}
             <div className="lg:col-span-7">
               <ContactTabs />
@@ -822,15 +819,16 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
             {/* Sidebar info — 5 columns */}
             <aside className="space-y-8 lg:sticky lg:top-32 lg:col-span-5">
               {/* Contact Information */}
-              <div className="border-border/40 bg-card rounded-3xl border p-8 shadow-lg transition-transform hover:-translate-y-1 md:p-10">
-                <h2 className="text-foreground mb-8 text-2xl font-extrabold">Get in Touch</h2>
+              <div className="border-border/60 bg-card rounded-none border p-8 md:p-10">
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-muted-foreground mb-4 block">Reach Out</span>
+                <h2 className="text-foreground mb-8 text-3xl font-bold tracking-tight">Get in Touch</h2>
                 <div className="space-y-8">
                   <div className="flex items-start gap-5">
-                    <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
-                      <Mail className="h-6 w-6" />
+                    <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-primary/20">
+                      <Mail className="h-5 w-5" />
                     </div>
                     <div className="pt-1">
-                      <p className="text-foreground mb-1 text-base font-bold">Email Us</p>
+                      <p className="text-foreground mb-1 text-sm font-bold uppercase tracking-widest">Email Us</p>
                       <a
                         href={`mailto:${contactSettings?.email || "contact@voryentsolutions.com"}`}
                         className="text-muted-foreground hover:text-primary block text-base font-medium transition-colors"
@@ -842,11 +840,11 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
 
                   {contactSettings?.phone && (
                     <div className="flex items-start gap-5">
-                      <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
-                        <Phone className="h-6 w-6" />
+                      <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-primary/20">
+                        <Phone className="h-5 w-5" />
                       </div>
                       <div className="pt-1">
-                        <p className="text-foreground mb-1 text-base font-bold">Call Us</p>
+                        <p className="text-foreground mb-1 text-sm font-bold uppercase tracking-widest">Call Us</p>
                         <a
                           href={`tel:${contactSettings?.phone}`}
                           className="text-muted-foreground hover:text-primary block text-base font-medium transition-colors"
@@ -859,11 +857,11 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
 
                   {contactSettings?.address && (
                     <div className="flex items-start gap-5">
-                      <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
-                        <MapPin className="h-6 w-6" />
+                      <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-primary/20">
+                        <MapPin className="h-5 w-5" />
                       </div>
                       <div className="pt-1">
-                        <p className="text-foreground mb-1 text-base font-bold">Headquarters</p>
+                        <p className="text-foreground mb-1 text-sm font-bold uppercase tracking-widest">Headquarters</p>
                         <p className="text-muted-foreground whitespace-pre-wrap text-base font-medium leading-relaxed">
                           {contactSettings.address}
                         </p>
@@ -875,8 +873,9 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
 
               {/* Social Media */}
               {socialSettings && (
-                <div className="border-border/40 bg-card rounded-3xl border p-8 shadow-lg transition-transform hover:-translate-y-1 md:p-10">
-                  <h2 className="text-foreground mb-6 text-2xl font-extrabold">Connect With Us</h2>
+                <div className="border-border/60 bg-card rounded-none border p-8 md:p-10">
+                  <span className="text-xs font-bold tracking-[0.2em] uppercase text-muted-foreground mb-4 block">Social</span>
+                  <h2 className="text-foreground mb-6 text-3xl font-bold tracking-tight">Connect With Us</h2>
                   <div className="pt-2">
                     <SocialIcons social={socialSettings} />
                   </div>
@@ -884,18 +883,19 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
               )}
 
               {/* Office Status */}
-              <div className="border-border/40 bg-card from-card to-primary/5 rounded-3xl border bg-gradient-to-br p-8 shadow-lg transition-transform hover:-translate-y-1 md:p-10">
-                <h2 className="text-foreground mb-6 text-2xl font-extrabold">Global Operations</h2>
+              <div className="border-border/60 bg-muted/20 rounded-none border p-8 md:p-10">
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-muted-foreground mb-4 block">Operations</span>
+                <h2 className="text-foreground mb-6 text-3xl font-bold tracking-tight">Global Support</h2>
                 <div className="space-y-5">
                   <div className="flex items-start gap-5">
-                    <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
-                      <Globe className="h-6 w-6" />
+                    <div className="bg-background text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-border/60">
+                      <Globe className="h-5 w-5" />
                     </div>
                     <div className="pt-1">
-                      <p className="text-foreground mb-1 text-base font-bold">
-                        Remote-First & Worldwide
+                      <p className="text-foreground mb-1 text-sm font-bold uppercase tracking-widest">
+                        Remote-First
                       </p>
-                      <p className="text-muted-foreground text-sm font-medium leading-relaxed">
+                      <p className="text-muted-foreground text-base leading-relaxed">
                         Our distributed team works across time zones to provide responsive, seamless
                         collaboration wherever you are.
                       </p>
@@ -909,30 +909,24 @@ export default function ContactClient({ socialSettings, contactSettings }: Conta
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="pb-24 pt-12">
+      <section className="py-24 md:py-32 bg-background border-t border-border/40">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="bg-foreground relative overflow-hidden rounded-[2.5rem] px-8 py-24 text-center shadow-2xl">
-            <div
-              className="from-primary/20 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-black/40"
-              aria-hidden="true"
-            />
-            <div className="relative z-10 mx-auto max-w-3xl">
-              <h2 className="text-background mb-8 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
-                Ready to accelerate your digital growth?
-              </h2>
-              <p className="text-muted mx-auto mt-6 max-w-2xl text-lg font-medium leading-relaxed">
-                Sometimes it&apos;s easier to talk it through. Send us an email and let&apos;s
-                schedule a discovery call.
-              </p>
-              <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-                <a
-                  href="mailto:contact@voryentsolutions.com"
-                  className="bg-primary text-primary-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center rounded-2xl px-10 py-5 text-base font-extrabold shadow-lg transition-all hover:scale-105 hover:shadow-xl focus-visible:outline-none focus-visible:ring-4"
-                >
-                  Email Us Directly
-                  <ArrowRight className="ml-2 h-6 w-6" />
-                </a>
-              </div>
+          <div className="text-center max-w-4xl mx-auto">
+            <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-foreground mb-8">
+              Ready to accelerate your digital growth?
+            </h2>
+            <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg md:text-xl leading-relaxed mb-10">
+              Sometimes it&apos;s easier to talk it through. Send us an email and let&apos;s
+              schedule a discovery call.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <a
+                href="mailto:contact@voryentsolutions.com"
+                className="bg-foreground text-background inline-flex items-center justify-center rounded-none px-10 h-14 text-sm tracking-widest uppercase font-bold transition-colors hover:bg-foreground/90"
+              >
+                Email Us Directly
+                <ArrowRight className="ml-3 h-4 w-4" />
+              </a>
             </div>
           </div>
         </div>
