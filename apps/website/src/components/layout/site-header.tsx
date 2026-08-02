@@ -82,8 +82,8 @@ const navigationLinks = [
       ),
     },
   },
-  { label: "Work", href: "/work" },
   {
+
     label: "Insights",
     href: "#",
     dropdownItems: [
@@ -116,7 +116,7 @@ export function SiteHeader() {
               priority
             />
             <Image
-              src="/Assets/Logos/Dark BG/Horizontal_layout_Logo_Dark.webp"
+              src="/Assets/Logos/Dark BG/Horizontal_layout_Logo_Dark.png"
               alt="Voryent Solutions"
               fill
               sizes="180px"

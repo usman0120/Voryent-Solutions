@@ -78,30 +78,7 @@ const defaultPages = [
           },
         ],
       },
-      featuredWork: {
-        title: "Featured Work",
-        description: "A selection of projects that showcase our engineering craft.",
-        items: [
-          {
-            title: "Medicare Plus Management System",
-            category: "Custom Software & AI Solutions",
-            summary:
-              "A comprehensive hospital management system integrating AI-powered intelligent medicine auto-suggestions and operational workflow optimizations.",
-            technologies: ["React", "PostgreSQL", "Python (AI)", "Docker"],
-            imageSrc: "/Assets/Illustrations/Medicare Plus Illustration.webp",
-            link: "/work",
-          },
-          {
-            title: "Boss Restaurant POS",
-            category: "Custom Software & POS",
-            summary:
-              "A robust Point of Sale and internal management system developed specifically for fast-paced hospitality workflows.",
-            technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Supabase"],
-            imageSrc: "/Assets/Illustrations/Boss Restaurant Illustration.webp",
-            link: "/work",
-          },
-        ],
-      },
+
       testimonials: {
         title: "Client Outcomes",
         description: "Don't just take our word for it. Hear from the partners we've built with.",

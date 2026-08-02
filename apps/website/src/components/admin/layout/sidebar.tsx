@@ -23,7 +23,7 @@ const websiteNavItems = [
   { href: "/admin/dashboard/contact-cms", icon: FileText, label: "Contact CMS" },
   { href: "/admin/dashboard/about", icon: FileText, label: "About Page CMS" },
 
-  { href: "/admin/dashboard/projects", icon: Briefcase, label: "Projects CMS" },
+
   { href: "/admin/dashboard/case-studies", icon: BookOpen, label: "Case Studies CMS" },
   { href: "/admin/dashboard/services", icon: LayoutDashboard, label: "Services CMS" },
   { href: "/admin/dashboard/industries", icon: Building, label: "Industries CMS" },

@@ -51,7 +51,7 @@ export const columns: ColumnDef<CaseStudy>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const caseStudy = row.original;
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const deleteMutation = useDeleteCaseStudy();
@@ -66,11 +66,9 @@ export const columns: ColumnDef<CaseStudy>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/dashboard/case-studies/${caseStudy.id}`}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit
-              </Link>
+            <DropdownMenuItem onClick={() => (table.options.meta as any)?.onEdit(caseStudy)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 

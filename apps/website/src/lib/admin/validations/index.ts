@@ -14,22 +14,18 @@ export const jobSchema = z.object({
   status: z.enum(["Open", "Closed", "Draft"]),
 });
 
-export const projectSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  client: z.string().min(2, "Client name is required"),
-  status: z.enum(["Planning", "In Progress", "Completed", "On Hold"]),
-  dueDate: z.date(),
-  budget: z.number().min(0),
-});
+
 
 export * from "./job.schema";
 export * from "./application.schema";
 export * from "./employee.schema";
-export * from "./project.schema";
+
 export * from "./cms";
 export * from "./page.schema";
 export * from "./service.schema";
 export * from "./industry.schema";
+export * from "./case-study.schema";
+export * from "./case-study-lead.schema";
 export * from "./faq.schema";
 export * from "./blog.schema";
 export * from "./contact.schema";

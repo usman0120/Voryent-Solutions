@@ -297,66 +297,6 @@ export async function getContactSettings() {
   return data;
 }
 
-// --- Projects ---
-export async function getProjects(): Promise<any[]> {
-  const key = "projects_v2";
-  const cached = getCached<any[]>(key);
-  if (cached) return cached;
-
-  try {
-    const q = query(collection(db(), "projects"), where("status", "in", ["Completed", "Active", "Planning", "Published", "published"]));
-    const snapshot = await getDocs(q);
-    const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
-    const data = docs.sort((a, b) => {
-      const timeA = a.updatedAt?.toMillis?.() || 0;
-      const timeB = b.updatedAt?.toMillis?.() || 0;
-      return timeB - timeA;
-    });
-    setCacheWithPrune(key, data, SHORT_TTL);
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch projects:", error);
-    return [];
-  }
-}
-
-export async function getFeaturedProjects(): Promise<any[]> {
-  const key = "featuredProjects_v2";
-  const cached = getCached<any[]>(key);
-  if (cached) return cached;
-
-  try {
-    const q = query(collection(db(), "projects"), where("status", "in", ["Completed", "Active", "Planning", "Published", "published"]));
-    const snapshot = await getDocs(q);
-    const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
-    // Filter locally for isFeatured to avoid needing a composite index
-    const featuredDocs = docs.filter(doc => doc.isFeatured === true);
-    const data = featuredDocs.sort((a, b) => {
-      const timeA = a.updatedAt?.toMillis?.() || 0;
-      const timeB = b.updatedAt?.toMillis?.() || 0;
-      return timeB - timeA;
-    });
-    setCacheWithPrune(key, data, SHORT_TTL);
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch featured projects:", error);
-    return [];
-  }
-}
-
-export async function getProjectBySlug(slug: string): Promise<any> {
-  const key = `project:${slug}`;
-  const cached = getCached<any>(key);
-  if (cached) return cached;
-
-  const q = query(collection(db(), "projects"), where("slug", "==", slug), limit(1));
-  const snapshot = await getDocs(q);
-  const firstDoc = snapshot.docs[0];
-  if (!firstDoc) return null;
-  const data = { id: firstDoc.id, ...firstDoc.data() };
-  setCacheWithPrune(key, data, SHORT_TTL);
-  return data;
-}
 
 // --- Applications ---
 export async function submitJobApplication(data: any) {
@@ -470,4 +410,21 @@ export async function getCaseStudyBySlug(slug: string): Promise<any> {
     console.error(`Failed to fetch case study by slug (${slug}):`, error);
     return null;
   }
+}
+
+export async function submitCaseStudyDownload(data: any) {
+  const { addDoc, serverTimestamp, collection } = await import("firebase/firestore");
+  const docRef = await addDoc(collection(db(), "caseStudyLeads"), {
+    ...data,
+    downloadedAt: serverTimestamp(),
+  });
+  await addDoc(collection(db(), "notifications"), {
+    title: "New Case Study Download",
+    message: `${data.firstName} ${data.lastName} downloaded ${data.caseStudyTitle}`,
+    type: "lead",
+    isRead: false,
+    createdAt: serverTimestamp(),
+    link: `/admin/dashboard/case-studies?tab=leads`,
+  });
+  return docRef;
 }

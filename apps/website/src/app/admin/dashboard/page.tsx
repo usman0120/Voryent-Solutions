@@ -7,18 +7,15 @@ import { Skeleton, Button } from "@voryent/ui";
 
 // Assume we have these hooks or services (using generic fast fetches if available)
 import { contactsService } from "@/lib/admin/services/contacts.service";
-import { projectsService } from "@/lib/admin/services/projects.service";
 import { jobsService } from "@/lib/admin/services/jobs.service";
 
 export default function DashboardPage() {
   const { data: contacts = [], isLoading: loadingContacts } = useQuery({ queryKey: ["contacts"], queryFn: () => contactsService.getAll() });
-  const { data: projects = [], isLoading: loadingProjects } = useQuery({ queryKey: ["projects"], queryFn: () => projectsService.getAll() });
   const { data: jobs = [], isLoading: loadingJobs } = useQuery({ queryKey: ["jobs"], queryFn: () => jobsService.getAll() });
 
-  const loading = loadingContacts || loadingProjects || loadingJobs;
+  const loading = loadingContacts || loadingJobs;
 
   const stats = [
-    { name: "Total Projects", value: projects.length.toString(), icon: FolderOpen, color: "text-blue-500", bg: "bg-blue-500/10" },
     { name: "Active Job Postings", value: jobs.filter((j: any) => j.status === "Published").length.toString(), icon: Briefcase, color: "text-emerald-500", bg: "bg-emerald-500/10" },
     { name: "Contact Inquiries", value: contacts.length.toString(), icon: MessageSquare, color: "text-orange-500", bg: "bg-orange-500/10" },
   ];
@@ -73,15 +70,7 @@ export default function DashboardPage() {
             <h3 className="font-semibold text-lg flex items-center gap-2"><LayoutDashboard className="h-5 w-5" /> Quick Actions</h3>
           </div>
           <div className="p-6 grid gap-4 grid-cols-1 sm:grid-cols-2">
-            <Button asChild variant="secondary" className="h-auto py-4 justify-start">
-              <Link href="/admin/dashboard/projects/create">
-                <Plus className="mr-3 h-5 w-5 text-blue-500" />
-                <div className="text-left">
-                  <p className="font-medium">New Project</p>
-                  <p className="text-xs text-muted-foreground">Add to portfolio</p>
-                </div>
-              </Link>
-            </Button>
+
             <Button asChild variant="secondary" className="h-auto py-4 justify-start">
               <Link href="/admin/dashboard/blog/create">
                 <PenTool className="mr-3 h-5 w-5 text-orange-500" />

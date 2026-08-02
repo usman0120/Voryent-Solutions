@@ -21,7 +21,6 @@ const resourcesLinks = [
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },
   { label: "Industries", href: "/industries" },
-  { label: "Work", href: "/work" },
 ];
 
 const legalLinks = [
@@ -107,7 +106,7 @@ export async function SiteFooter() {
               priority
             />
             <Image
-              src="/Assets/Logos/Dark BG/Horizontal_layout_Logo_Dark.webp"
+              src="/Assets/Logos/Dark BG/Horizontal_layout_Logo_Dark.png"
               alt="Voryent Solutions"
               fill
               sizes="180px"

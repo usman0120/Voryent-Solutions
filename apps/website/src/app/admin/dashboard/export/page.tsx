@@ -10,7 +10,6 @@ import { Input } from "@voryent/ui";
 
 const COLLECTIONS = [
   "users",
-  "projects",
   "contacts",
   "jobs",
   "applications",

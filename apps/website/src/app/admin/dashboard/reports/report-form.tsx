@@ -117,7 +117,6 @@ export function ReportForm({ initialData, onSuccess }: ReportFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Projects">Projects</SelectItem>
                     <SelectItem value="Finance">Finance</SelectItem>
                     <SelectItem value="HR">HR / Employees</SelectItem>
                     <SelectItem value="CRM">CRM / Contacts</SelectItem>

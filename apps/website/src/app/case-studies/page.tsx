@@ -1,11 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Container, Section, Button, Card, CardContent } from "@voryent/ui";
+import { Container, Section, Button } from "@voryent/ui";
 import { ArrowRight, Code2 } from "lucide-react";
 import { getCaseStudiesFromDb } from "@/lib/firebase/services";
+import { CaseStudyCard } from "./case-study-card";
 
 export default async function CaseStudiesPage() {
-  const caseStudies = await getCaseStudiesFromDb();
+  const caseStudiesRaw = await getCaseStudiesFromDb();
+  // Sanitize data to remove Firestore Timestamp objects before passing to client components
+  const caseStudies = JSON.parse(JSON.stringify(caseStudiesRaw));
 
   return (
     <>
@@ -34,65 +37,7 @@ export default async function CaseStudiesPage() {
           {caseStudies.length > 0 ? (
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {caseStudies.map((study: any, index: number) => (
-                <Card
-                  key={study.slug || index}
-                  className="border-border/50 bg-card group flex h-full flex-col overflow-hidden shadow-sm transition-all hover:shadow-md"
-                >
-                  <div className="bg-muted relative h-48 w-full overflow-hidden sm:h-56">
-                    <Image
-                      src={
-                        study.imageSrc ||
-                        study.coverImage ||
-                        "/Assets/Illustrations/AI Illustration.webp"
-                      }
-                      alt={study.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    {study.category && (
-                      <div className="bg-background/90 absolute left-4 top-4 rounded-full border px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm">
-                        {study.category}
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="flex flex-grow flex-col p-8">
-                    <div className="mb-4 flex items-center justify-between">
-                      <div className="text-primary text-sm font-semibold uppercase tracking-wider">
-                        {study.industry}
-                      </div>
-                      <div className="text-muted-foreground bg-secondary/50 rounded-md px-2 py-1 text-xs font-medium">
-                        {study.projectType}
-                      </div>
-                    </div>
-                    <h3 className="text-foreground mb-4 text-2xl font-bold leading-tight">
-                      {study.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-6 flex-grow leading-relaxed">
-                      {study.outcomeSummary}
-                    </p>
-                    <div className="mb-8 flex flex-wrap gap-2">
-                      {study.technologies.slice(0, 4).map((tech: string) => (
-                        <span
-                          key={tech}
-                          className="border-border/50 bg-background text-muted-foreground inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                      {study.technologies.length > 4 && (
-                        <span className="border-border/50 bg-background text-muted-foreground inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium">
-                          +{study.technologies.length - 4} more
-                        </span>
-                      )}
-                    </div>
-                    <Button asChild variant="default" className="w-fit">
-                      <Link href={`/case-studies/${study.slug}`}>
-                        Read Case Study <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                <CaseStudyCard key={study.id || study.slug || index} study={study} />
               ))}
             </div>
           ) : (

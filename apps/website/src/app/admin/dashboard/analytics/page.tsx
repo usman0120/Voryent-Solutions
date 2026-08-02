@@ -29,12 +29,6 @@ export default function AnalyticsPage() {
             icon={<Users className="w-4 h-4 text-muted-foreground" />} 
           />
           <MetricCard 
-            title="Projects" 
-            value={metrics?.totalProjects} 
-            loading={isMetricsLoading} 
-            icon={<FolderGit2 className="w-4 h-4 text-muted-foreground" />} 
-          />
-          <MetricCard 
             title="Contacts" 
             value={metrics?.totalContacts} 
             loading={isMetricsLoading} 

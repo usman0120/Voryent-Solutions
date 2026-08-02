@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { caseStudiesService, type CaseStudy } from "../services/case-studies.service";
+import { caseStudiesService, caseStudyLeadsService, type CaseStudy, type CaseStudyLead } from "../services/case-studies.service";
 import { useToast } from "@/hooks/use-toast";
 import type { CaseStudyFormValues } from "../validations/case-study.schema";
 
@@ -11,6 +11,16 @@ export function useCaseStudies() {
     queryFn: async () => {
       const data = await caseStudiesService.getAll();
       return data as CaseStudy[];
+    },
+  });
+}
+
+export function useCaseStudyLeads() {
+  return useQuery({
+    queryKey: ["caseStudyLeads"],
+    queryFn: async () => {
+      const data = await caseStudyLeadsService.getAll();
+      return data as CaseStudyLead[];
     },
   });
 }

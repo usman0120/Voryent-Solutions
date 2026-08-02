@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Image from "next/image";
 import Link from "next/link";
-import { getHomepageData, getServices, getIndustries, getFeaturedProjects } from "@/lib/firebase/services";
+import { getHomepageData, getServices, getIndustries } from "@/lib/firebase/services";
 import {
   Code2,
   Cloud,
@@ -99,27 +99,6 @@ const industries = [
   { icon: Factory, name: "Manufacturing", href: "/industries" },
 ];
 
-const fallbackFeaturedProjects = [
-  {
-    title: "Medicare Plus Management System",
-    type: "Custom Software & AI Solutions",
-    description:
-      "A comprehensive hospital management system integrating AI-powered intelligent medicine auto-suggestions and operational workflow optimizations.",
-    technologies: ["React", "PostgreSQL", "Python (AI)", "Docker"],
-    coverImage: "/Assets/Illustrations/Medicare Plus Illustration.png",
-    slug: "medicare-plus",
-  },
-  {
-    title: "Boss Restaurant POS",
-    type: "Custom Software & POS",
-    description:
-      "A robust Point of Sale and internal management system developed specifically for fast-paced hospitality workflows.",
-    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Supabase"],
-    coverImage: "/Assets/Illustrations/Boss Restaurant Illustration.png",
-    slug: "boss-restaurant",
-  },
-];
-
 const testimonials = [
   {
     quote:
@@ -140,11 +119,10 @@ const testimonials = [
 /* ──────────────────────────── PAGE ──────────────────────────── */
 
 export default async function HomePage() {
-  const [homepageData, dbServices, dbIndustries, dbFeaturedProjects] = await Promise.all([
-    getHomepageData().catch(() => null),
+  const [homepageData, dbServices, dbIndustries] = await Promise.all([
+    getHomepageData(),
     getServices().catch(() => []),
-    getIndustries().catch(() => []),
-    getFeaturedProjects().catch(() => []),
+    getIndustries().catch(() => [])
   ]);
 
   // Only display featured services on the homepage
@@ -421,97 +399,6 @@ export default async function HomePage() {
                   </Link>
                 </FadeIn>
               ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ─── FEATURED WORK ─── */}
-      {isEnabled("featured-work") && (
-        <section className="bg-muted/30 py-20 md:py-28">
-          <div className="container mx-auto px-4 md:px-6 lg:px-8">
-            <div className="mx-auto mb-16 max-w-2xl text-center">
-              <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-                {getSection("featured-work").title ||
-                  blocks?.featuredWork?.title ||
-                  "Featured Work"}
-              </h2>
-              <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-                {getSection("featured-work").description ||
-                  blocks?.featuredWork?.description ||
-                  "A selection of projects that showcase our engineering craft."}
-              </p>
-            </div>
-
-            <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-              {dbFeaturedProjects.length > 0 ? (
-                dbFeaturedProjects.map((project: any, index: number) => (
-                  <FadeIn delay={0.1 * index} key={project.id || index}>
-                    <div className="bg-card hover:border-primary/40 group relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
-                      <div className="bg-muted relative aspect-[16/9] w-full overflow-hidden border-b">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={project.coverImage || project.attachments?.[0]?.url || "https://placehold.co/800x450/EEE/31343C"}
-                          alt={project.title || project.name}
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
-                        <div className="absolute top-4 right-4">
-                          <span className="bg-gradient-to-r from-primary to-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                            ⭐ Featured
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex flex-grow flex-col p-8 md:p-10">
-                        <div className="text-primary mb-3 text-sm font-semibold uppercase tracking-wider">
-                          {project.type || project.category || "Project"}
-                        </div>
-                        <h3 className="text-foreground mb-4 text-2xl font-bold leading-tight md:text-3xl line-clamp-1">
-                          {project.title || project.name}
-                        </h3>
-                        <p className="text-muted-foreground mb-8 flex-grow text-sm leading-relaxed line-clamp-3">
-                          {project.description || project.summary}
-                        </p>
-                        <div className="mb-8 flex flex-wrap gap-2">
-                          {(project.technologies || []).slice(0, 4).map((tech: string) => (
-                            <span
-                              key={tech}
-                              className="px-3 py-1 bg-primary/5 border border-primary/20 rounded-full text-[10px] uppercase tracking-wider font-semibold text-primary"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                          {project.technologies && project.technologies.length > 4 && (
-                            <span className="px-3 py-1 bg-muted text-muted-foreground text-[10px] rounded-full">
-                              +{project.technologies.length - 4}
-                            </span>
-                          )}
-                        </div>
-                        <Link
-                          href={`/work/${project.slug}`}
-                          aria-label={`View Project: ${project.title || project.name}`}
-                          className="text-primary inline-flex items-center text-sm font-bold opacity-90 transition-all duration-300 group-hover:translate-x-2 group-hover:opacity-100"
-                        >
-                          View Project <ArrowRight className="ml-1.5 h-4 w-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </FadeIn>
-                ))
-              ) : (
-                <div className="col-span-full py-12 text-center border rounded-2xl bg-card">
-                  <p className="text-muted-foreground">More projects coming soon.</p>
-                </div>
-              )}
-            </div>
-
-            <div className="text-center">
-              <Link
-                href="/work"
-                className="border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex items-center justify-center rounded-md border px-6 py-3 text-sm font-medium shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
-              >
-                View All Work
-              </Link>
             </div>
           </div>
         </section>

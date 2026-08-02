@@ -14,3 +14,25 @@ class CaseStudiesService extends CoreService<CaseStudyFormValues> {
 }
 
 export const caseStudiesService = new CaseStudiesService();
+
+export type CaseStudyLead = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string;
+  jobTitle: string;
+  phone?: string;
+  location?: string;
+  caseStudyId: string;
+  caseStudyTitle: string;
+  downloadedAt: any;
+};
+
+class CaseStudyLeadsService extends CoreService<any> {
+  constructor() {
+    super("caseStudyLeads");
+  }
+}
+
+export const caseStudyLeadsService = new CaseStudyLeadsService();
