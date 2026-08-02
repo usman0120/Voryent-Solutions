@@ -26,6 +26,7 @@ import { StatusSelector } from "@/components/admin/cms/status-selector";
 import { caseStudySchema, type CaseStudyFormValues } from "@/lib/admin/validations/case-study.schema";
 import { useCreateCaseStudy, useUpdateCaseStudy } from "@/lib/admin/react-query/case-studies.hooks";
 import { type CaseStudy } from "@/lib/admin/services/case-studies.service";
+import LZString from "lz-string";
 
 interface CaseStudyDialogProps {
   initialData?: CaseStudy;
@@ -84,7 +85,8 @@ export function CaseStudyDialog({ initialData, open, onOpenChange }: CaseStudyDi
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
-      form.setValue("fileBase64", base64String);
+      const compressed = LZString.compressToBase64(base64String);
+      form.setValue("fileBase64", compressed);
       form.setValue("fileName", file.name);
       form.setValue("fileType", file.type);
     };

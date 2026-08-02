@@ -91,7 +91,7 @@ type FormStatus = "idle" | "submitting" | "success" | "error";
 
 /* ──────────────────────────── CONTACT FORM ──────────────────────────── */
 
-function QuickMessageForm() {
+export function QuickMessageForm() {
   const [formData, setFormData] = React.useState({
     name: "",
     company: "",

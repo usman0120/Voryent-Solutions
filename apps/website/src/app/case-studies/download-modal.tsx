@@ -22,6 +22,7 @@ import { Input, Button } from "@voryent/ui";
 import { caseStudyLeadSchema, type CaseStudyLeadFormValues } from "@/lib/admin/validations/case-study-lead.schema";
 import { submitCaseStudyDownload } from "@/lib/firebase/services";
 import { useToast } from "@/hooks/use-toast";
+import LZString from "lz-string";
 
 interface DownloadModalProps {
   open: boolean;
@@ -71,9 +72,12 @@ export function DownloadModal({
       if (downloadLink) {
         window.open(downloadLink, "_blank");
       } else if (fileBase64) {
-        // fileBase64 is expected to be a data URL if uploaded via the admin panel
+        // fileBase64 is expected to be a compressed base64 string if uploaded via the admin panel
+        const decompressed = LZString.decompressFromBase64(fileBase64);
+        const dataUrl = decompressed || fileBase64; // Fallback in case it wasn't compressed
+        
         const link = document.createElement("a");
-        link.href = fileBase64;
+        link.href = dataUrl;
         link.download = fileName || `${caseStudyTitle}.pdf`;
         document.body.appendChild(link);
         link.click();
