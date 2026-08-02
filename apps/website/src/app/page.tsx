@@ -36,74 +36,84 @@ const renderIcon = (iconName: string, className: string = "") => {
 
 const testimonials = [
   {
-    quote: "The hospital management system built by Voryent completely transformed our daily operations. The AI medicine suggestions and seamless integrations across the pharmacy, labs, and administration have drastically reduced wait times. They are true engineering partners.",
+    quote:
+      "The hospital management system built by Voryent completely transformed our daily operations. The AI medicine suggestions and seamless integrations across the pharmacy, labs, and administration have drastically reduced wait times. They are true engineering partners.",
     author: "Dr. Sarah Jenkins",
     title: "Head of Operations, Medicare Plus",
     rating: 5,
   },
   {
-    quote: "Voryent Solutions understands real-world problems. The POS system they built for us handles our fast-paced restaurant environment perfectly. Our staff loves it, and our kitchen synchronization has never been better. We are incredibly happy with their work.",
+    quote:
+      "Voryent Solutions understands real-world problems. The POS system they built for us handles our fast-paced restaurant environment perfectly. Our staff loves it, and our kitchen synchronization has never been better. We are incredibly happy with their work.",
     author: "Boss",
     title: "Owner & Founder, Boss Restaurant",
     rating: 5,
-  }
+  },
 ];
 
 const companyStats = [
   { label: "Talented Experts", value: "10+", icon: Users },
   { label: "Global Clients", value: "10+", icon: Globe2 },
-  { label: "Years Experience", value: "10+", icon: Briefcase },
+  { label: "Years Experience", value: "1+", icon: Briefcase },
   { label: "Industry Awards", value: "10+", icon: Trophy },
 ];
 
 const whyVoryent = [
   {
     title: "Engineering Excellence",
-    description: "Every line of code is reviewed, tested, and optimized. We don't ship until it's production-ready.",
+    description:
+      "Every line of code is reviewed, tested, and optimized. We don't ship until it's production-ready.",
     icon: Zap,
   },
   {
     title: "Transparent Partnership",
-    description: "No black boxes. You own your code, your data, and your roadmap. We work alongside your team, not around them.",
+    description:
+      "No black boxes. You own your code, your data, and your roadmap. We work alongside your team, not around them.",
     icon: Handshake,
   },
   {
     title: "Scalable From Day One",
-    description: "Our architectures are designed to grow with you — from MVP to millions of users without re-platforming.",
+    description:
+      "Our architectures are designed to grow with you — from MVP to millions of users without re-platforming.",
     icon: Rocket,
   },
   {
     title: "Security First",
-    description: "OWASP best practices, encrypted at rest and in transit, with continuous vulnerability scanning baked into every pipeline.",
+    description:
+      "OWASP best practices, encrypted at rest and in transit, with continuous vulnerability scanning baked into every pipeline.",
     icon: ShieldCheck,
-  }
+  },
 ];
 
 const howWeWork = [
   {
     step: "01",
     title: "Discovery & Strategy",
-    description: "Deep-dive sessions to understand your business goals, target audience, and technical constraints before mapping out a strategy.",
+    description:
+      "Deep-dive sessions to understand your business goals, target audience, and technical constraints before mapping out a strategy.",
     icon: Search,
   },
   {
     step: "02",
     title: "Architecture & Design",
-    description: "Architecture blueprints, wireframes, and prototypes — validated with your stakeholders before a single line of code is written.",
+    description:
+      "Architecture blueprints, wireframes, and prototypes — validated with your stakeholders before a single line of code is written.",
     icon: PenTool,
   },
   {
     step: "03",
     title: "Agile Engineering",
-    description: "Iterative sprints with weekly demos, automated testing, and production-grade deployments at every milestone.",
+    description:
+      "Iterative sprints with weekly demos, automated testing, and production-grade deployments at every milestone.",
     icon: Code,
   },
   {
     step: "04",
     title: "Support & Maintenance",
-    description: "Post-launch monitoring, performance tuning, and incident response to keep your systems running flawlessly at scale.",
+    description:
+      "Post-launch monitoring, performance tuning, and incident response to keep your systems running flawlessly at scale.",
     icon: LifeBuoy,
-  }
+  },
 ];
 
 const fallbackServiceImages = [
@@ -310,7 +320,8 @@ export default async function HomePage() {
               Why Voryent Solutions?
             </h2>
             <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
-              We combine deep engineering discipline with genuine partnership to deliver outcomes that matter — not just features.
+              We combine deep engineering discipline with genuine partnership to deliver outcomes
+              that matter — not just features.
             </p>
           </FadeIn>
 
@@ -320,13 +331,11 @@ export default async function HomePage() {
               return (
                 <FadeIn key={idx} delay={0.1 * idx}>
                   <div className="bg-card border-border/40 group flex h-full flex-col rounded-3xl border p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
-                    <div className="bg-primary/10 mb-6 flex h-14 w-14 items-center justify-center rounded-2xl text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-6 flex h-14 w-14 items-center justify-center rounded-2xl transition-colors">
                       <Icon className="h-7 w-7" />
                     </div>
                     <h3 className="text-foreground mb-3 text-xl font-bold">{feature.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {feature.description}
-                    </p>
+                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                   </div>
                 </FadeIn>
               );
@@ -336,20 +345,21 @@ export default async function HomePage() {
       </section>
 
       {/* ─── HOW WE WORK ─── */}
-      <section className="py-20 md:py-32 border-y border-border/40 bg-background relative overflow-hidden">
+      <section className="border-border/40 bg-background relative overflow-hidden border-y py-20 md:py-32">
         <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-8">
           <FadeIn className="mx-auto mb-20 max-w-3xl text-center">
             <h2 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
               How We Work
             </h2>
             <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
-              A proven, repeatable process that minimises risk and maximises velocity at every stage.
+              A proven, repeatable process that minimises risk and maximises velocity at every
+              stage.
             </p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 relative">
+          <div className="relative grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
             {/* Connecting Line for Desktop */}
-            <div className="hidden lg:block absolute top-[45px] left-[12%] right-[12%] h-[2px] bg-border/50 -z-10" />
+            <div className="bg-border/50 absolute left-[12%] right-[12%] top-[45px] -z-10 hidden h-[2px] lg:block" />
 
             {howWeWork.map((step, idx) => {
               const Icon = step.icon;
@@ -357,15 +367,13 @@ export default async function HomePage() {
                 <FadeIn key={idx} delay={0.1 * idx} className="relative">
                   <div className="flex flex-col items-center text-center">
                     <div className="bg-background border-border/40 relative mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 shadow-sm">
-                      <span className="text-primary/10 absolute -top-4 -right-4 text-6xl font-black">
+                      <span className="text-primary/10 absolute -right-4 -top-4 text-6xl font-black">
                         {step.step}
                       </span>
                       <Icon className="text-primary relative z-10 h-10 w-10" />
                     </div>
                     <h3 className="text-foreground mb-4 text-xl font-bold">{step.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {step.description}
-                    </p>
+                    <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                   </div>
                 </FadeIn>
               );
@@ -501,7 +509,8 @@ export default async function HomePage() {
               Trusted by Industry Leaders
             </h2>
             <p className="text-muted-foreground mt-6 text-lg leading-relaxed">
-              Don&apos;t just take our word for it. Here is what our partners have to say about working with Voryent Solutions.
+              Don&apos;t just take our word for it. Here is what our partners have to say about
+              working with Voryent Solutions.
             </p>
           </FadeIn>
 
@@ -519,7 +528,7 @@ export default async function HomePage() {
                     &quot;{testimonial.quote}&quot;
                   </blockquote>
                   <div className="flex items-center gap-4">
-                    <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full font-bold text-primary">
+                    <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-full font-bold">
                       {testimonial.author.charAt(0)}
                     </div>
                     <div>

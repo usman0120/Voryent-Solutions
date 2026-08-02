@@ -274,7 +274,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ slug
                   Ready to transform your ideas into reality?
                 </h2>
                 <p className="text-primary-foreground/80 text-lg mb-8">
-                  Let's discuss how our technical expertise can accelerate your business growth.
+                  Let&apos;s discuss how our technical expertise can accelerate your business growth.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button size="lg" variant="secondary" className="px-8" asChild>
