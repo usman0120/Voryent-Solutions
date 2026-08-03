@@ -3,12 +3,7 @@ import Link from "next/link"
 import { 
   Container, 
   Section, 
-  Button, 
-  Badge, 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle 
+  Button
 } from "@voryent/ui"
 import { 
   ShieldCheck, 
@@ -35,34 +30,46 @@ export default function SecurityPage() {
   return (
     <>
       {/* ─── HERO ─── */}
-      <Section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent -z-10" aria-hidden="true" />
-        <Container>
-          <div className="max-w-3xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-6 py-1.5 px-4 text-sm font-medium">
+      <Section className="relative min-h-[70vh] flex items-end pb-24 pt-48 overflow-hidden bg-black text-white">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2034&auto=format&fit=crop" 
+            alt="Server Infrastructure" 
+            className="w-full h-full object-cover opacity-30 grayscale"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
+        </div>
+        
+        <Container className="relative z-10 w-full">
+          <div className="max-w-4xl border-l-4 border-primary pl-6">
+            <span className="mb-4 block text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
               Voryent Security
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
+            </span>
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold tracking-tighter text-white mb-8">
               Security by Design.
             </h1>
-            <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+            <p className="text-xl text-white/80 font-medium mb-10 max-w-2xl leading-relaxed">
               We take security seriously. Our commitment to protecting your data starts from the first line of code and extends through our entire infrastructure.
             </p>
+            <Button asChild size="lg" className="rounded-none h-14 px-8 text-xs font-bold uppercase tracking-widest bg-white text-black hover:bg-primary hover:text-white transition-colors">
+              <Link href="#contact">Report Vulnerability</Link>
+            </Button>
           </div>
         </Container>
       </Section>
 
       {/* ─── SECURITY PRINCIPLES ─── */}
-      <Section className="bg-muted/30">
+      <Section className="bg-background border-b border-border/60">
         <Container>
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Security Principles</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
+          <div className="mb-16 border-b border-border/60 pb-8">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">Security Principles</h2>
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl">
               The fundamental practices that guide how we build software and manage infrastructure.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border/60 border border-border/60">
             {[
               { icon: FileCode2, title: "Secure Development", desc: "Security is baked into our SDLC. We perform code reviews, static analysis, and dependency scanning continuously." },
               { icon: Key, title: "Principle of Least Privilege", desc: "Access rights and permissions are restricted to only what is strictly required to perform a specific task." },
@@ -71,33 +78,30 @@ export default function SecurityPage() {
               { icon: ShieldCheck, title: "Access Control", desc: "Strict authentication, including multi-factor authentication (MFA), is required for all administrative access." },
               { icon: EyeOff, title: "Privacy by Design", desc: "We collect only the data we need and ensure privacy controls are integrated into the architecture of our products." },
             ].map((principle, i) => (
-              <Card key={i} className="shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
-                    <principle.icon className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl">{principle.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{principle.desc}</p>
-                </CardContent>
-              </Card>
+              <div key={i} className="bg-background p-10 group hover:bg-muted/5 transition-colors flex flex-col">
+                <div className="w-12 h-12 border border-border/60 bg-muted/30 flex items-center justify-center text-foreground mb-8 group-hover:text-primary transition-colors">
+                  <principle.icon className="h-5 w-5" />
+                </div>
+                <h3 className="text-xl font-bold tracking-tight mb-4">{principle.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed flex-grow">{principle.desc}</p>
+              </div>
             ))}
           </div>
         </Container>
       </Section>
 
       {/* ─── INFRASTRUCTURE OVERVIEW ─── */}
-      <Section>
+      <Section className="py-24 bg-muted/5 border-b border-border/60">
         <Container>
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+            <div className="lg:col-span-4 sticky top-24">
+              <div className="w-16 h-16 border border-border/60 bg-background flex items-center justify-center text-foreground mb-6">
                 <Server className="h-6 w-6" />
               </div>
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">Infrastructure Overview</h2>
+              <h2 className="text-4xl font-bold tracking-tighter text-foreground mb-4">Infrastructure Overview</h2>
+              <p className="text-muted-foreground">Architected for resilience and compliance.</p>
             </div>
-            <div className="prose prose-gray dark:prose-invert max-w-none text-muted-foreground">
+            <div className="lg:col-span-8 prose prose-gray dark:prose-invert max-w-none text-muted-foreground prose-p:text-lg prose-p:leading-relaxed">
               <p>
                 Our applications are hosted on industry-leading cloud providers like AWS and Vercel, which provide world-class physical and network security. We deploy our infrastructure using Infrastructure as Code (IaC) to ensure consistency, auditability, and rapid recovery.
               </p>
@@ -110,16 +114,17 @@ export default function SecurityPage() {
       </Section>
 
       {/* ─── DATA PROTECTION ─── */}
-      <Section className="bg-muted/30">
+      <Section className="py-24 bg-background border-b border-border/60">
         <Container>
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+            <div className="lg:col-span-4 sticky top-24">
+              <div className="w-16 h-16 border border-border/60 bg-muted/30 flex items-center justify-center text-foreground mb-6">
                 <Database className="h-6 w-6" />
               </div>
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">Data Protection</h2>
+              <h2 className="text-4xl font-bold tracking-tighter text-foreground mb-4">Data Protection</h2>
+              <p className="text-muted-foreground">Encryption at every layer.</p>
             </div>
-            <div className="prose prose-gray dark:prose-invert max-w-none text-muted-foreground">
+            <div className="lg:col-span-8 prose prose-gray dark:prose-invert max-w-none text-muted-foreground prose-p:text-lg prose-p:leading-relaxed">
               <p>
                 Protecting your data is our highest priority. All data transmitted between clients and our servers is encrypted using TLS 1.2 or higher. Data stored at rest in our databases and object storage is encrypted using industry-standard AES-256 encryption.
               </p>
@@ -132,26 +137,39 @@ export default function SecurityPage() {
       </Section>
 
       {/* ─── RESPONSIBLE DISCLOSURE ─── */}
-      <Section>
+      <Section className="py-24 bg-muted/5 border-b border-border/60">
         <Container>
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+            <div className="lg:col-span-4 sticky top-24">
+              <div className="w-16 h-16 border border-border/60 bg-background flex items-center justify-center text-foreground mb-6">
                 <ShieldCheck className="h-6 w-6" />
               </div>
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">Responsible Disclosure</h2>
+              <h2 className="text-4xl font-bold tracking-tighter text-foreground mb-4">Responsible Disclosure</h2>
+              <p className="text-muted-foreground">Collaborating with the security community.</p>
             </div>
-            <div className="prose prose-gray dark:prose-invert max-w-none text-muted-foreground">
+            <div className="lg:col-span-8 prose prose-gray dark:prose-invert max-w-none text-muted-foreground prose-p:text-lg prose-p:leading-relaxed">
               <p>
                 We believe in the value of the security community and encourage responsible reporting of any security vulnerabilities found in our systems. If you believe you have discovered a vulnerability, please let us know immediately.
               </p>
-              <ul className="mt-4 list-disc pl-6 space-y-2">
-                <li>Please provide detailed reports with reproducible steps.</li>
-                <li>Do not exploit the vulnerability beyond what is necessary to confirm its existence.</li>
-                <li>Avoid privacy violations, destruction of data, and interruption or degradation of our service.</li>
-                <li>Give us a reasonable amount of time to resolve the issue before making it public.</li>
+              <ul className="mt-8 space-y-4 list-none pl-0">
+                <li className="flex items-start gap-3">
+                  <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-none bg-primary" />
+                  <span>Please provide detailed reports with reproducible steps.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-none bg-primary" />
+                  <span>Do not exploit the vulnerability beyond what is necessary to confirm its existence.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-none bg-primary" />
+                  <span>Avoid privacy violations, destruction of data, and interruption or degradation of our service.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-none bg-primary" />
+                  <span>Give us a reasonable amount of time to resolve the issue before making it public.</span>
+                </li>
               </ul>
-              <p className="mt-6">
+              <p className="mt-8">
                 Please submit your findings to our security team using the contact information below. We will acknowledge your report and keep you updated on our progress.
               </p>
             </div>
@@ -160,25 +178,25 @@ export default function SecurityPage() {
       </Section>
 
       {/* ─── SECURITY CONTACT CTA ─── */}
-      <Section className="pb-24">
-        <Container>
-          <div className="relative rounded-3xl bg-primary px-8 py-16 text-center overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 pointer-events-none" aria-hidden="true" />
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <Mail className="h-12 w-12 text-primary-foreground mx-auto mb-6 opacity-90" />
-              <h2 className="text-3xl font-bold tracking-tight text-primary-foreground mb-4">
-                Contact our Security Team
-              </h2>
-              <p className="text-primary-foreground/90 mb-8">
-                If you have security concerns, questions about our practices, or need to report a vulnerability, please reach out to us directly.
-              </p>
-              <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
-                <a href="mailto:security@voryentsolutions.com">
-                  Email security@voryentsolutions.com
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
+      <Section id="contact" className="py-32 bg-background relative overflow-hidden">
+        {/* Abstract structural dots */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, black 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+        <Container className="relative z-10">
+          <div className="border border-border/60 bg-muted/5 p-12 lg:p-24 text-center max-w-4xl mx-auto flex flex-col items-center">
+            <div className="w-16 h-16 border border-border/60 bg-background flex items-center justify-center text-foreground mb-8">
+              <Mail className="h-6 w-6" />
             </div>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-6">
+              Contact Security Team
+            </h2>
+            <p className="text-lg text-muted-foreground mb-12 max-w-2xl">
+              If you have security concerns, questions about our practices, or need to report a vulnerability, please reach out to us directly.
+            </p>
+            <Button asChild size="lg" className="rounded-none h-16 px-10 text-sm font-bold uppercase tracking-widest bg-foreground text-background hover:bg-primary transition-colors">
+              <a href="mailto:security@voryentsolutions.com">
+                Email security@voryentsolutions.com
+              </a>
+            </Button>
           </div>
         </Container>
       </Section>

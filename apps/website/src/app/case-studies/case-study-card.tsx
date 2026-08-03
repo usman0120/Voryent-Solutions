@@ -1,60 +1,68 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { Button, Card, CardContent } from "@voryent/ui";
-import { Download } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { DownloadModal } from "./download-modal";
 
 interface CaseStudyCardProps {
   study: any;
+  index: number;
 }
 
-export function CaseStudyCard({ study }: CaseStudyCardProps) {
+const FALLBACK_IMAGES = [
+  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2034&auto=format&fit=crop"
+];
+
+export function CaseStudyCard({ study, index }: CaseStudyCardProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  
+  // Use real image if it exists and isn't the default AI placeholder, otherwise use a high-quality fallback
+  const isDefaultPlaceholder = !study.coverImage || 
+    study.coverImage.includes("AI Illustration") || 
+    study.coverImage.includes("AI%20Illustration") ||
+    study.coverImage.trim() === "";
+    
+  const displayImage = isDefaultPlaceholder ? FALLBACK_IMAGES[index % FALLBACK_IMAGES.length] : study.coverImage;
 
   return (
     <>
-      <Card className="border-border/50 bg-card group flex h-full flex-col overflow-hidden shadow-sm transition-all hover:shadow-md">
-        <div className="bg-muted relative h-48 w-full overflow-hidden sm:h-56">
-          <Image
-            src={
-              study.coverImage ||
-              "/Assets/Illustrations/AI Illustration.webp"
-            }
+      <div className="group flex flex-col h-full bg-background">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted mb-6 border border-border/60">
+          <img
+            src={displayImage}
             alt={study.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
           />
-          {study.category && (
-            <div className="bg-background/90 absolute left-4 top-4 rounded-full border px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm">
-              {study.category}
-            </div>
-          )}
         </div>
-        <CardContent className="flex flex-grow flex-col p-8">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="text-primary text-sm font-semibold uppercase tracking-wider">
+        
+        <div className="flex flex-col flex-grow px-2">
+          {study.industry && (
+            <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground border-b border-border/60 pb-2 self-start">
               {study.industry}
             </div>
-          </div>
-          <h3 className="text-foreground mb-4 text-2xl font-bold leading-tight">
+          )}
+          
+          <h3 className="mb-3 text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary">
             {study.title}
           </h3>
-          <p className="text-muted-foreground mb-8 flex-grow leading-relaxed">
+          
+          <p className="mb-6 text-sm leading-relaxed text-muted-foreground line-clamp-3">
             {study.description}
           </p>
-          <Button 
-            onClick={() => setModalOpen(true)} 
-            variant="default" 
-            className="w-full"
+          
+          <button 
+            onClick={() => setModalOpen(true)}
+            className="mt-auto flex items-center text-xs font-bold uppercase tracking-widest text-primary transition-colors hover:text-foreground"
           >
-            <Download className="mr-2 h-4 w-4" />
-            Download Case Study
-          </Button>
-        </CardContent>
-      </Card>
+            Read More <ArrowRight className="ml-2 h-3 w-3" />
+          </button>
+        </div>
+      </div>
       
       <DownloadModal
         open={modalOpen}

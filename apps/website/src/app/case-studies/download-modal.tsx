@@ -111,25 +111,25 @@ export function DownloadModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Download Case Study</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="max-w-md rounded-none border-border/60 bg-background p-8">
+        <DialogHeader className="mb-6 space-y-2">
+          <DialogTitle className="text-xl font-bold uppercase tracking-widest">Download Case Study</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             Please fill out this form to download "{caseStudyTitle}".
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First Name *</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest">First Name *</FormLabel>
                     <FormControl>
-                      <Input placeholder="John" {...field} />
+                      <Input placeholder="John" {...field} className="rounded-none border-border/60 h-12 bg-muted/10" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,9 +140,9 @@ export function DownloadModal({
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last Name *</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest">Last Name *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Doe" {...field} />
+                      <Input placeholder="Doe" {...field} className="rounded-none border-border/60 h-12 bg-muted/10" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -155,9 +155,9 @@ export function DownloadModal({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Work Email *</FormLabel>
+                  <FormLabel className="text-[10px] font-bold uppercase tracking-widest">Work Email *</FormLabel>
                   <FormControl>
-                    <Input placeholder="john@company.com" {...field} />
+                    <Input placeholder="john@company.com" {...field} className="rounded-none border-border/60 h-12 bg-muted/10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,9 +170,9 @@ export function DownloadModal({
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company *</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest">Company *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Company Inc." {...field} />
+                      <Input placeholder="Company Inc." {...field} className="rounded-none border-border/60 h-12 bg-muted/10" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,9 +183,9 @@ export function DownloadModal({
                 name="jobTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Job Title *</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest">Job Title *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Director" {...field} />
+                      <Input placeholder="Director" {...field} className="rounded-none border-border/60 h-12 bg-muted/10" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -199,9 +199,9 @@ export function DownloadModal({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest">Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder="+1 234 567 8900" {...field} />
+                      <Input placeholder="+1 234 567 8900" {...field} className="rounded-none border-border/60 h-12 bg-muted/10" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -212,9 +212,9 @@ export function DownloadModal({
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest">Location</FormLabel>
                     <FormControl>
-                      <Input placeholder="New York, NY" {...field} />
+                      <Input placeholder="New York, NY" {...field} className="rounded-none border-border/60 h-12 bg-muted/10" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -222,7 +222,7 @@ export function DownloadModal({
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button type="submit" className="w-full rounded-none h-14 text-xs font-bold uppercase tracking-widest mt-4" disabled={isSubmitting}>
               {isSubmitting ? "Processing..." : "Download Now"}
             </Button>
           </form>

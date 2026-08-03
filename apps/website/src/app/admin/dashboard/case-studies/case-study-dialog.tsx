@@ -210,10 +210,45 @@ export function CaseStudyDialog({ initialData, open, onOpenChange }: CaseStudyDi
                   name="coverImage"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Cover Image URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="/Assets/..." {...field} />
-                      </FormControl>
+                      <FormLabel>Cover Image</FormLabel>
+                      <div className="space-y-2">
+                        <FormControl>
+                          <Input placeholder="https://... or upload local image" {...field} />
+                        </FormControl>
+                        <input 
+                          type="file" 
+                          id="case-study-cover-upload"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                const base64 = event.target?.result as string;
+                                if (base64) {
+                                  form.setValue("coverImage", base64);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => document.getElementById("case-study-cover-upload")?.click()}
+                        >
+                          Upload Image (Base64)
+                        </Button>
+                        {field.value && (
+                          <div className="mt-2 relative aspect-[16/9] w-full rounded-md overflow-hidden border">
+                            <img src={field.value} alt="Cover Preview" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
