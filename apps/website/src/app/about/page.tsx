@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container, Section, Button } from "@voryent/ui";
 import { getAboutData, getEmployees, getInvestors } from "@/lib/firebase/services";
+import { Linkedin } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
   const [aboutData, employees, investors] = await Promise.all([
@@ -433,7 +436,7 @@ export default async function AboutPage() {
                   const position = emp.title || emp.position || "";
                   
                   return (
-                    <div key={emp.id || i} className="group cursor-pointer">
+                    <div key={emp.id || i} className="group relative">
                       <div className="bg-muted border-border/50 relative mb-6 aspect-[3/4] w-full overflow-hidden rounded-none border">
                         <Image
                           src={
@@ -444,6 +447,19 @@ export default async function AboutPage() {
                           fill
                           className="object-cover grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
                         />
+                        {emp.linkedin && (
+                          <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-start p-6">
+                            <a 
+                              href={emp.linkedin} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="bg-primary hover:bg-primary/90 text-primary-foreground p-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                            >
+                              <Linkedin className="w-4 h-4" />
+                              Connect
+                            </a>
+                          </div>
+                        )}
                       </div>
                       <h3 className="text-foreground mb-1 text-xl font-bold">
                         {name}
