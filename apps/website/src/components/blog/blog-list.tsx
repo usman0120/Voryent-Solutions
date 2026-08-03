@@ -2,10 +2,9 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { Container, Section, Button, Card, CardContent } from "@voryent/ui";
-import { Search, ArrowRight, Calendar, Clock, ChevronLeft, ChevronRight, Sparkles, Send } from "lucide-react";
-import { subscribeBlogNewsletter } from "@/lib/firebase/services";
-import { toast } from "sonner";
+import { Container, Section, Button } from "@voryent/ui";
+import { Search, ArrowRight, Calendar, Clock, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { NewsletterForm } from "./newsletter-form";
 
 export interface BlogItem {
   id?: string;
@@ -29,11 +28,6 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
-  // Newsletter state
-  const [email, setEmail] = useState("");
-  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
-
   // Featured carousel ref
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -68,54 +62,41 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
     }
   };
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes("@")) {
-      toast.error("Please enter a valid email address.");
-      return;
-    }
-    setIsSubmittingEmail(true);
-    try {
-      await subscribeBlogNewsletter(email);
-      toast.success("Thank you for subscribing! You will receive our latest updates.");
-      setEmail("");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to subscribe. Please try again.");
-    } finally {
-      setIsSubmittingEmail(false);
-    }
-  };
-
   return (
     <>
-      {/* ─── HERO & FEATURED ARTICLES CAROUSEL ─── */}
-      <Section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 border-b border-border/50">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent -z-10" aria-hidden="true" />
-        <Container>
-          <div className="max-w-3xl mb-12">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
+      {/* ─── HERO & FEATURED ARTICLES ─── */}
+      <Section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 border-b border-border/60 bg-background">
+        <div className="absolute top-0 right-0 text-[300px] font-bold text-muted/20 leading-none select-none pointer-events-none z-0 translate-x-1/4 -translate-y-1/4">
+          B
+        </div>
+        <Container className="relative z-10">
+          <div className="max-w-4xl mb-16 border-l-4 border-primary pl-6 md:pl-10 py-4">
+            <span className="text-primary mb-6 block text-xs font-bold uppercase tracking-[0.2em]">
+              Knowledge Base
+            </span>
+            <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-6xl lg:text-7xl mb-6">
               Insights & Engineering
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground leading-relaxed">
-              Thoughts on software architecture, artificial intelligence, and building scalable digital products.
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl">
+              Thoughts on software architecture, artificial intelligence, and building scalable digital products from the engineers at Voryent.
             </p>
           </div>
 
           {/* Featured Articles Section */}
           {displayFeatured.length > 0 && activeCategory === "All" && searchQuery === "" && currentPage === 1 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" /> Featured {displayFeatured.length > 1 ? "Articles" : "Article"}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-border/60 pb-4">
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" /> Featured {displayFeatured.length > 1 ? "Articles" : "Article"}
                 </h3>
                 {displayFeatured.length > 1 && (
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => scrollCarousel("left")}>
+                    <button className="h-10 w-10 border border-border/60 flex items-center justify-center hover:bg-muted/20 transition-colors" onClick={() => scrollCarousel("left")}>
                       <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => scrollCarousel("right")}>
+                    </button>
+                    <button className="h-10 w-10 border border-border/60 flex items-center justify-center hover:bg-muted/20 transition-colors" onClick={() => scrollCarousel("right")}>
                       <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 )}
               </div>
@@ -125,73 +106,67 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
                   const featuredItem = displayFeatured[0];
                   return (
                     <Link href={`/blog/${featuredItem.slug}`} className="group block">
-                      <Card className="overflow-hidden border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/30">
-                        <div className="grid grid-cols-1 lg:grid-cols-2">
-                          <div className="relative aspect-video lg:aspect-auto w-full bg-muted overflow-hidden">
-                            <img
-                              src={featuredItem.imageSrc}
-                              alt={featuredItem.title}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
+                      <div className="grid grid-cols-1 lg:grid-cols-2 border border-border/60 hover:border-primary/50 transition-colors bg-background">
+                        <div className="relative aspect-square lg:aspect-auto w-full bg-muted overflow-hidden border-b lg:border-b-0 lg:border-r border-border/60">
+                          <img
+                            src={featuredItem.imageSrc}
+                            alt={featuredItem.title}
+                            className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                          />
+                        </div>
+                        <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-6 font-bold uppercase tracking-widest">
+                            <span className="text-primary">{featuredItem.category}</span>
+                            <span>•</span>
+                            <span>{featuredItem.publishDate}</span>
+                            <span>•</span>
+                            <span>{featuredItem.readingTime}</span>
                           </div>
-                          <div className="p-8 md:p-12 flex flex-col justify-center">
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                              <span className="font-semibold text-primary uppercase tracking-wider">{featuredItem.category}</span>
-                              <span>•</span>
-                              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {featuredItem.publishDate}</span>
-                              <span>•</span>
-                              <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {featuredItem.readingTime}</span>
-                            </div>
-                            <h2 className="text-3xl font-bold text-foreground mb-4 leading-tight group-hover:text-primary transition-colors">
-                              {featuredItem.title}
-                            </h2>
-                            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                              {featuredItem.excerpt}
-                            </p>
-                            <div className="flex items-center text-sm font-medium text-primary">
-                              Read Article <ArrowRight className="ml-2 h-4 w-4" />
-                            </div>
+                          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6 leading-tight group-hover:text-primary transition-colors">
+                            {featuredItem.title}
+                          </h2>
+                          <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                            {featuredItem.excerpt}
+                          </p>
+                          <div className="inline-flex h-12 items-center justify-center border-b-2 border-foreground px-4 text-xs font-bold uppercase tracking-widest text-foreground transition-colors group-hover:border-primary group-hover:text-primary self-start">
+                            Read Article <ArrowRight className="ml-2 h-4 w-4" />
                           </div>
                         </div>
-                      </Card>
+                      </div>
                     </Link>
                   );
                 })()
               ) : (
                 <div 
                   ref={carouselRef}
-                  className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 pt-1"
+                  className="flex gap-px overflow-x-auto snap-x snap-mandatory scrollbar-hide border border-border/60 bg-border/60"
                 >
                   {displayFeatured.filter((p): p is BlogItem => Boolean(p)).map((post) => (
-                    <div key={post.slug} className="min-w-[85%] md:min-w-[60%] lg:min-w-[48%] snap-start">
-                      <Link href={`/blog/${post.slug}`} className="group block h-full">
-                        <Card className="flex flex-col h-full overflow-hidden border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/30">
-                          <div className="relative aspect-video w-full bg-muted overflow-hidden">
-                            <img
-                              src={post.imageSrc}
-                              alt={post.title}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
+                    <div key={post.slug} className="min-w-[85%] md:min-w-[60%] lg:min-w-[48%] snap-start bg-background">
+                      <Link href={`/blog/${post.slug}`} className="group flex flex-col h-full hover:bg-muted/10 transition-colors">
+                        <div className="relative aspect-video w-full bg-muted overflow-hidden border-b border-border/60">
+                          <img
+                            src={post.imageSrc}
+                            alt={post.title}
+                            className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                          />
+                        </div>
+                        <div className="p-8 flex flex-col flex-grow">
+                          <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-4 font-bold uppercase tracking-[0.2em]">
+                            <span className="text-primary">{post.category}</span>
+                            <span>•</span>
+                            <span>{post.publishDate}</span>
                           </div>
-                          <CardContent className="p-6 flex flex-col flex-grow">
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                              <span className="font-semibold text-primary uppercase tracking-wider">{post.category}</span>
-                              <span>•</span>
-                              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {post.publishDate}</span>
-                              <span>•</span>
-                              <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {post.readingTime}</span>
-                            </div>
-                            <h2 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                              {post.title}
-                            </h2>
-                            <p className="text-sm text-muted-foreground leading-relaxed flex-grow line-clamp-3 mb-4">
-                              {post.excerpt}
-                            </p>
-                            <div className="flex items-center text-sm font-medium text-primary mt-auto">
-                              Read Article <ArrowRight className="ml-2 h-4 w-4" />
-                            </div>
-                          </CardContent>
-                        </Card>
+                          <h2 className="text-2xl font-bold text-foreground mb-4 leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                            {post.title}
+                          </h2>
+                          <p className="text-base text-muted-foreground leading-relaxed flex-grow line-clamp-3 mb-6">
+                            {post.excerpt}
+                          </p>
+                          <div className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-foreground mt-auto group-hover:text-primary transition-colors">
+                            Read Article <ArrowRight className="ml-2 h-4 w-4" />
+                          </div>
+                        </div>
                       </Link>
                     </div>
                   ))}
@@ -203,18 +178,18 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
       </Section>
 
       {/* ─── FILTERS & GRID ─── */}
-      <Section className="py-16 md:py-24 bg-muted/30">
+      <Section className="py-24 bg-muted/10 border-b border-border/60">
         <Container>
           {/* Controls */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-            <div className="flex-1 w-full md:max-w-xs relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-muted-foreground" />
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-16">
+            <div className="w-full lg:w-96 relative border border-border/60 bg-background p-1">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-muted-foreground" />
               </div>
               <input
                 type="text"
                 placeholder="Search articles or tags..."
-                className="w-full pl-10 pr-4 py-2 border border-border/50 rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-transparent text-sm focus:outline-none placeholder:text-muted-foreground/60 font-medium"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -225,8 +200,8 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
             </div>
             
             {/* Scrollable Category Row */}
-            <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-              <div className="flex gap-2">
+            <div className="w-full lg:w-auto overflow-x-auto scrollbar-hide border border-border/60 bg-background p-1">
+              <div className="flex gap-1">
                 {CATEGORIES.map((category) => (
                   <button
                     key={category}
@@ -235,10 +210,10 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
                       setCurrentPage(1);
                     }}
                     suppressHydrationWarning
-                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    className={`whitespace-nowrap px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors ${
                       activeCategory === category
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-background border border-border/50 text-muted-foreground hover:bg-muted"
+                        ? "bg-foreground text-background"
+                        : "bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground"
                     }`}
                   >
                     {category}
@@ -251,104 +226,89 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
           {/* Grid */}
           {paginatedPosts.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border/60 border border-border/60 mb-16">
                 {paginatedPosts.map((post) => (
-                  <Link key={post.slug} href={`/blog/${post.slug}`} className="group block h-full">
-                    <Card className="flex flex-col h-full border-border/50 shadow-sm overflow-hidden hover:shadow-md hover:border-primary/30 transition-all">
-                      <div className="relative aspect-video w-full bg-muted border-b border-border/50 overflow-hidden">
-                        <img
-                          src={post.imageSrc}
-                          alt={post.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
+                  <Link key={post.slug} href={`/blog/${post.slug}`} className="group flex flex-col h-full bg-background hover:bg-foreground hover:text-background transition-colors p-8">
+                    <div className="relative aspect-video w-full bg-muted border border-border/60 mb-8 overflow-hidden">
+                      <img
+                        src={post.imageSrc}
+                        alt={post.title}
+                        className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                      />
+                    </div>
+                    <div className="flex flex-col flex-grow">
+                      <div className="flex items-center gap-3 text-[10px] text-muted-foreground group-hover:text-background/60 mb-4 font-bold uppercase tracking-[0.2em] transition-colors">
+                        <span className="text-primary group-hover:text-background">{post.category}</span>
+                        <span>•</span>
+                        <span>{post.publishDate}</span>
                       </div>
-                      <CardContent className="p-6 flex flex-col flex-grow">
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                          <span className="font-semibold text-primary uppercase tracking-wider">{post.category}</span>
-                          <span>•</span>
-                          <span>{post.publishDate}</span>
-                          <span>•</span>
-                          <span>{post.readingTime}</span>
+                      <h3 className="text-2xl font-bold mb-4 leading-tight">
+                        {post.title}
+                      </h3>
+                      <p className="text-muted-foreground group-hover:text-background/80 leading-relaxed flex-grow line-clamp-3 mb-6 transition-colors">
+                        {post.excerpt}
+                      </p>
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-auto pt-6 border-t border-border/60 group-hover:border-background/20 transition-colors">
+                          {post.tags.slice(0, 3).map((tag) => (
+                            <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-background/60 transition-colors border border-border/60 group-hover:border-background/20 px-2 py-1">
+                              {tag}
+                            </span>
+                          ))}
                         </div>
-                        <h3 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors">
-                          {post.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed flex-grow line-clamp-3">
-                          {post.excerpt}
-                        </p>
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-4 pt-3 border-t border-border/30">
-                            {post.tags.slice(0, 3).map((tag) => (
-                              <span key={tag} className="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded">
-                                #{tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                      )}
+                    </div>
                   </Link>
                 ))}
               </div>
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2">
-                  <Button
-                    variant="outline"
+                <div className="flex justify-center items-center gap-4">
+                  <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className="h-12 px-6 border border-border/60 text-xs font-bold uppercase tracking-widest text-foreground hover:bg-foreground hover:text-background transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground"
                   >
                     Previous
-                  </Button>
-                  <span className="text-sm text-muted-foreground px-4">
+                  </button>
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                     Page {currentPage} of {totalPages}
                   </span>
-                  <Button
-                    variant="outline"
+                  <button
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className="h-12 px-6 border border-border/60 text-xs font-bold uppercase tracking-widest text-foreground hover:bg-foreground hover:text-background transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground"
                   >
                     Next
-                  </Button>
+                  </button>
                 </div>
               )}
             </>
           ) : (
-            <div className="text-center py-20 border border-dashed border-border/50 rounded-xl bg-background">
-              <h3 className="text-lg font-medium text-foreground mb-2">No articles found</h3>
-              <p className="text-muted-foreground">Try adjusting your search or filter criteria.</p>
+            <div className="text-center py-32 border border-border/60 bg-background">
+              <h3 className="text-2xl font-bold text-foreground mb-4">No articles found</h3>
+              <p className="text-muted-foreground">Adjust your search or category filters.</p>
             </div>
           )}
         </Container>
       </Section>
       
       {/* ─── NEWSLETTER SUBSCRIPTION CTA ─── */}
-      <Section className="pb-24 pt-12 bg-muted/30">
+      <Section className="bg-foreground text-background py-24 md:py-32">
         <Container>
-          <div className="relative rounded-3xl bg-primary px-8 py-20 text-center overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 pointer-events-none" aria-hidden="true" />
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary-foreground mb-6">
-                Stay updated with our latest insights.
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <span className="text-background/60 mb-6 block text-xs font-bold uppercase tracking-[0.2em]">
+                Stay Updated
+              </span>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-8">
+                Engineering deep dives,<br />delivered.
               </h2>
-              <p className="text-lg text-primary-foreground/80 mb-10">
-                Subscribe to our newsletter for engineering deep dives and product updates. No spam, ever.
+              <p className="text-lg text-background/80 max-w-lg leading-relaxed">
+                Subscribe to our newsletter for insights on software architecture, artificial intelligence, and building scalable digital products. No spam, ever.
               </p>
-              <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={handleSubscribe}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 rounded-md bg-background text-foreground border-0 focus:ring-2 focus:ring-primary-foreground/50 placeholder:text-muted-foreground"
-                  required
-                  suppressHydrationWarning
-                />
-                <Button type="submit" size="lg" variant="secondary" className="px-8 flex items-center gap-2" disabled={isSubmittingEmail}>
-                  <Send className="h-4 w-4" /> {isSubmittingEmail ? "Subscribing..." : "Subscribe"}
-                </Button>
-              </form>
+              <NewsletterForm />
             </div>
           </div>
         </Container>
