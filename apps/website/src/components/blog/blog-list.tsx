@@ -65,23 +65,37 @@ export function BlogList({ posts }: { posts: BlogItem[] }) {
   return (
     <>
       {/* ─── HERO & FEATURED ARTICLES ─── */}
-      <Section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 border-b border-border/60 bg-background">
-        <div className="absolute top-0 right-0 text-[300px] font-bold text-muted/20 leading-none select-none pointer-events-none z-0 translate-x-1/4 -translate-y-1/4">
-          B
+      <Section className="relative min-h-[60vh] flex items-center pt-24 pb-16 bg-black overflow-hidden border-b border-border">
+        {/* Subtle animated grid background overlaying the image */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)', backgroundSize: '4rem 4rem' }}></div>
+        
+        <div className="absolute inset-0 z-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&q=80"
+            alt="Blog Hero"
+            className="w-full h-full object-cover opacity-50 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
         </div>
-        <Container className="relative z-10">
-          <div className="max-w-4xl mb-16 border-l-4 border-primary pl-6 md:pl-10 py-4">
-            <span className="text-primary mb-6 block text-xs font-bold uppercase tracking-[0.2em]">
+        <Container className="relative z-10 w-full">
+          <div className="max-w-5xl border-l-4 border-primary pl-6 md:pl-10">
+            <span className="mb-6 block text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-white/70">
               Knowledge Base
             </span>
-            <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-6xl lg:text-7xl mb-6">
-              Insights & Engineering
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-white mb-8 leading-[0.9]">
+              Insights &<br />Engineering.
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl">
+            <p className="text-xl md:text-2xl text-white/80 font-medium max-w-2xl leading-relaxed">
               Thoughts on software architecture, artificial intelligence, and building scalable digital products from the engineers at Voryent.
             </p>
           </div>
+        </Container>
+      </Section>
 
+      {/* ─── FEATURED ARTICLES ─── */}
+      <Section className="pb-16 bg-background pt-16 border-b border-border">
+        <Container>
           {/* Featured Articles Section */}
           {displayFeatured.length > 0 && activeCategory === "All" && searchQuery === "" && currentPage === 1 && (
             <div className="space-y-6">

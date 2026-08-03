@@ -46,7 +46,7 @@ export function Navbar({
         "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out border-b",
         isScrolled 
           ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-border shadow-sm" 
-          : "bg-transparent border-transparent shadow-none",
+          : "bg-transparent border-transparent shadow-none dark",
         className
       )}
       {...props}

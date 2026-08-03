@@ -30,7 +30,9 @@ export function MegaMenu({ triggerLabel, items, featuredItem, className, ...prop
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>{triggerLabel}</NavigationMenuTrigger>
+            <NavigationMenuTrigger className="h-8 px-2 py-1 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent focus:bg-transparent text-sm font-medium text-muted-foreground hover:text-foreground">
+              {triggerLabel}
+            </NavigationMenuTrigger>
             <NavigationMenuContent>
               <div className="flex w-screen max-w-full">
                 {/* Left side: featured item in grey background */}

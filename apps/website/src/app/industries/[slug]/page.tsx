@@ -6,7 +6,6 @@ import * as LucideIcons from "lucide-react";
 import Link from "next/link";
 import { Metadata, ResolvingMetadata } from "next";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/fade-in";
-import { Metadata, ResolvingMetadata } from "next";
 
 interface Props {
   params: Promise<{ slug: string }>;

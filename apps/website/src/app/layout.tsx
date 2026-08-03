@@ -105,7 +105,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextTopLoader color="hsl(var(--primary))" showSpinner={true} />
+          <NextTopLoader color="hsl(var(--primary))" showSpinner={false} />
           <ConditionalWrapper header={<SiteHeader />} footer={<SiteFooter />}>
             {children}
           </ConditionalWrapper>

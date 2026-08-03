@@ -29,7 +29,7 @@ export function NewsletterForm() {
 
   return (
     <div className="border border-background/20 p-8 bg-background/5">
-      <form className="flex flex-col gap-4" onSubmit={handleSubscribe}>
+      <form className="flex flex-col gap-4" onSubmit={handleSubscribe} suppressHydrationWarning>
         <div className="flex flex-col">
           <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-background mb-3">Email Address</label>
           <input
@@ -47,6 +47,7 @@ export function NewsletterForm() {
           type="submit" 
           className="h-14 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs hover:bg-primary/90 transition-colors flex items-center justify-center gap-3 mt-4 disabled:opacity-50" 
           disabled={isSubmittingEmail}
+          suppressHydrationWarning
         >
           <Send className="h-4 w-4" /> {isSubmittingEmail ? "Subscribing..." : "Subscribe to Newsletter"}
         </button>
