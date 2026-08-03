@@ -336,37 +336,228 @@ export default async function ServiceDetail({ params }: { params: Promise<{ slug
         </Container>
       </Section>
 
-      {/* ─── PROCESS GRID ─── */}
-      {service.process && service.process.length > 0 && (
-        <Section className="bg-foreground text-background py-24">
+      {/* ─── WHY CHOOSE US ─── */}
+      <Section className="bg-background relative py-32 overflow-hidden border-t border-border/10">
+        {/* Background Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        
+        <Container className="relative z-10">
+          <FadeIn>
+            <div className="text-center mb-24">
+              <h2 className="text-4xl font-black md:text-5xl tracking-tight">Why Choose Voryent for {service.title}?</h2>
+            </div>
+          </FadeIn>
+          
+          <div className="relative grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-0">
+             {/* Desktop Wavy Connecting Line */}
+             <div className="hidden md:block absolute top-[48px] left-[12.5%] w-[75%] h-24 -translate-y-1/2 pointer-events-none z-0">
+                <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100" fill="none" stroke="url(#dashGradient)" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round">
+                   <defs>
+                     <linearGradient id="dashGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                       <stop offset="0%" stopColor="currentColor" stopOpacity="0.05" />
+                       <stop offset="50%" stopColor="currentColor" stopOpacity="0.5" />
+                       <stop offset="100%" stopColor="currentColor" stopOpacity="0.05" />
+                     </linearGradient>
+                   </defs>
+                   <path d="M 0,50 Q 16.66,100 33.33,50 T 66.66,50 T 100,50" className="text-primary/70" />
+                </svg>
+             </div>
+             
+             {(() => {
+               const serviceSpecificPillars: Record<string, any[]> = {
+                 "ai-engineering-automation": [
+                   { title: "Advanced LLM Integration", description: "Harness the power of leading models like OpenAI, Claude, and Gemini securely within your ecosystem.", icon: "Brain" },
+                   { title: "Data Privacy First", description: "Your proprietary data never leaves your control. We build RAG systems with strict enterprise-grade security.", icon: "ShieldCheck" },
+                   { title: "Autonomous Agents", description: "Beyond simple chatbots. We engineer intelligent agents that act, reason, and execute complex workflows.", icon: "Cpu" },
+                   { title: "Scalable Infrastructure", description: "Deploy resilient AI models using Docker, Kubernetes, and optimized vector databases for low-latency.", icon: "TrendingUp" }
+                 ],
+                 "custom-software-development": [
+                   { title: "Domain-Driven Design", description: "We architect software that maps perfectly to your complex business logic and operational reality.", icon: "Layers" },
+                   { title: "Agile Transparency", description: "Complete visibility into development sprints, ensuring the product evolves alongside your feedback.", icon: "Activity" },
+                   { title: "Cloud-Native Scalability", description: "Built for the cloud from day one. Our microservices architecture scales effortlessly under load.", icon: "Cloud" },
+                   { title: "Enterprise Security", description: "Rigorous vulnerability testing and secure coding practices protect your mission-critical applications.", icon: "ShieldCheck" }
+                 ],
+                 "web-development": [
+                   { title: "SEO-Optimized Architecture", description: "Built with Server-Side Rendering (SSR) for lightning-fast load times and maximum search visibility.", icon: "Search" },
+                   { title: "Responsive Fluidity", description: "Pixel-perfect implementations that look stunning and perform flawlessly on any device screen size.", icon: "MonitorSmartphone" },
+                   { title: "Global CDN Delivery", description: "We utilize Edge computing and global CDNs to ensure your application loads instantly worldwide.", icon: "Globe" },
+                   { title: "DDoS Protection", description: "Enterprise-grade web application firewalls (WAF) and security headers keep your web apps secure.", icon: "ShieldCheck" }
+                 ],
+                 "mobile-app-development": [
+                   { title: "Native & Cross-Platform", description: "Expertise in both pure Native (Swift/Kotlin) and high-performance Cross-Platform (React Native/Flutter).", icon: "Smartphone" },
+                   { title: "Battery & Memory Optimization", description: "We engineer apps that respect user device resources, eliminating battery drain and memory leaks.", icon: "BatteryCharging" },
+                   { title: "Offline Capabilities", description: "Seamless offline-first architectures that allow users to interact with your app without internet access.", icon: "WifiOff" },
+                   { title: "App Store Compliance", description: "We handle the rigorous security and privacy audits required for seamless App Store and Play Store approval.", icon: "ShieldCheck" }
+                 ],
+                 "cloud-devops": [
+                   { title: "Zero-Downtime Deployments", description: "Continuous Integration and Deployment (CI/CD) pipelines that allow multiple releases a day seamlessly.", icon: "Rocket" },
+                   { title: "Infrastructure as Code", description: "We use Terraform and CloudFormation to make your entire infrastructure reproducible and version-controlled.", icon: "Code2" },
+                   { title: "Auto-Scaling Resilience", description: "Systems designed to automatically scale resources during traffic spikes and scale down to save costs.", icon: "TrendingUp" },
+                   { title: "Compliance & Governance", description: "Enforcing SOC2, HIPAA, and GDPR compliance directly at the cloud infrastructure level.", icon: "ShieldCheck" }
+                 ],
+                 "cybersecurity": [
+                   { title: "Zero Trust Architecture", description: "Never trust, always verify. We implement strict identity-based access controls across your network.", icon: "Lock" },
+                   { title: "Proactive Threat Hunting", description: "We don't wait for alerts. Our systems actively hunt for anomalies and advanced persistent threats.", icon: "Search" },
+                   { title: "24/7 Incident Response", description: "Rapid containment and eradication protocols ready to deploy the moment a security event is detected.", icon: "Activity" },
+                   { title: "Regulatory Compliance", description: "Ensuring your systems meet strict industry mandates like PCI-DSS, HIPAA, SOC2, and GDPR.", icon: "FileText" }
+                 ],
+                 "data-analytics": [
+                   { title: "Real-Time Processing", description: "Streaming data architectures that allow you to make critical business decisions on up-to-the-second data.", icon: "Zap" },
+                   { title: "Data Lakehouse Design", description: "Combining the best of data lakes and warehouses for unstructured and structured data mastery.", icon: "Database" },
+                   { title: "Predictive Intelligence", description: "Moving beyond historical reporting by utilizing machine learning to forecast future business trends.", icon: "Brain" },
+                   { title: "Data Governance & Privacy", description: "Strict data lineage, anonymization, and access controls to ensure ethical and secure data handling.", icon: "ShieldCheck" }
+                 ],
+                 "ui-ux-design": [
+                   { title: "User-Centric Research", description: "Data-driven design decisions based on actual user behavior, heatmaps, and psychological principles.", icon: "Users" },
+                   { title: "Design Systems", description: "Creating robust, reusable component libraries that ensure visual consistency across your entire brand.", icon: "Layers" },
+                   { title: "Accessibility (a11y) First", description: "Designs fully compliant with WCAG standards, ensuring your product is usable by everyone.", icon: "Eye" },
+                   { title: "High-Fidelity Prototyping", description: "Interactive, clickable prototypes that feel like the real app before a single line of code is written.", icon: "PenTool" }
+                 ]
+               };
+               
+               const defaultPillars = [
+                 { title: "Domain Expertise", description: `Deep industry knowledge applied to solve your unique ${service.title.toLowerCase()} challenges.`, icon: "Layers" },
+                 { title: "Cutting-Edge Tech", description: `We utilize the latest frameworks to deliver high-performance, future-proof solutions.`, icon: "Zap" },
+                 { title: "Scalability & Growth", description: `Architectures designed to grow seamlessly with your business, allowing for easy expansion.`, icon: "TrendingUp" },
+                 { title: "Security & Integrity", description: `We prioritize data confidentiality by implementing robust security protocols and compliance audits.`, icon: "ShieldCheck" }
+               ];
+
+               const pillars = serviceSpecificPillars[service.id] || defaultPillars;
+               
+               return pillars.map((item, i) => (
+                 <FadeIn key={i} delay={i * 0.1}>
+                   <div className="flex flex-col items-center text-center px-4 relative z-10 group">
+                     {/* Circular Glassmorphic Icon Box */}
+                     <div className="w-24 h-24 rounded-full bg-background border border-primary/20 flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(6,182,212,0.08)] group-hover:shadow-[0_0_50px_rgba(6,182,212,0.2)] group-hover:border-primary/50 transition-all duration-500 relative overflow-hidden backdrop-blur-md">
+                       <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                       {renderIcon(item.icon, "w-10 h-10 text-primary relative z-10 group-hover:scale-110 transition-transform duration-500")}
+                     </div>
+                     <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                     <p className="text-muted-foreground text-sm leading-relaxed max-w-[260px] opacity-80">{item.description}</p>
+                   </div>
+                 </FadeIn>
+               ));
+             })()}
+          </div>
+        </Container>
+      </Section>
+
+      {/* ─── OUR PROCESS (INFINITY/TRACK LAYOUT) ─── */}
+      {(service.developmentProcess || service.process) && (service.developmentProcess || service.process).length > 0 && (
+        <Section className="bg-muted/5 border-t border-border py-24 md:py-32 overflow-hidden">
           <Container>
             <FadeIn>
-              <div className="mb-20">
-                <h2 className="mb-6 text-4xl font-black tracking-tighter md:text-6xl">
-                  Methodology
-                </h2>
-                <div className="bg-primary h-1 w-16" />
+              <div className="text-center mb-16 md:mb-32">
+                <h2 className="text-4xl font-black md:text-5xl">Our {service.title} Process</h2>
               </div>
             </FadeIn>
 
-            <div className="grid grid-cols-1 gap-x-12 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
-              {service.process
-                .sort((a: any, b: any) => (a.step || 0) - (b.step || 0))
-                .map((step: any, index: number) => (
-                  <FadeIn key={index} delay={index * 0.1}>
-                    <div className="group relative">
-                      <div className="text-background/10 group-hover:text-primary/20 pointer-events-none absolute -left-4 -top-12 z-0 text-8xl font-black transition-colors">
-                        0{step.step || index + 1}
-                      </div>
-                      <div className="relative z-10">
-                        <h4 className="text-background mb-4 flex items-center gap-3 text-2xl font-bold">
-                          {step.title}
-                        </h4>
-                        <p className="text-background/70 leading-relaxed">{step.description}</p>
-                      </div>
+            {(() => {
+              const steps = service.developmentProcess || service.process || [];
+              
+              if (steps.length === 6) {
+                return (
+                  <div className="relative max-w-7xl mx-auto hidden lg:flex items-center justify-center h-[650px] my-12">
+                    {/* The Gradient Stadium Track */}
+                    <div className="absolute inset-x-[220px] xl:inset-x-[280px] top-1/2 -translate-y-1/2 h-[280px]">
+                      <FadeIn delay={0.2} className="w-full h-full relative">
+                        <div className="w-full h-full rounded-[140px] bg-gradient-to-r from-primary via-blue-500 to-cyan-400 p-[20px] shadow-[0_0_50px_rgba(6,182,212,0.2)]">
+                          {/* Inner cutout to make it look like a hollow track */}
+                          <div className="w-full h-full rounded-[120px] bg-background border-[4px] border-primary/10 backdrop-blur-md" />
+                        </div>
+                        
+                        {/* The Nodes placed precisely on the track bounds */}
+                        {steps.map((step: any, index: number) => {
+                          let positionClasses = "";
+                          let textClasses = "";
+                          
+                          if (index === 0) {
+                            positionClasses = "top-[10px] left-[75%] -translate-x-1/2 -translate-y-1/2";
+                            textClasses = "bottom-full mb-6 left-1/2 -translate-x-1/2 text-center w-60 xl:w-72";
+                          } else if (index === 1) {
+                            positionClasses = "top-[140px] right-[10px] translate-x-1/2 -translate-y-1/2";
+                            textClasses = "left-full ml-5 xl:ml-8 top-1/2 -translate-y-1/2 w-48 xl:w-60";
+                          } else if (index === 2) {
+                            positionClasses = "bottom-[10px] left-[75%] -translate-x-1/2 translate-y-1/2";
+                            textClasses = "top-full mt-6 left-1/2 -translate-x-1/2 text-center w-60 xl:w-72";
+                          } else if (index === 3) {
+                            positionClasses = "bottom-[10px] left-[25%] -translate-x-1/2 translate-y-1/2";
+                            textClasses = "top-full mt-6 left-1/2 -translate-x-1/2 text-center w-60 xl:w-72";
+                          } else if (index === 4) {
+                            positionClasses = "top-[140px] left-[10px] -translate-x-1/2 -translate-y-1/2";
+                            textClasses = "right-full mr-5 xl:mr-8 top-1/2 -translate-y-1/2 text-right w-48 xl:w-60";
+                          } else if (index === 5) {
+                            positionClasses = "top-[10px] left-[25%] -translate-x-1/2 -translate-y-1/2";
+                            textClasses = "bottom-full mb-6 left-1/2 -translate-x-1/2 text-center w-60 xl:w-72";
+                          }
+
+                          return (
+                            <div key={index} className={`absolute ${positionClasses} z-10`}>
+                              <FadeIn delay={0.4 + index * 0.1} className="relative flex flex-col items-center">
+                                <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold border-[4px] border-background shadow-[0_0_20px_rgba(6,182,212,0.4)] group-hover:scale-110 transition-transform">
+                                  {index + 1}
+                                </div>
+                                <div className={`absolute ${textClasses} pointer-events-none`}>
+                                  <h4 className="font-bold text-lg xl:text-xl mb-3 text-foreground">{step.title}</h4>
+                                  <p className="text-sm text-muted-foreground leading-relaxed drop-shadow-sm">{step.description}</p>
+                                </div>
+                              </FadeIn>
+                            </div>
+                          );
+                        })}
+                      </FadeIn>
                     </div>
-                  </FadeIn>
-                ))}
+                  </div>
+                );
+              }
+
+              return (
+                <div className="lg:hidden relative space-y-12 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent max-w-3xl mx-auto">
+                  {steps.map((step: any, index: number) => (
+                    <FadeIn key={index} delay={index * 0.1} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                      {/* Icon */}
+                      <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-background bg-primary text-primary-foreground font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10 relative">
+                        {index + 1}
+                      </div>
+                      {/* Card */}
+                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-8 rounded-2xl bg-background border border-border shadow-sm">
+                        <h4 className="font-bold text-xl mb-3">{step.title}</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                      </div>
+                    </FadeIn>
+                  ))}
+                </div>
+              );
+            })()}
+            
+            {/* Display Vertical Timeline for Mobile (or for anything that's not exactly 6 steps on Desktop) */}
+            <div className="hidden lg:block">
+              {(() => {
+                const steps = service.developmentProcess || service.process || [];
+                if (steps.length === 6) return null; // handled by track layout
+                
+                return (
+                  <div className="relative space-y-12 before:absolute before:inset-0 md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent max-w-4xl mx-auto">
+                    {steps.map((step: any, index: number) => (
+                      <FadeIn key={index} delay={index * 0.1} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                        <div className="flex items-center justify-center w-14 h-14 rounded-full border-4 border-background bg-primary text-primary-foreground text-lg font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10 relative">
+                          {index + 1}
+                        </div>
+                        <div className="w-[calc(50%-4rem)] p-8 rounded-2xl bg-background border border-border shadow-sm">
+                          <h4 className="font-bold text-2xl mb-3">{step.title}</h4>
+                          <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                        </div>
+                      </FadeIn>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+            
+            <div className="mt-20 text-center">
+              <Button asChild className="rounded-full px-8 py-6 text-lg font-bold">
+                <Link href="/contact">Create Scalable {service.title} Solutions</Link>
+              </Button>
             </div>
           </Container>
         </Section>
