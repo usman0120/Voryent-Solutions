@@ -394,30 +394,39 @@ export default async function HomePage() {
       </section>
 
       {/* ─── TECH STACK & INTEGRATIONS (NEW SECTION) ─── */}
-      <section className="bg-background border-border/40 border-b py-20 md:py-32">
+      <section className="bg-muted/10 border-border/40 border-b py-20 md:py-32 overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <FadeIn className="mb-16 text-center">
-            <h2 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
-              Built on Enterprise Technologies
-            </h2>
-          </FadeIn>
+          <div className="max-w-3xl mb-16">
+            <FadeIn>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-foreground mb-6">
+                Built on strong technology alliances
+              </h2>
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                We collaborate with leading technology providers to deliver modern, scalable solutions that help 
+                enterprises accelerate transformation, improve performance, and create lasting business value.
+              </p>
+            </FadeIn>
+          </div>
+        </div>
 
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
-            {techStack.map((tech, idx) => {
-              const Icon = tech.icon;
-              return (
-                <FadeIn
-                  key={idx}
-                  delay={0.1 * idx}
-                  className="flex cursor-default flex-col items-center gap-3 opacity-60 transition-opacity hover:opacity-100"
-                >
-                  <Icon className="text-foreground h-10 w-10" />
-                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest">
-                    {tech.name}
-                  </span>
-                </FadeIn>
-              );
-            })}
+        {/* Marquee Slider */}
+        <div className="relative flex overflow-x-hidden group">
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex animate-marquee group-hover:[animation-play-state:paused] gap-12 items-center py-4 pl-12 whitespace-nowrap">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex gap-12 md:gap-24 items-center shrink-0">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" className="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/microsoftsqlserver/microsoftsqlserver-original-wordmark.svg" alt="Microsoft" className="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original-wordmark.svg" alt="Google Cloud" className="h-12 md:h-16 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original-wordmark.svg" alt="React" className="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original-wordmark.svg" alt="Node.js" className="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original-wordmark.svg" alt="Docker" className="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-plain-wordmark.svg" alt="Kubernetes" className="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original-wordmark.svg" alt="Python" className="h-16 md:h-20 object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+              </div>
+            ))}
           </div>
         </div>
       </section>
