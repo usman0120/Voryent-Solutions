@@ -406,47 +406,59 @@ export default async function AboutPage() {
       </Section>
 
       {/* ─── LEADERSHIP & TEAM ─── */}
-      {employees.length > 0 && (
-        <Section className="bg-background border-border/40 border-t py-24 md:py-32">
-          <Container>
-            <div className="mb-20 max-w-3xl">
-              <span className="text-muted-foreground mb-6 block text-xs font-bold uppercase tracking-[0.2em]">
-                Our People
-              </span>
-              <h2 className="text-foreground mb-6 text-4xl font-bold tracking-tight md:text-5xl">
-                Meet the minds behind Voryent.
-              </h2>
-              <p className="text-muted-foreground text-xl leading-relaxed">
-                A collective of passionate engineers, designers, and strategists.
-              </p>
-            </div>
+      {(() => {
+        const leadershipMembers = blocks?.leadership?.members || employees || [];
+        const leadershipTitle = blocks?.leadership?.title || "Meet the minds behind Voryent.";
+        
+        if (leadershipMembers.length === 0) return null;
+        
+        return (
+          <Section className="bg-background border-border/40 border-t py-24 md:py-32">
+            <Container>
+              <div className="mb-20 max-w-3xl">
+                <span className="text-muted-foreground mb-6 block text-xs font-bold uppercase tracking-[0.2em]">
+                  Our People
+                </span>
+                <h2 className="text-foreground mb-6 text-4xl font-bold tracking-tight md:text-5xl">
+                  {leadershipTitle}
+                </h2>
+                <p className="text-muted-foreground text-xl leading-relaxed">
+                  A collective of passionate engineers, designers, and strategists.
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
-              {employees.map((emp: any, i: number) => (
-                <div key={emp.id || i} className="group cursor-pointer">
-                  <div className="bg-muted border-border/50 relative mb-6 aspect-[3/4] w-full overflow-hidden rounded-none border">
-                    <Image
-                      src={
-                        emp.image ||
-                        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
-                      }
-                      alt={emp.firstName}
-                      fill
-                      className="object-cover grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
-                    />
-                  </div>
-                  <h3 className="text-foreground mb-1 text-xl font-bold">
-                    {emp.firstName} {emp.lastName}
-                  </h3>
-                  <p className="text-primary text-xs font-bold uppercase tracking-widest">
-                    {emp.position}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Container>
-        </Section>
-      )}
+              <div className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
+                {leadershipMembers.map((emp: any, i: number) => {
+                  const name = emp.name || (emp.firstName ? `${emp.firstName} ${emp.lastName}` : "");
+                  const position = emp.title || emp.position || "";
+                  
+                  return (
+                    <div key={emp.id || i} className="group cursor-pointer">
+                      <div className="bg-muted border-border/50 relative mb-6 aspect-[3/4] w-full overflow-hidden rounded-none border">
+                        <Image
+                          src={
+                            emp.image ||
+                            "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
+                          }
+                          alt={name}
+                          fill
+                          className="object-cover grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
+                        />
+                      </div>
+                      <h3 className="text-foreground mb-1 text-xl font-bold">
+                        {name}
+                      </h3>
+                      <p className="text-primary text-xs font-bold uppercase tracking-widest">
+                        {position}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </Container>
+          </Section>
+        );
+      })()}
 
       {/* ─── INVESTORS ─── */}
       {investors.length > 0 && (
