@@ -69,6 +69,8 @@ import ClarityAnalytics from "@/components/analytics/clarity";
 import NextTopLoader from "nextjs-toploader";
 import { ConditionalWrapper } from "@/components/layout/conditional-wrapper";
 
+import { BackToTop } from "@/components/layout/back-to-top";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -109,6 +111,7 @@ export default function RootLayout({
           <ConditionalWrapper header={<SiteHeader />} footer={<SiteFooter />}>
             {children}
           </ConditionalWrapper>
+          <BackToTop />
           <Toaster />
           <SonnerToaster position="top-right" richColors />
         </ThemeProvider>
