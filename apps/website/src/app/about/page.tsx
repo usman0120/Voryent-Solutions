@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
   const [aboutData, employees, investors] = await Promise.all([
-    getAboutData().catch(() => null),
+    getAboutData().catch((e) => {
+      console.error("Error fetching aboutData:", e);
+      return null;
+    }),
     getEmployees().catch(() => []),
     getInvestors().catch(() => []),
   ]);
@@ -432,41 +435,43 @@ export default async function AboutPage() {
 
               <div className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
                 {leadershipMembers.map((emp: any, i: number) => {
-                  const name = emp.name || (emp.firstName ? `${emp.firstName} ${emp.lastName}` : "");
+                  const nameStr = emp.name || (emp.firstName ? `${emp.firstName} ${emp.lastName}` : "");
+                  const nameParts = nameStr.split(" ");
+                  const lastName = nameParts.pop();
+                  const firstName = nameParts.join(" ");
                   const position = emp.title || emp.position || "";
                   
                   return (
-                    <div key={emp.id || i} className="group relative">
-                      <div className="bg-muted border-border/50 relative mb-6 aspect-[3/4] w-full overflow-hidden rounded-none border">
+                    <div key={emp.id || i} className="group flex flex-col">
+                      <div className="relative mb-4 aspect-[4/5] w-full overflow-hidden bg-transparent">
                         <Image
                           src={
                             emp.image ||
                             "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
                           }
-                          alt={name}
+                          alt={nameStr}
                           fill
-                          className="object-cover grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
+                          className="object-contain object-bottom transition-transform duration-500 group-hover:scale-105"
                         />
+                      </div>
+                      <div className="flex flex-col flex-grow">
+                        <h3 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
+                          {firstName} <span className="text-primary">{lastName}</span>
+                        </h3>
+                        <p className="text-muted-foreground mt-2 text-sm md:text-base">
+                          {position}
+                        </p>
                         {emp.linkedin && (
-                          <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-start p-6">
-                            <a 
-                              href={emp.linkedin} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="bg-primary hover:bg-primary/90 text-primary-foreground p-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
-                            >
-                              <Linkedin className="w-4 h-4" />
-                              Connect
-                            </a>
-                          </div>
+                          <a 
+                            href={emp.linkedin} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="mt-3 inline-block text-foreground hover:text-primary transition-colors"
+                          >
+                            <Linkedin className="h-5 w-5" />
+                          </a>
                         )}
                       </div>
-                      <h3 className="text-foreground mb-1 text-xl font-bold">
-                        {name}
-                      </h3>
-                      <p className="text-primary text-xs font-bold uppercase tracking-widest">
-                        {position}
-                      </p>
                     </div>
                   );
                 })}
