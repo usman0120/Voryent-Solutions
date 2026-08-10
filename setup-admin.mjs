@@ -18,7 +18,7 @@ const db = getFirestore(app);
 
 async function setupAdmin() {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, "admin@voryentsolutions.com", "Admin123!");
+    const userCredential = await createUserWithEmailAndPassword(auth, "voryentsolutions@gmail.com", "Admin123!");
     const user = userCredential.user;
     
     await setDoc(doc(db, "users", user.uid), {
@@ -29,7 +29,7 @@ async function setupAdmin() {
     });
     
     console.log("Admin account created successfully!");
-    console.log("Email: admin@voryentsolutions.com");
+    console.log("Email: voryentsolutions@gmail.com");
     console.log("Password: Admin123!");
     process.exit(0);
   } catch (error) {
