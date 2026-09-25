@@ -2,6 +2,8 @@ import { collection, doc, getDoc, getDocs, query, where, orderBy, limit } from "
 import { db as firestoreDb } from "./config";
 import { getCached, setCacheWithPrune } from "../cache";
 import { hardcodedServices } from "../data/services";
+import hardcodedBlogsData from "../data/blogs.json";
+export const hardcodedBlogs: any[] = hardcodedBlogsData;
 
 // Helper: get db lazily - call as db() to get the Firestore instance
 const db = () => firestoreDb;
@@ -139,27 +141,38 @@ export async function getBlogPosts() {
   const cached = getCached<any[]>(key);
   if (cached) return cached;
 
+  let dynamicPosts: any[] = [];
   try {
     const snapshot = await getDocs(collection(db(), "blogPosts"));
     const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as any) }));
     
     // Resilient filter for published posts (case-insensitive) or posts without status constraint
-    const publishedDocs = docs.filter((d) => {
+    dynamicPosts = docs.filter((d) => {
       if (!d.status) return true;
       return String(d.status).toLowerCase() === "published";
     });
-
-    const data = publishedDocs.sort((a, b) => {
-      const timeA = a.publishedAt?.toMillis?.() || a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
-      const timeB = b.publishedAt?.toMillis?.() || b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
-      return timeB - timeA;
-    });
-    setCacheWithPrune(key, data, SHORT_TTL);
-    return data;
   } catch (error) {
-    console.error("Failed to fetch blog posts:", error);
-    return [];
+    console.error("Failed to fetch blog posts from Firestore (falling back to hardcoded):", error);
   }
+
+  // Combine dynamic posts from admin and hardcoded posts
+  // Dynamic posts take precedence if the same slug exists
+  const dynamicSlugs = new Set(dynamicPosts.map((p) => p.slug));
+  const fallbackBlogs = (hardcodedBlogs || []).filter((h) => !dynamicSlugs.has(h.slug));
+  const combined = [...dynamicPosts, ...fallbackBlogs];
+
+  const getTime = (p: any): number => {
+    if (p.publishedAt?.toMillis) return p.publishedAt.toMillis();
+    if (p.publishedAt?.seconds) return p.publishedAt.seconds * 1000;
+    if (typeof p.publishedAt === "string" || typeof p.publishedAt === "number") return new Date(p.publishedAt).getTime() || 0;
+    if (p.createdAt?.toMillis) return p.createdAt.toMillis();
+    if (p.createdAt?.seconds) return p.createdAt.seconds * 1000;
+    return 0;
+  };
+
+  const data = combined.sort((a, b) => getTime(b) - getTime(a));
+  setCacheWithPrune(key, data, SHORT_TTL);
+  return data;
 }
 
 export async function getBlogPostBySlug(slug: string) {
@@ -171,14 +184,23 @@ export async function getBlogPostBySlug(slug: string) {
     const q = query(collection(db(), "blogPosts"), where("slug", "==", slug), limit(1));
     const snapshot = await getDocs(q);
     const firstDoc = snapshot.docs[0];
-    if (!firstDoc) return null;
-    const data = { id: firstDoc.id, ...firstDoc.data() };
-    setCacheWithPrune(key, data, SHORT_TTL);
-    return data;
+    if (firstDoc) {
+      const data = { id: firstDoc.id, ...firstDoc.data() };
+      setCacheWithPrune(key, data, SHORT_TTL);
+      return data;
+    }
   } catch (error) {
-    console.error(`Failed to fetch blog post by slug (${slug}):`, error);
-    return null;
+    console.error(`Failed to fetch dynamic blog post by slug (${slug}):`, error);
   }
+
+  // Check hardcoded fallback
+  const hardcodedMatch = (hardcodedBlogs || []).find((p) => p.slug === slug);
+  if (hardcodedMatch) {
+    setCacheWithPrune(key, hardcodedMatch, SHORT_TTL);
+    return hardcodedMatch;
+  }
+
+  return null;
 }
 
 export async function subscribeBlogNewsletter(email: string) {

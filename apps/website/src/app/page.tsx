@@ -207,7 +207,11 @@ export default async function HomePage() {
     imageUrl:
       b.coverImage ||
       "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop",
-    date: b.publishedAt ? new Date(b.publishedAt).toLocaleDateString() : "Recent",
+    date: b.publishedAt?.seconds
+      ? new Date(b.publishedAt.seconds * 1000).toLocaleDateString()
+      : b.publishedAt
+      ? new Date(b.publishedAt).toLocaleDateString()
+      : "Recent",
   }));
 
   const sections = homepageData?.["sections"] || [];
